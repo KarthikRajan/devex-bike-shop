@@ -68,7 +68,7 @@ A full-stack demo e-commerce application for a premium bike shop — built with 
 ### Installation
 
 ```bash
-git clone https://github.com/pdutta25/devex-bike-shop.git
+git clone https://github.com/KarthikRajan/devex-bike-shop
 cd devex-bike-shop
 npm install
 ```
