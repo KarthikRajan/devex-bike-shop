@@ -377,7 +377,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@f
         with:
           node-version: '20'
 
@@ -395,11 +395,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="v1.0.${{ github.run_number }}"
-          gh release create "$TAG" \
-            --title "Release $TAG" \
-            --notes-file /tmp/release-notes.md \
-            --target ${{ github.sha }}
-          echo "✅ Release $TAG created with AI-generated notes"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "⚠️ Release $TAG already exists. Skipping."
+          else
+             gh release create "$TAG" \  
+              --title "Release $TAG" \
+              --notes-file /tmp/release-notes.md \
+              --target ${{ github.sha }}
+             echo "✅ Release $TAG created with AI-generated notes"
+          fi
 
   # ─────────────────────────────────────────
   # STAGE 5: CREATE DOCS → GITHUB WIKI
