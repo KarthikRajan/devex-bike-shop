@@ -30,10 +30,10 @@ concurrency:
 # ═══════════════════════════════════════════════════════════
 # PIPELINE GRAPH (visible in GitHub Actions UI):
 #
-#   build ──┐
-#   lint  ──┤──→ security-scan ──┐                    ┌──→ release-notes
-#   test  ──┤──→ code-quality  ──┤──→ deploy-gate ──→─┤
-#           └────────────────────┘                    └──→ create-docs
+#   build ──┬──→ security-scan ──┐
+#   lint  ──┤──→ code-quality  ──┤──→ deploy-gate
+#   test  ──┤──→ release-notes
+#           └──→ wiki-updates
 #
 # ═══════════════════════════════════════════════════════════
 
@@ -360,11 +360,11 @@ jobs:
 
 
   # ─────────────────────────────────────────
-  # STAGE 4: RELEASE NOTES (Agentic)
+  # STAGE 3b: RELEASE NOTES (Agent) — parallel with security/quality/deploy
   # ─────────────────────────────────────────
   release-notes:
     name: 🤖 Release Notes (Agent)
-    needs: [deploy-gate]
+    needs: [build]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
@@ -382,6 +382,7 @@ jobs:
           node-version: '20'
 
       - name: Generate release notes via AI agent
+        timeout-minutes: 2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OUTPUT_FILE: /tmp/release-notes.md
@@ -406,11 +407,11 @@ jobs:
           fi
 
   # ─────────────────────────────────────────
-  # STAGE 5: CREATE DOCS → GITHUB WIKI
+  # STAGE 3c: WIKI UPDATES — parallel with security/quality/deploy
   # ─────────────────────────────────────────
   create-docs:
     name: 📚 Wiki Updates
-    needs: [deploy-gate]
+    needs: [build]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && !inputs.test_deploy
     runs-on: ubuntu-latest
     permissions:
@@ -499,12 +500,25 @@ jobs:
             '- [[Database Schema]]' \
             > wiki-repo/_Sidebar.md
 
+          # Find commits since last release tag
+          LAST_TAG=$(git -C "${{ github.workspace }}" describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            COMMIT_LOG=$(git -C "${{ github.workspace }}" log ${LAST_TAG}..HEAD --pretty=format:"  - %s (%h)" --no-merges)
+            COMMIT_RANGE="${LAST_TAG}..${GITHUB_SHA::7}"
+          else
+            COMMIT_LOG=$(git -C "${{ github.workspace }}" log -5 --pretty=format:"  - %s (%h)" --no-merges)
+            COMMIT_RANGE="last 5 commits"
+          fi
+
           cd wiki-repo
           git add -A
           if git diff --staged --quiet; then
             echo "ℹ️  No doc changes to publish"
           else
-            git commit -m "docs: auto-update from ${GITHUB_SHA::7}"
+            git commit -m "$(printf 'docs: auto-update for %s\n\nGenerated for commits (%s):\n%s' "${GITHUB_SHA::7}" "$COMMIT_RANGE" "$COMMIT_LOG")"
             git push origin HEAD
             echo "✅ Wiki updated successfully"
+            echo ""
+            echo "📋 Commits covered:"
+            echo "$COMMIT_LOG"
           fi
