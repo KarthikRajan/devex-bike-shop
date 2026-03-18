@@ -1,0 +1,303 @@
+pipeline:
+  name: pat2-release-devex-bike-shop
+  identifier: pat2releasedevexbikeshop
+  projectIdentifier: devexbikeshop
+  orgIdentifier: default
+  tags: {}
+  variables:
+    - name: commitSha
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: buildNumber
+      type: String
+      default: "0"
+      value: <+input>
+    - name: branch
+      type: String
+      default: "main"
+      value: <+input>
+    - name: prNumber
+      type: String
+      default: "none"
+      value: <+input>
+    - name: triggeredBy
+      type: String
+      default: "GitHub Actions"
+      value: <+input>
+    - name: repoUrl
+      type: String
+      default: "https://github.com/devx-bike-shop"
+      value: <+input>
+    - name: runId
+      type: String
+      default: "0"
+      value: <+input>
+    - name: dbVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: dbChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: svcVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: svcChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: uiVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: uiChange
+      type: String
+      default: "unknown"
+      value: <+input>
+  stages:
+    # ════════════════════════════════════════════════════════════
+    # DEV — One gate for DB, then Services + UI parallel (no gates)
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: DEV
+        identifier: DEV
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Gate: Approve Database Deploy ──
+              - step:
+                  name: Approve Database Deploy
+                  identifier: Approve_Database_Deploy
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      🗄️ Ready to deploy Database to DEV
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Database ──
+              - step:
+                  name: Deploy Database
+                  identifier: Deploy_Database
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — DATABASE                   ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "🗄️  Deploying database to DEV"
+                          echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "📋 Component: Database v<+pipeline.variables.dbVer>"
+                          echo "   Change:   <+pipeline.variables.dbChange>"
+                          echo ""
+                          sleep 2
+                          echo "   Running schema diff... ✔"
+                          sleep 2
+                          echo "   Applying migrations..."
+                          echo "     ✔ 001_create_products_table"
+                          echo "     ✔ 002_create_categories_table"
+                          echo "     ✔ 003_create_orders_table"
+                          echo "     ✔ 004_create_customers_table"
+                          sleep 2
+                          echo "   Verifying integrity... ✔"
+                          echo "   Seeding reference data... ✔"
+                          echo ""
+                          echo "✅ Database deployed to DEV"
+
+              # ── Deploy Services & UI in Parallel (no gates) ──
+              - parallel:
+                  - step:
+                      name: Deploy Services
+                      identifier: Deploy_Services
+                      type: ShellScript
+                      timeout: 5m
+                      spec:
+                        shell: Bash
+                        onDelegate: true
+                        source:
+                          type: Inline
+                          spec:
+                            script: |-
+                              #!/bin/bash
+                              echo "╔══════════════════════════════════════╗"
+                              echo "║  DEPLOY — SERVICES (API)  [parallel] ║"
+                              echo "╚══════════════════════════════════════╝"
+                              echo ""
+                              echo "⚙️  Deploying API services to DEV"
+                              echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                              echo ""
+                              echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                              echo "   Change:   <+pipeline.variables.svcChange>"
+                              echo ""
+                              sleep 2
+                              echo "   Deploying Next.js API routes..."
+                              echo "     ✔ /api/products"
+                              echo "     ✔ /api/categories"
+                              echo "     ✔ /api/orders"
+                              echo "     ✔ /api/cart"
+                              echo "     ✔ /api/health"
+                              sleep 2
+                              echo "   Health check... HTTP 200 ✔"
+                              echo ""
+                              echo "✅ Services deployed to DEV"
+                  - step:
+                      name: Deploy UI
+                      identifier: Deploy_UI
+                      type: ShellScript
+                      timeout: 5m
+                      spec:
+                        shell: Bash
+                        onDelegate: true
+                        source:
+                          type: Inline
+                          spec:
+                            script: |-
+                              #!/bin/bash
+                              echo "╔══════════════════════════════════════╗"
+                              echo "║  DEPLOY — UI (Storefront) [parallel] ║"
+                              echo "╚══════════════════════════════════════╝"
+                              echo ""
+                              echo "🎨 Deploying storefront UI to DEV"
+                              echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                              echo ""
+                              echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                              echo "   Change:   <+pipeline.variables.uiChange>"
+                              echo ""
+                              sleep 2
+                              echo "   Deploying static assets... ✔"
+                              sleep 2
+                              echo "   Deploying SSR pages..."
+                              echo "     ✔ Homepage"
+                              echo "     ✔ Product catalog"
+                              echo "     ✔ Product detail"
+                              echo "     ✔ Cart & Checkout"
+                              echo "     ✔ Admin dashboard"
+                              sleep 2
+                              echo "   CDN cache invalidation... ✔"
+                              echo "   Visual diff check... no regressions ✔"
+                              echo ""
+                              echo "✅ UI deployed to DEV"
+
+              # ── DEV Smoke Tests ──
+              - step:
+                  name: DEV Smoke Tests
+                  identifier: DEV_Smoke_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 DEV Smoke Tests"
+                          echo ""
+                          echo "   ✔ [DEV-01] Build artifact verified"
+                          echo "   ✔ [DEV-02] Config validation passed"
+                          echo "   ✔ [DEV-03] Service health simulated"
+                          echo ""
+                          echo "┌──────────────────────────────────────┐"
+                          echo "│     DEV SMOKE TEST RESULTS           │"
+                          echo "├──────────────────────────────────────┤"
+                          echo "│ Total Tests:    3                    │"
+                          echo "│ Passed:         3                    │"
+                          echo "│ Failed:         0                    │"
+                          echo "│ Status:         ✅ ALL PASSED        │"
+                          echo "└──────────────────────────────────────┘"
+                          echo ""
+                          echo "✅ DEV smoke tests passed"
+
+              # ── Certify DEV Build (Auto-Approve in 10s) ──
+              - step:
+                  name: Certify DEV Build
+                  identifier: Certify_DEV_Build
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      ✅ AUTO-CERTIFY: DEV Build
+                      DEV deployment and smoke tests passed.
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── DEV Summary ──
+              - step:
+                  name: DEV Summary
+                  identifier: DEV_Summary
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "┌──────────────────────────────────────────────┐"
+                          echo "│          DEV STAGE SUMMARY                   │"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ Build:   #<+pipeline.variables.buildNumber>"
+                          echo "│ Commit:  <+pipeline.variables.commitSha>"
+                          echo "│ Branch:  <+pipeline.variables.branch>"
+                          echo "│ Trigger: <+pipeline.variables.triggeredBy>"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "│ ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "│ ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo "│ ✅ Smoke Tests Passed (3/3)"
+                          echo "│ ✅ Build Certified"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ Result:  ✅ DEV PASSED"
+                          echo "└──────────────────────────────────────────────┘"
+                          echo ""
+                          echo "🔗 Trace: <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
+                          echo ""
+        tags: {}
