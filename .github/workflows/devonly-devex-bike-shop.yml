@@ -1,6 +1,13 @@
 name: DEV Only - DevEx Bike Shop
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'harness/devonly-devex-bike-shop.yaml'
+      - '.github/workflows/devonly-devex-bike-shop.yml'
+  repository_dispatch:
+    types: [component-updated]
   workflow_dispatch:
 
 permissions:
