@@ -81,10 +81,34 @@ pipeline:
                           echo ""
                           echo "✅ DEV infrastructure provisioned"
 
-              # ── Step 2a: Deploy Database ──
+              # ── Gate: Approve Database Deploy ──
               - step:
-                  name: Deploy Database
-                  identifier: Deploy_Database
+                  name: Approve Database Deploy
+                  identifier: Approve_Database_Deploy
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      🗄️ Ready to deploy Database (Comp-1) to DEV
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Database - Comp-1 ──
+              - step:
+                  name: Deploy Database - Comp-1
+                  identifier: Deploy_Database_Comp_1
                   type: ShellScript
                   timeout: 5m
                   spec:
@@ -116,11 +140,35 @@ pipeline:
                           echo ""
                           echo "✅ Database deployed to DEV"
 
-              # ── Step 2b+2c: Deploy Services & UI in Parallel ──
+              # ── Gate: Approve Services and UI Deploy ──
+              - step:
+                  name: Approve Services and UI Deploy
+                  identifier: Approve_Services_and_UI_Deploy
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      ⚙️ Ready to deploy Services (Comp-2) and UI (Comp-3) to DEV
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Services (Comp-2) & UI (Comp-3) in Parallel ──
               - parallel:
                   - step:
-                      name: Deploy Services
-                      identifier: Deploy_Services
+                      name: Deploy Services - Comp-2
+                      identifier: Deploy_Services_Comp_2
                       type: ShellScript
                       timeout: 5m
                       spec:
@@ -152,8 +200,8 @@ pipeline:
                               echo ""
                               echo "✅ Services deployed to DEV"
                   - step:
-                      name: Deploy UI
-                      identifier: Deploy_UI
+                      name: Deploy UI - Comp-3
+                      identifier: Deploy_UI_Comp_3
                       type: ShellScript
                       timeout: 5m
                       spec:
@@ -266,9 +314,9 @@ pipeline:
                           echo "│ Trigger: <+pipeline.variables.triggeredBy>   │"
                           echo "├──────────────────────────────────────┤"
                           echo "│ ✅ Infrastructure Provisioned        │"
-                          echo "│ ✅ Database Deployed                 │"
-                          echo "│ ✅ Services (API) Deployed           │"
-                          echo "│ ✅ UI (Storefront) Deployed          │"
+                          echo "│ ✅ Database (Comp-1) Deployed        │"
+                          echo "│ ✅ Services (Comp-2) Deployed        │"
+                          echo "│ ✅ UI (Comp-3) Deployed              │"
                           echo "│ ✅ Smoke Tests Passed (3/3)          │"
                           echo "│ ✅ Build Certified                   │"
                           echo "├──────────────────────────────────────┤"
