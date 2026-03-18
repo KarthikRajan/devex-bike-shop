@@ -50,37 +50,6 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Step 1: Provision DEV Infrastructure ──
-              - step:
-                  name: Provision DEV Infrastructure
-                  identifier: Provision_DEV_Infrastructure
-                  type: ShellScript
-                  timeout: 5m
-                  spec:
-                    shell: Bash
-                    onDelegate: true
-                    source:
-                      type: Inline
-                      spec:
-                        script: |-
-                          #!/bin/bash
-                          echo "📋 Provisioning DEV — AWS EC2 via Terraform"
-                          echo "   Region: us-east-1 | Instance: t3.medium"
-                          sleep 2
-                          echo "   Terraform init... ✔"
-                          sleep 2
-                          echo "   Terraform plan... 3 to add, 0 to change"
-                          sleep 2
-                          echo "   Terraform apply..."
-                          sleep 3
-                          echo "   ✔ aws_security_group.dev_web   created"
-                          echo "   ✔ aws_instance.dev_bikeshop    created [i-0def1234abcd5678]"
-                          echo "   ✔ aws_eip.dev_bikeshop         created"
-                          sleep 2
-                          echo "   ✔ Instance running | Status checks passed"
-                          echo ""
-                          echo "✅ DEV infrastructure provisioned"
-
               # ── Gate: Approve Database Deploy ──
               - step:
                   name: Approve Database Deploy
@@ -326,24 +295,30 @@ pipeline:
                       spec:
                         script: |-
                           #!/bin/bash
+                          # Fetch versions from each component manifest
+                          DB_VER=$(cat /tmp/bikeshop-db/manifest.json 2>/dev/null | grep -o '"version": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+                          DB_CHANGE=$(cat /tmp/bikeshop-db/manifest.json 2>/dev/null | grep -o '"lastChange": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+                          SVC_VER=$(cat /tmp/bikeshop-services/manifest.json 2>/dev/null | grep -o '"version": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+                          SVC_CHANGE=$(cat /tmp/bikeshop-services/manifest.json 2>/dev/null | grep -o '"lastChange": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+                          UI_VER=$(cat /tmp/bikeshop-ui/manifest.json 2>/dev/null | grep -o '"version": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+                          UI_CHANGE=$(cat /tmp/bikeshop-ui/manifest.json 2>/dev/null | grep -o '"lastChange": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
                           echo ""
-                          echo "┌──────────────────────────────────────┐"
-                          echo "│     DEV STAGE SUMMARY                │"
-                          echo "├──────────────────────────────────────┤"
-                          echo "│ Build:   #<+pipeline.variables.buildNumber>  │"
-                          echo "│ Commit:  <+pipeline.variables.commitSha>     │"
-                          echo "│ Branch:  <+pipeline.variables.branch>        │"
-                          echo "│ Trigger: <+pipeline.variables.triggeredBy>   │"
-                          echo "├──────────────────────────────────────┤"
-                          echo "│ ✅ Infrastructure Provisioned        │"
-                          echo "│ ✅ Database Deployed                 │"
-                          echo "│ ✅ Services Deployed                 │"
-                          echo "│ ✅ UI Deployed                       │"
-                          echo "│ ✅ Smoke Tests Passed (3/3)          │"
-                          echo "│ ✅ Build Certified                   │"
-                          echo "├──────────────────────────────────────┤"
-                          echo "│ Result:  ✅ DEV PASSED               │"
-                          echo "└──────────────────────────────────────┘"
+                          echo "┌──────────────────────────────────────────────┐"
+                          echo "│          DEV STAGE SUMMARY                   │"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ Build:   #<+pipeline.variables.buildNumber>"
+                          echo "│ Commit:  <+pipeline.variables.commitSha>"
+                          echo "│ Branch:  <+pipeline.variables.branch>"
+                          echo "│ Trigger: <+pipeline.variables.triggeredBy>"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ ✅ Database  v${DB_VER}  — ${DB_CHANGE}"
+                          echo "│ ✅ Services  v${SVC_VER}  — ${SVC_CHANGE}"
+                          echo "│ ✅ UI        v${UI_VER}  — ${UI_CHANGE}"
+                          echo "│ ✅ Smoke Tests Passed (3/3)"
+                          echo "│ ✅ Build Certified"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ Result:  ✅ DEV PASSED"
+                          echo "└──────────────────────────────────────────────┘"
                           echo ""
                           echo "🔗 Trace: <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
                           echo ""
