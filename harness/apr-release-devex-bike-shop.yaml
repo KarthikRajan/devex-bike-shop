@@ -1,5 +1,5 @@
 pipeline:
-  name: devonly-devex-bike-shop
+  name: apr-release-devex-bike-shop
   identifier: devonlydevexbikeshop
   projectIdentifier: devexbikeshop
   orgIdentifier: default
