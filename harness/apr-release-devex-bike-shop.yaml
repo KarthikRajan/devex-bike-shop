@@ -59,7 +59,7 @@ pipeline:
       value: <+input>
   stages:
     # ════════════════════════════════════════════════════════════
-    # DEV ONLY — Deploy and Certify (Auto-Approved)
+    # DEV — Deploy and Certify (Auto-Approved)
     # ════════════════════════════════════════════════════════════
     - stage:
         name: DEV
@@ -320,6 +320,437 @@ pipeline:
                           echo "│ ✅ Build Certified"
                           echo "├──────────────────────────────────────────────┤"
                           echo "│ Result:  ✅ DEV PASSED"
+                          echo "└──────────────────────────────────────────────┘"
+                          echo ""
+                          echo "🔗 Trace: <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
+                          echo ""
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # SIT — Integration Testing (Auto-Approved)
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: SIT
+        identifier: SIT
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Gate: Approve Database Deploy ──
+              - step:
+                  name: Approve SIT Database
+                  identifier: Approve_SIT_Database
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      🗄️ Ready to deploy Database to SIT
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Database ──
+              - step:
+                  name: Deploy Database
+                  identifier: SIT_Deploy_Database
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — DATABASE (SIT)             ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "📋 Component: Database v<+pipeline.variables.dbVer>"
+                          echo "   Change:   <+pipeline.variables.dbChange>"
+                          echo ""
+                          sleep 2
+                          echo "   Running schema diff... ✔"
+                          sleep 2
+                          echo "   Applying migrations... ✔"
+                          echo "   Verifying integrity... ✔"
+                          echo ""
+                          echo "✅ Database deployed to SIT"
+
+              # ── Gate: Approve Services and UI ──
+              - step:
+                  name: Approve SIT Services and UI
+                  identifier: Approve_SIT_Services_UI
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      ⚙️ Ready to deploy Services and UI to SIT
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Services & UI in Parallel ──
+              - parallel:
+                  - step:
+                      name: Deploy Services
+                      identifier: SIT_Deploy_Services
+                      type: ShellScript
+                      timeout: 5m
+                      spec:
+                        shell: Bash
+                        onDelegate: true
+                        source:
+                          type: Inline
+                          spec:
+                            script: |-
+                              #!/bin/bash
+                              echo "╔══════════════════════════════════════╗"
+                              echo "║  DEPLOY — SERVICES (SIT)  [parallel] ║"
+                              echo "╚══════════════════════════════════════╝"
+                              echo ""
+                              echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                              echo "   Change:   <+pipeline.variables.svcChange>"
+                              echo ""
+                              sleep 2
+                              echo "   Deploying API routes... ✔"
+                              sleep 2
+                              echo "   Health check... HTTP 200 ✔"
+                              echo ""
+                              echo "✅ Services deployed to SIT"
+                  - step:
+                      name: Deploy UI
+                      identifier: SIT_Deploy_UI
+                      type: ShellScript
+                      timeout: 5m
+                      spec:
+                        shell: Bash
+                        onDelegate: true
+                        source:
+                          type: Inline
+                          spec:
+                            script: |-
+                              #!/bin/bash
+                              echo "╔══════════════════════════════════════╗"
+                              echo "║  DEPLOY — UI (SIT)        [parallel] ║"
+                              echo "╚══════════════════════════════════════╝"
+                              echo ""
+                              echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                              echo "   Change:   <+pipeline.variables.uiChange>"
+                              echo ""
+                              sleep 2
+                              echo "   Deploying storefront... ✔"
+                              sleep 2
+                              echo "   CDN cache invalidation... ✔"
+                              echo ""
+                              echo "✅ UI deployed to SIT"
+
+              # ── SIT Integration Tests ──
+              - step:
+                  name: SIT Integration Tests
+                  identifier: SIT_Integration_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 SIT Integration Tests"
+                          echo ""
+                          echo "   ✔ [SIT-01] API contract validation"
+                          echo "   ✔ [SIT-02] Cross-service communication"
+                          echo "   ✔ [SIT-03] Database connectivity"
+                          echo "   ✔ [SIT-04] UI-to-API integration"
+                          echo ""
+                          echo "✅ SIT integration tests passed (4/4)"
+
+              # ── Certify SIT ──
+              - step:
+                  name: Certify SIT
+                  identifier: Certify_SIT
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      ✅ AUTO-CERTIFY: SIT
+                      SIT deployment and integration tests passed.
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── SIT Summary ──
+              - step:
+                  name: SIT Summary
+                  identifier: SIT_Summary
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "┌──────────────────────────────────────────────┐"
+                          echo "│          SIT STAGE SUMMARY                   │"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ Build:   #<+pipeline.variables.buildNumber>"
+                          echo "│ Commit:  <+pipeline.variables.commitSha>"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "│ ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "│ ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo "│ ✅ Integration Tests Passed (4/4)"
+                          echo "│ ✅ SIT Certified"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ Result:  ✅ SIT PASSED"
+                          echo "└──────────────────────────────────────────────┘"
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # PROD — Production Deploy (Manual Approval Required)
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: PROD
+        identifier: PROD
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── PROD Approval Gate (Manual) ──
+              - step:
+                  name: PROD Approval
+                  identifier: PROD_Approval
+                  type: HarnessApproval
+                  timeout: 30m
+                  spec:
+                    approvalMessage: |-
+                      🚨 PRODUCTION DEPLOYMENT APPROVAL
+                      Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>
+                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
+                      DEV ✅ | SIT ✅ — Ready for PROD?
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+
+              # ── Deploy Database ──
+              - step:
+                  name: Deploy Database
+                  identifier: PROD_Deploy_Database
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — DATABASE (PROD)            ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "📋 Component: Database v<+pipeline.variables.dbVer>"
+                          echo "   Change:   <+pipeline.variables.dbChange>"
+                          echo ""
+                          sleep 2
+                          echo "   Running schema diff... ✔"
+                          sleep 2
+                          echo "   Applying migrations... ✔"
+                          echo "   Verifying integrity... ✔"
+                          echo ""
+                          echo "✅ Database deployed to PROD"
+
+              # ── Deploy Services & UI in Parallel ──
+              - parallel:
+                  - step:
+                      name: Deploy Services
+                      identifier: PROD_Deploy_Services
+                      type: ShellScript
+                      timeout: 5m
+                      spec:
+                        shell: Bash
+                        onDelegate: true
+                        source:
+                          type: Inline
+                          spec:
+                            script: |-
+                              #!/bin/bash
+                              echo "╔══════════════════════════════════════╗"
+                              echo "║  DEPLOY — SERVICES (PROD) [parallel] ║"
+                              echo "╚══════════════════════════════════════╝"
+                              echo ""
+                              echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                              echo "   Change:   <+pipeline.variables.svcChange>"
+                              echo ""
+                              sleep 2
+                              echo "   Deploying API routes... ✔"
+                              sleep 2
+                              echo "   Health check... HTTP 200 ✔"
+                              echo ""
+                              echo "✅ Services deployed to PROD"
+                  - step:
+                      name: Deploy UI
+                      identifier: PROD_Deploy_UI
+                      type: ShellScript
+                      timeout: 5m
+                      spec:
+                        shell: Bash
+                        onDelegate: true
+                        source:
+                          type: Inline
+                          spec:
+                            script: |-
+                              #!/bin/bash
+                              echo "╔══════════════════════════════════════╗"
+                              echo "║  DEPLOY — UI (PROD)       [parallel] ║"
+                              echo "╚══════════════════════════════════════╝"
+                              echo ""
+                              echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                              echo "   Change:   <+pipeline.variables.uiChange>"
+                              echo ""
+                              sleep 2
+                              echo "   Deploying storefront... ✔"
+                              sleep 2
+                              echo "   CDN cache invalidation... ✔"
+                              echo ""
+                              echo "✅ UI deployed to PROD"
+
+              # ── PROD Smoke Tests ──
+              - step:
+                  name: PROD Smoke Tests
+                  identifier: PROD_Smoke_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 PROD Smoke Tests"
+                          echo ""
+                          echo "   ✔ [PROD-01] Health endpoint responding"
+                          echo "   ✔ [PROD-02] Homepage loads"
+                          echo "   ✔ [PROD-03] API returns products"
+                          echo "   ✔ [PROD-04] Cart flow functional"
+                          echo ""
+                          echo "✅ PROD smoke tests passed (4/4)"
+
+              # ── Certify PROD ──
+              - step:
+                  name: Certify PROD
+                  identifier: Certify_PROD
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      ✅ AUTO-CERTIFY: PROD
+                      Production deployment and smoke tests passed.
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── PROD Summary ──
+              - step:
+                  name: PROD Summary
+                  identifier: PROD_Summary
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "┌──────────────────────────────────────────────┐"
+                          echo "│          PROD STAGE SUMMARY                  │"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ Build:   #<+pipeline.variables.buildNumber>"
+                          echo "│ Commit:  <+pipeline.variables.commitSha>"
+                          echo "│ Branch:  <+pipeline.variables.branch>"
+                          echo "│ Trigger: <+pipeline.variables.triggeredBy>"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "│ ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "│ ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo "│ ✅ Smoke Tests Passed (4/4)"
+                          echo "│ ✅ PROD Certified"
+                          echo "├──────────────────────────────────────────────┤"
+                          echo "│ Result:  🚀 PROD DEPLOYED"
                           echo "└──────────────────────────────────────────────┘"
                           echo ""
                           echo "🔗 Trace: <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
