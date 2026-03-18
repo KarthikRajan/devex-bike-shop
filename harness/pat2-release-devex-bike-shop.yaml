@@ -82,7 +82,8 @@ pipeline:
                   timeout: 10s
                   spec:
                     approvalMessage: |-
-                      🚀 Ready to deploy all components to DEV
+                      🚀 Approving all 3 components for deployment to DEV
+                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:
@@ -249,7 +250,8 @@ pipeline:
                   timeout: 10s
                   spec:
                     approvalMessage: |-
-                      ✅ AUTO-CERTIFY: All deploys and smoke tests passed.
+                      ✅ Certifying all 3 components deployed successfully
+                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:

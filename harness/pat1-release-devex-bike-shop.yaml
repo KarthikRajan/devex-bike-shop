@@ -82,7 +82,8 @@ pipeline:
                   timeout: 10s
                   spec:
                     approvalMessage: |-
-                      🗄️ Ready to deploy Database to DEV
+                      🗄️ Approving Database component for deployment to DEV
+                      Database v<+pipeline.variables.dbVer> — <+pipeline.variables.dbChange>
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:
@@ -149,7 +150,8 @@ pipeline:
                             timeout: 10s
                             spec:
                               approvalMessage: |-
-                                ⚙️ Ready to deploy Services to DEV
+                                ⚙️ Approving Services component for deployment to DEV
+                                Services v<+pipeline.variables.svcVer> — <+pipeline.variables.svcChange>
                                 Build: #<+pipeline.variables.buildNumber>
                               includePipelineExecutionHistory: true
                               approvers:
@@ -209,7 +211,8 @@ pipeline:
                             timeout: 10s
                             spec:
                               approvalMessage: |-
-                                🎨 Ready to deploy UI to DEV
+                                🎨 Approving UI component for deployment to DEV
+                                UI v<+pipeline.variables.uiVer> — <+pipeline.variables.uiChange>
                                 Build: #<+pipeline.variables.buildNumber>
                               includePipelineExecutionHistory: true
                               approvers:
@@ -301,8 +304,8 @@ pipeline:
                   timeout: 10s
                   spec:
                     approvalMessage: |-
-                      ✅ AUTO-CERTIFY: DEV Build
-                      DEV deployment and smoke tests passed.
+                      ✅ Certifying all 3 components deployed successfully
+                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:
