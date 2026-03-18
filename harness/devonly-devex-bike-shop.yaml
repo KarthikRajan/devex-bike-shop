@@ -295,13 +295,13 @@ pipeline:
                       spec:
                         script: |-
                           #!/bin/bash
-                          # Fetch versions from each component manifest
-                          DB_VER=$(cat /tmp/bikeshop-db/manifest.json 2>/dev/null | grep -o '"version": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
-                          DB_CHANGE=$(cat /tmp/bikeshop-db/manifest.json 2>/dev/null | grep -o '"lastChange": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
-                          SVC_VER=$(cat /tmp/bikeshop-services/manifest.json 2>/dev/null | grep -o '"version": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
-                          SVC_CHANGE=$(cat /tmp/bikeshop-services/manifest.json 2>/dev/null | grep -o '"lastChange": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
-                          UI_VER=$(cat /tmp/bikeshop-ui/manifest.json 2>/dev/null | grep -o '"version": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
-                          UI_CHANGE=$(cat /tmp/bikeshop-ui/manifest.json 2>/dev/null | grep -o '"lastChange": *"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+                          # Fetch versions from each component manifest using sed
+                          DB_VER=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-db/manifest.json 2>/dev/null || echo "unknown")
+                          DB_CHANGE=$(sed -n 's/.*"lastChange": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-db/manifest.json 2>/dev/null || echo "unknown")
+                          SVC_VER=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-services/manifest.json 2>/dev/null || echo "unknown")
+                          SVC_CHANGE=$(sed -n 's/.*"lastChange": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-services/manifest.json 2>/dev/null || echo "unknown")
+                          UI_VER=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-ui/manifest.json 2>/dev/null || echo "unknown")
+                          UI_CHANGE=$(sed -n 's/.*"lastChange": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-ui/manifest.json 2>/dev/null || echo "unknown")
                           echo ""
                           echo "┌──────────────────────────────────────────────┐"
                           echo "│          DEV STAGE SUMMARY                   │"
