@@ -8,6 +8,9 @@ on:
       - 'docs/**'
       - '.github/dependabot.yml'
       - 'LICENSE'
+      - 'harness/**'
+      - 'slides/**'
+      - '.github/workflows/devonly-*'
   pull_request:
     branches: [main]
     paths-ignore:
@@ -15,6 +18,9 @@ on:
       - 'docs/**'
       - '.github/dependabot.yml'
       - 'LICENSE'
+      - 'harness/**'
+      - 'slides/**'
+      - '.github/workflows/devonly-*'
   workflow_dispatch:
     inputs:
       test_deploy:
