@@ -74,15 +74,15 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Gate: Approve Database Deploy ──
+              # ── Gate: Approve Deploys ──
               - step:
-                  name: Approve Database Deploy
-                  identifier: Approve_Database_Deploy
+                  name: Approve Deploys
+                  identifier: Approve_Deploys
                   type: HarnessApproval
                   timeout: 10s
                   spec:
                     approvalMessage: |-
-                      🗄️ Ready to deploy Database to DEV
+                      🚀 Ready to deploy all components to DEV
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:
@@ -241,16 +241,15 @@ pipeline:
                           echo ""
                           echo "✅ DEV smoke tests passed"
 
-              # ── Certify DEV Build (Auto-Approve in 10s) ──
+              # ── Certify Deploys (Auto-Approve in 10s) ──
               - step:
-                  name: Certify DEV Build
-                  identifier: Certify_DEV_Build
+                  name: Certify Deploys
+                  identifier: Certify_Deploys
                   type: HarnessApproval
                   timeout: 10s
                   spec:
                     approvalMessage: |-
-                      ✅ AUTO-CERTIFY: DEV Build
-                      DEV deployment and smoke tests passed.
+                      ✅ AUTO-CERTIFY: All deploys and smoke tests passed.
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:
