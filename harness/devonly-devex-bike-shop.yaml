@@ -33,6 +33,30 @@ pipeline:
       type: String
       default: "0"
       value: <+input>
+    - name: dbVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: dbChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: svcVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: svcChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: uiVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: uiChange
+      type: String
+      default: "unknown"
+      value: <+input>
   stages:
     # ════════════════════════════════════════════════════════════
     # DEV ONLY — Deploy and Certify (Auto-Approved)
@@ -95,13 +119,8 @@ pipeline:
                           echo "🗄️  Deploying database to DEV"
                           echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
                           echo ""
-                          echo "📦 Fetching manifest from bikeshop-db repo..."
-                          cd /tmp && rm -rf bikeshop-db
-                          git clone --depth 1 https://github.com/pdutta25/bikeshop-db.git 2>&1 | tail -1
-                          echo ""
-                          echo "📋 Component Manifest:"
-                          cat bikeshop-db/manifest.json
-                          echo ""
+                          echo "📋 Component: Database v<+pipeline.variables.dbVer>"
+                          echo "   Change:   <+pipeline.variables.dbChange>"
                           echo ""
                           sleep 2
                           echo "   Running schema diff... ✔"
@@ -163,13 +182,8 @@ pipeline:
                               echo "⚙️  Deploying API services to DEV"
                               echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
                               echo ""
-                              echo "📦 Fetching manifest from bikeshop-services repo..."
-                              cd /tmp && rm -rf bikeshop-services
-                              git clone --depth 1 https://github.com/pdutta25/bikeshop-services.git 2>&1 | tail -1
-                              echo ""
-                              echo "📋 Component Manifest:"
-                              cat bikeshop-services/manifest.json
-                              echo ""
+                              echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                              echo "   Change:   <+pipeline.variables.svcChange>"
                               echo ""
                               sleep 2
                               echo "   Deploying Next.js API routes..."
@@ -202,13 +216,8 @@ pipeline:
                               echo "🎨 Deploying storefront UI to DEV"
                               echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
                               echo ""
-                              echo "📦 Fetching manifest from bikeshop-ui repo..."
-                              cd /tmp && rm -rf bikeshop-ui
-                              git clone --depth 1 https://github.com/pdutta25/bikeshop-ui.git 2>&1 | tail -1
-                              echo ""
-                              echo "📋 Component Manifest:"
-                              cat bikeshop-ui/manifest.json
-                              echo ""
+                              echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                              echo "   Change:   <+pipeline.variables.uiChange>"
                               echo ""
                               sleep 2
                               echo "   Deploying static assets... ✔"
@@ -295,13 +304,6 @@ pipeline:
                       spec:
                         script: |-
                           #!/bin/bash
-                          # Fetch versions from each component manifest using sed
-                          DB_VER=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-db/manifest.json 2>/dev/null || echo "unknown")
-                          DB_CHANGE=$(sed -n 's/.*"lastChange": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-db/manifest.json 2>/dev/null || echo "unknown")
-                          SVC_VER=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-services/manifest.json 2>/dev/null || echo "unknown")
-                          SVC_CHANGE=$(sed -n 's/.*"lastChange": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-services/manifest.json 2>/dev/null || echo "unknown")
-                          UI_VER=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-ui/manifest.json 2>/dev/null || echo "unknown")
-                          UI_CHANGE=$(sed -n 's/.*"lastChange": *"\([^"]*\)".*/\1/p' /tmp/bikeshop-ui/manifest.json 2>/dev/null || echo "unknown")
                           echo ""
                           echo "┌──────────────────────────────────────────────┐"
                           echo "│          DEV STAGE SUMMARY                   │"
@@ -311,9 +313,9 @@ pipeline:
                           echo "│ Branch:  <+pipeline.variables.branch>"
                           echo "│ Trigger: <+pipeline.variables.triggeredBy>"
                           echo "├──────────────────────────────────────────────┤"
-                          echo "│ ✅ Database  v${DB_VER}  — ${DB_CHANGE}"
-                          echo "│ ✅ Services  v${SVC_VER}  — ${SVC_CHANGE}"
-                          echo "│ ✅ UI        v${UI_VER}  — ${UI_CHANGE}"
+                          echo "│ ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "│ ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "│ ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
                           echo "│ ✅ Smoke Tests Passed (3/3)"
                           echo "│ ✅ Build Certified"
                           echo "├──────────────────────────────────────────────┤"
