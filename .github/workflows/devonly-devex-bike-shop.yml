@@ -26,9 +26,10 @@ jobs:
       - name: Fetch component manifests
         id: manifests
         run: |
-          DB=$(curl -sf https://raw.githubusercontent.com/pdutta25/bikeshop-db/main/manifest.json || echo '{}')
-          SVC=$(curl -sf https://raw.githubusercontent.com/pdutta25/bikeshop-services/main/manifest.json || echo '{}')
-          UI=$(curl -sf https://raw.githubusercontent.com/pdutta25/bikeshop-ui/main/manifest.json || echo '{}')
+          BUST=$(date +%s)
+          DB=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-db/main/manifest.json?t=$BUST" || echo '{}')
+          SVC=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-services/main/manifest.json?t=$BUST" || echo '{}')
+          UI=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-ui/main/manifest.json?t=$BUST" || echo '{}')
           echo "db_ver=$(echo $DB | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
           echo "db_change=$(echo $DB | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
           echo "svc_ver=$(echo $SVC | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
