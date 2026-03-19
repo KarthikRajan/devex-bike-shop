@@ -123,6 +123,11 @@ pipeline:
                           echo "📋 Component: Database v<+pipeline.variables.dbVer>"
                           echo "   Change:   <+pipeline.variables.dbChange>"
                           echo ""
+                          echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-db/actions"
+                          echo "   ✔ Build   — Schema compiled"
+                          echo "   ✔ Lint    — SQL syntax validated"
+                          echo "   ✔ Test    — Migration tests passed"
+                          echo ""
                           sleep 2
                           echo "   Running schema diff... ✔"
                           sleep 2
@@ -189,6 +194,11 @@ pipeline:
                                     echo "📋 Component: Services v<+pipeline.variables.svcVer>"
                                     echo "   Change:   <+pipeline.variables.svcChange>"
                                     echo ""
+                                    echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-services/actions"
+                                    echo "   ✔ Build   — API routes compiled"
+                                    echo "   ✔ Lint    — ESLint + type check passed"
+                                    echo "   ✔ Test    — API tests passed (4/4)"
+                                    echo ""
                                     sleep 2
                                     echo "   Deploying Next.js API routes..."
                                     echo "     ✔ /api/products"
@@ -249,6 +259,11 @@ pipeline:
                                     echo ""
                                     echo "📋 Component: UI v<+pipeline.variables.uiVer>"
                                     echo "   Change:   <+pipeline.variables.uiChange>"
+                                    echo ""
+                                    echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-ui/actions"
+                                    echo "   ✔ Build   — Next.js compiled"
+                                    echo "   ✔ Lint    — ESLint + Prettier passed"
+                                    echo "   ✔ Test    — UI tests passed (4/4)"
                                     echo ""
                                     sleep 2
                                     echo "   Deploying static assets... ✔"
