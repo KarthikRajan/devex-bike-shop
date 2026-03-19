@@ -80,7 +80,7 @@ pipeline:
             steps:
               # ── Whats Shipping ──
               - step:
-                  name: Whats Shipping
+                  name: Mission Scope
                   identifier: Whats_Shipping
                   type: ShellScript
                   timeout: 1m
@@ -112,7 +112,7 @@ pipeline:
                           echo ""
               # ── Whats Inside ──
               - step:
-                  name: Whats Inside
+                  name: Payload
                   identifier: Whats_Inside
                   type: ShellScript
                   timeout: 1m
@@ -140,7 +140,7 @@ pipeline:
                           echo ""
               # ── How It Ships ──
               - step:
-                  name: How It Ships
+                  name: Flight Plan
                   identifier: How_It_Ships
                   type: ShellScript
                   timeout: 1m
@@ -1183,7 +1183,7 @@ pipeline:
             steps:
               # ── What Happened ──
               - step:
-                  name: What Happened
+                  name: Mission Report
                   identifier: What_Happened
                   type: ShellScript
                   timeout: 1m
@@ -1258,7 +1258,7 @@ pipeline:
                           echo ""
               # ── Where to Look ──
               - step:
-                  name: Where to Look
+                  name: Outcomes
                   identifier: Where_to_Look
                   type: ShellScript
                   timeout: 1m
@@ -1286,7 +1286,7 @@ pipeline:
                           echo ""
               # ── Governance ──
               - step:
-                  name: Governance
+                  name: Compliance
                   identifier: Governance
                   type: ShellScript
                   timeout: 1m
@@ -1318,7 +1318,7 @@ pipeline:
                           echo ""
               # ── Done ──
               - step:
-                  name: Done
+                  name: All Done
                   identifier: Done
                   type: ShellScript
                   timeout: 1m
