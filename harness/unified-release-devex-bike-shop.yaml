@@ -78,10 +78,10 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Pipeline Briefing ──
+              # ── Pipeline Overview ──
               - step:
-                  name: Pipeline Briefing
-                  identifier: Pipeline_Briefing
+                  name: Pipeline Overview
+                  identifier: Pipeline_Overview
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -94,7 +94,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      PIPELINE BRIEFING                            ║"
+                          echo "║                      PIPELINE OVERVIEW                            ║"
                           echo "║  A pre-execution summary of what this release will deploy,        ║"
                           echo "║  which components are included, and the release strategy.         ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
@@ -343,10 +343,10 @@ pipeline:
                         action:
                           type: MarkAsSuccess
 
-              # ── DEV Debrief ──
+              # ── DEV Recap ──
               - step:
-                  name: DEV Debrief
-                  identifier: DEV_Debrief
+                  name: DEV Recap
+                  identifier: DEV_Recap
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -359,7 +359,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                        DEV DEBRIEF                                ║"
+                          echo "║                        DEV RECAP                                ║"
                           echo "║  Summary of what was deployed and verified in DEV.                ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -610,10 +610,10 @@ pipeline:
                         action:
                           type: MarkAsSuccess
 
-              # ── SIT Debrief ──
+              # ── SIT Recap ──
               - step:
-                  name: SIT Debrief
-                  identifier: SIT_Debrief
+                  name: SIT Recap
+                  identifier: SIT_Recap
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -626,7 +626,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                        SIT DEBRIEF                                ║"
+                          echo "║                        SIT RECAP                                ║"
                           echo "║  Summary of what was deployed and verified in SIT.                ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
