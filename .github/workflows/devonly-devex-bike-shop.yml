@@ -1,10 +1,10 @@
-name: Pat1 Release - DevEx Bike Shop
+name: Gated Release - DevEx Bike Shop
 
 on:
   push:
     branches: [main]
     paths:
-      - 'harness/pat1-release-devex-bike-shop.yaml'
+      - 'harness/gated-release-devex-bike-shop.yaml'
       - '.github/workflows/devonly-devex-bike-shop.yml'
   repository_dispatch:
     types: [component-updated]
@@ -49,7 +49,7 @@ jobs:
           GIT_RUN_ID: ${{ github.run_id }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: |
-          PIPELINE_ID="devonlydevexbikeshop"
+          PIPELINE_ID="gatedreleasedevexbikeshop"
           SHORT_SHA="${GIT_SHA:0:7}"
           BASE_URL="https://app.harness.io/pipeline/api"
           SCOPE="accountIdentifier=${HARNESS_ACCOUNT_ID}&orgIdentifier=${HARNESS_ORG_ID}&projectIdentifier=${HARNESS_PROJECT_ID}"
@@ -57,7 +57,7 @@ jobs:
 
           # Step 1: Ensure pipeline exists (create if missing, update if exists)
           echo "📋 Ensuring DEV-only pipeline exists..."
-          YAML=$(cat harness/pat1-release-devex-bike-shop.yaml)
+          YAML=$(cat harness/gated-release-devex-bike-shop.yaml)
           CREATE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "${BASE_URL}/pipelines/v2?${SCOPE}" \
             -H "Content-Type: application/yaml" \
@@ -108,7 +108,7 @@ jobs:
             '{
               notesForPipelineExecution: ("DEV Only | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha),
               pipeline: {
-                identifier: "devonlydevexbikeshop",
+                identifier: "gatedreleasedevexbikeshop",
                 tags: {
                   commitSha: $sha,
                   buildNumber: $build,

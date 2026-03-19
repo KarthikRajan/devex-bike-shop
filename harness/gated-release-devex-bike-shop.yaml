@@ -1,6 +1,6 @@
 pipeline:
-  name: pat2-release-devex-bike-shop
-  identifier: pat2releasedevexbikeshop
+  name: gated-release-devex-bike-shop
+  identifier: gatedreleasedevexbikeshop
   projectIdentifier: devexbikeshop
   orgIdentifier: default
   tags: {}
@@ -59,7 +59,7 @@ pipeline:
       value: <+input>
   stages:
     # ════════════════════════════════════════════════════════════
-    # DEV — One gate for DB, then Services + UI parallel (no gates)
+    # DEV — Deploy and Certify (Auto-Approved)
     # ════════════════════════════════════════════════════════════
     - stage:
         name: DEV
@@ -74,16 +74,16 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Gate: Approve Deploys ──
+              # ── Gate: Approve Database Deploy ──
               - step:
-                  name: Approve Deploys
-                  identifier: Approve_Deploys
+                  name: Approve Database Deploy
+                  identifier: Approve_Database_Deploy
                   type: HarnessApproval
                   timeout: 10s
                   spec:
                     approvalMessage: |-
-                      🚀 Approving all 3 components for deployment to DEV
-                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
+                      🗄️ Approving Database component for deployment to DEV
+                      Database v<+pipeline.variables.dbVer> — <+pipeline.variables.dbChange>
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:
@@ -137,79 +137,133 @@ pipeline:
                           echo ""
                           echo "✅ Database deployed to DEV"
 
-              # ── Deploy Services & UI in Parallel (no gates) ──
+              # ── Services & UI: each with own gate, running in parallel ──
               - parallel:
-                  - step:
-                      name: Deploy Services
-                      identifier: Deploy_Services
-                      type: ShellScript
-                      timeout: 5m
-                      spec:
-                        shell: Bash
-                        onDelegate: true
-                        source:
-                          type: Inline
-                          spec:
-                            script: |-
-                              #!/bin/bash
-                              echo "╔══════════════════════════════════════╗"
-                              echo "║  DEPLOY — SERVICES (API)  [parallel] ║"
-                              echo "╚══════════════════════════════════════╝"
-                              echo ""
-                              echo "⚙️  Deploying API services to DEV"
-                              echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
-                              echo ""
-                              echo "📋 Component: Services v<+pipeline.variables.svcVer>"
-                              echo "   Change:   <+pipeline.variables.svcChange>"
-                              echo ""
-                              sleep 2
-                              echo "   Deploying Next.js API routes..."
-                              echo "     ✔ /api/products"
-                              echo "     ✔ /api/categories"
-                              echo "     ✔ /api/orders"
-                              echo "     ✔ /api/cart"
-                              echo "     ✔ /api/health"
-                              sleep 2
-                              echo "   Health check... HTTP 200 ✔"
-                              echo ""
-                              echo "✅ Services deployed to DEV"
-                  - step:
-                      name: Deploy UI
-                      identifier: Deploy_UI
-                      type: ShellScript
-                      timeout: 5m
-                      spec:
-                        shell: Bash
-                        onDelegate: true
-                        source:
-                          type: Inline
-                          spec:
-                            script: |-
-                              #!/bin/bash
-                              echo "╔══════════════════════════════════════╗"
-                              echo "║  DEPLOY — UI (Storefront) [parallel] ║"
-                              echo "╚══════════════════════════════════════╝"
-                              echo ""
-                              echo "🎨 Deploying storefront UI to DEV"
-                              echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
-                              echo ""
-                              echo "📋 Component: UI v<+pipeline.variables.uiVer>"
-                              echo "   Change:   <+pipeline.variables.uiChange>"
-                              echo ""
-                              sleep 2
-                              echo "   Deploying static assets... ✔"
-                              sleep 2
-                              echo "   Deploying SSR pages..."
-                              echo "     ✔ Homepage"
-                              echo "     ✔ Product catalog"
-                              echo "     ✔ Product detail"
-                              echo "     ✔ Cart & Checkout"
-                              echo "     ✔ Admin dashboard"
-                              sleep 2
-                              echo "   CDN cache invalidation... ✔"
-                              echo "   Visual diff check... no regressions ✔"
-                              echo ""
-                              echo "✅ UI deployed to DEV"
+                  - stepGroup:
+                      name: Services Track
+                      identifier: Services_Track
+                      steps:
+                        - step:
+                            name: Approve Services Deploy
+                            identifier: Approve_Services_Deploy
+                            type: HarnessApproval
+                            timeout: 10s
+                            spec:
+                              approvalMessage: |-
+                                ⚙️ Approving Services component for deployment to DEV
+                                Services v<+pipeline.variables.svcVer> — <+pipeline.variables.svcChange>
+                                Build: #<+pipeline.variables.buildNumber>
+                              includePipelineExecutionHistory: true
+                              approvers:
+                                userGroups:
+                                  - _project_all_users
+                                minimumCount: 1
+                                disallowPipelineExecutor: false
+                              isAutoRejectEnabled: false
+                            failureStrategies:
+                              - onFailure:
+                                  errors:
+                                    - Timeout
+                                  action:
+                                    type: MarkAsSuccess
+                        - step:
+                            name: Deploy Services
+                            identifier: Deploy_Services
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — SERVICES (API)  [parallel] ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "⚙️  Deploying API services to DEV"
+                                    echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                                    echo ""
+                                    echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                                    echo "   Change:   <+pipeline.variables.svcChange>"
+                                    echo ""
+                                    sleep 2
+                                    echo "   Deploying Next.js API routes..."
+                                    echo "     ✔ /api/products"
+                                    echo "     ✔ /api/categories"
+                                    echo "     ✔ /api/orders"
+                                    echo "     ✔ /api/cart"
+                                    echo "     ✔ /api/health"
+                                    sleep 2
+                                    echo "   Health check... HTTP 200 ✔"
+                                    echo ""
+                                    echo "✅ Services deployed to DEV"
+                  - stepGroup:
+                      name: UI Track
+                      identifier: UI_Track
+                      steps:
+                        - step:
+                            name: Approve UI Deploy
+                            identifier: Approve_UI_Deploy
+                            type: HarnessApproval
+                            timeout: 10s
+                            spec:
+                              approvalMessage: |-
+                                🎨 Approving UI component for deployment to DEV
+                                UI v<+pipeline.variables.uiVer> — <+pipeline.variables.uiChange>
+                                Build: #<+pipeline.variables.buildNumber>
+                              includePipelineExecutionHistory: true
+                              approvers:
+                                userGroups:
+                                  - _project_all_users
+                                minimumCount: 1
+                                disallowPipelineExecutor: false
+                              isAutoRejectEnabled: false
+                            failureStrategies:
+                              - onFailure:
+                                  errors:
+                                    - Timeout
+                                  action:
+                                    type: MarkAsSuccess
+                        - step:
+                            name: Deploy UI
+                            identifier: Deploy_UI
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — UI (Storefront) [parallel] ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "🎨 Deploying storefront UI to DEV"
+                                    echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                                    echo ""
+                                    echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                                    echo "   Change:   <+pipeline.variables.uiChange>"
+                                    echo ""
+                                    sleep 2
+                                    echo "   Deploying static assets... ✔"
+                                    sleep 2
+                                    echo "   Deploying SSR pages..."
+                                    echo "     ✔ Homepage"
+                                    echo "     ✔ Product catalog"
+                                    echo "     ✔ Product detail"
+                                    echo "     ✔ Cart & Checkout"
+                                    echo "     ✔ Admin dashboard"
+                                    sleep 2
+                                    echo "   CDN cache invalidation... ✔"
+                                    echo "   Visual diff check... no regressions ✔"
+                                    echo ""
+                                    echo "✅ UI deployed to DEV"
 
               # ── DEV Smoke Tests ──
               - step:
@@ -242,10 +296,10 @@ pipeline:
                           echo ""
                           echo "✅ DEV smoke tests passed"
 
-              # ── Certify Deploys (Auto-Approve in 10s) ──
+              # ── Certify DEV Build (Auto-Approve in 10s) ──
               - step:
-                  name: Certify Deploys
-                  identifier: Certify_Deploys
+                  name: Certify DEV Build
+                  identifier: Certify_DEV_Build
                   type: HarnessApproval
                   timeout: 10s
                   spec:
