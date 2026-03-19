@@ -136,7 +136,7 @@ pipeline:
             steps:
               # ── Whats Shipping ──
               - step:
-                  name: What's Releasing
+                  name: Whats Releasing
                   identifier: Whats_Shipping
                   type: ShellScript
                   timeout: 1m
@@ -168,7 +168,7 @@ pipeline:
                           echo ""
               # ── Whats Inside ──
               - step:
-                  name: What's Inside
+                  name: Whats Inside
                   identifier: Whats_Inside
                   type: ShellScript
                   timeout: 1m
@@ -210,7 +210,7 @@ pipeline:
                           echo ""
               # ── How It Ships ──
               - step:
-                  name: How It's Releasing
+                  name: How Its Releasing
                   identifier: How_It_Ships
                   type: ShellScript
                   timeout: 1m
