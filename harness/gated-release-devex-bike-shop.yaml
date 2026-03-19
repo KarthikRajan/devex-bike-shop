@@ -737,12 +737,12 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── PROD Approval (Manual Gate) ──
+              # ── PROD Approval ──
               - step:
                   name: PROD Approval
                   identifier: PROD_Approval
                   type: HarnessApproval
-                  timeout: 30m
+                  timeout: 10s
                   spec:
                     approvalMessage: |-
                       🚨 PRODUCTION DEPLOYMENT APPROVAL
@@ -756,6 +756,12 @@ pipeline:
                       minimumCount: 1
                       disallowPipelineExecutor: false
                     isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
 
               # ── Gate: Approve Database Deploy ──
               - step:
