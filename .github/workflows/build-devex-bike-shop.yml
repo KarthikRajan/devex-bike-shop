@@ -11,9 +11,7 @@ on:
       - 'harness/**'
       - 'slides/**'
       - 'release-components.json'
-      - '.github/workflows/gated-release-*'
-      - '.github/workflows/unified-release-*'
-      - '.github/workflows/apr-release-*'
+      - '.github/workflows/*-release-bike-shop*'
       - '.github/workflows/trigger-release*'
   pull_request:
     branches: [main]
@@ -25,9 +23,7 @@ on:
       - 'harness/**'
       - 'slides/**'
       - 'release-components.json'
-      - '.github/workflows/gated-release-*'
-      - '.github/workflows/unified-release-*'
-      - '.github/workflows/apr-release-*'
+      - '.github/workflows/*-release-bike-shop*'
       - '.github/workflows/trigger-release*'
   workflow_dispatch:
     inputs:

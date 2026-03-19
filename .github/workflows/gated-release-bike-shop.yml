@@ -1,11 +1,11 @@
-name: Gated Release - DevEx Bike Shop
+name: Gated Release - Bike Shop
 
 on:
   push:
     branches: [main]
     paths:
       - 'harness/gated-release-bike-shop.yaml'
-      - '.github/workflows/gated-release-devex-bike-shop.yml'
+      - '.github/workflows/gated-release-bike-shop.yml'
       - 'release-components.json'
   repository_dispatch:
     types: [component-updated]

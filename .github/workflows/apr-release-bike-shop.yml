@@ -1,11 +1,11 @@
-name: Unified Release - DevEx Bike Shop
+name: Apr Release - Bike Shop
 
 on:
   push:
     branches: [main]
     paths:
-      - 'harness/unified-release-bike-shop.yaml'
-      - '.github/workflows/unified-release-devex-bike-shop.yml'
+      - 'harness/apr-release-bike-shop.yaml'
+      - '.github/workflows/apr-release-bike-shop.yml'
       - 'release-components.json'
   repository_dispatch:
     types: [component-updated]
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   trigger-harness:
-    name: 🚀 Trigger Harness (Unified Release)
+    name: 🚀 Trigger Harness (Apr Release)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,7 +51,7 @@ jobs:
           echo ""
           echo "✅ All $COUNT component manifests fetched"
 
-      - name: Deploy via Harness CD Pipeline (Unified Release)
+      - name: Deploy via Harness CD Pipeline (Apr Release)
         env:
           HARNESS_API_KEY: ${{ secrets.HARNESS_API_KEY }}
           HARNESS_ACCOUNT_ID: ${{ secrets.HARNESS_ACCOUNT_ID }}
@@ -64,15 +64,15 @@ jobs:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           TRIGGER_REPO: ${{ github.event.client_payload.repo || github.repository }}
         run: |
-          PIPELINE_ID="unifiedreleasebikeshop"
+          PIPELINE_ID="aprreleasebikeshop"
           SHORT_SHA="${GIT_SHA:0:7}"
           BASE_URL="https://app.harness.io/pipeline/api"
           SCOPE="accountIdentifier=${HARNESS_ACCOUNT_ID}&orgIdentifier=${HARNESS_ORG_ID}&projectIdentifier=${HARNESS_PROJECT_ID}"
-          EXEC_NAME="unified-${SHORT_SHA}-${GIT_RUN}"
+          EXEC_NAME="apr-${SHORT_SHA}-${GIT_RUN}"
 
           # Step 1: Ensure pipeline exists (create if missing, update if exists)
-          echo "📋 Ensuring Unified Release pipeline exists..."
-          YAML=$(cat harness/unified-release-bike-shop.yaml)
+          echo "📋 Ensuring Apr Release pipeline exists..."
+          YAML=$(cat harness/apr-release-bike-shop.yaml)
           CREATE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "${BASE_URL}/pipelines/v2?${SCOPE}" \
             -H "Content-Type: application/yaml" \
@@ -106,7 +106,7 @@ jobs:
 
           # Step 2: Execute pipeline
           echo ""
-          echo "▶️  Executing Unified Release pipeline: $EXEC_NAME"
+          echo "▶️  Executing Apr Release pipeline: $EXEC_NAME"
           PAYLOAD=$(jq -n \
             --arg name "$EXEC_NAME" \
             --arg sha "$SHORT_SHA" \
@@ -114,17 +114,31 @@ jobs:
             --arg branch "$GIT_BRANCH" \
             --arg repo "$REPO_URL" \
             --arg runid "$GIT_RUN_ID" \
-            --arg dbver "${{ steps.manifests.outputs.db_ver }}" \
-            --arg dbchange "${{ steps.manifests.outputs.db_change }}" \
-            --arg svcver "${{ steps.manifests.outputs.svc_ver }}" \
-            --arg svcchange "${{ steps.manifests.outputs.svc_change }}" \
-            --arg uiver "${{ steps.manifests.outputs.ui_ver }}" \
-            --arg uichange "${{ steps.manifests.outputs.ui_change }}" \
             --arg triggerrepo "$TRIGGER_REPO" \
+            --arg authver "${{ steps.manifests.outputs.auth_ver }}" \
+            --arg authchange "${{ steps.manifests.outputs.auth_change }}" \
+            --arg payver "${{ steps.manifests.outputs.pay_ver }}" \
+            --arg paychange "${{ steps.manifests.outputs.pay_change }}" \
+            --arg invver "${{ steps.manifests.outputs.inv_ver }}" \
+            --arg invchange "${{ steps.manifests.outputs.inv_change }}" \
+            --arg notifver "${{ steps.manifests.outputs.notif_ver }}" \
+            --arg notifchange "${{ steps.manifests.outputs.notif_change }}" \
+            --arg anlytver "${{ steps.manifests.outputs.anlyt_ver }}" \
+            --arg anlytchange "${{ steps.manifests.outputs.anlyt_change }}" \
+            --arg sfver "${{ steps.manifests.outputs.sf_ver }}" \
+            --arg sfchange "${{ steps.manifests.outputs.sf_change }}" \
+            --arg adminver "${{ steps.manifests.outputs.admin_ver }}" \
+            --arg adminchange "${{ steps.manifests.outputs.admin_change }}" \
+            --arg mobilever "${{ steps.manifests.outputs.mobile_ver }}" \
+            --arg mobilechange "${{ steps.manifests.outputs.mobile_change }}" \
+            --arg cdnver "${{ steps.manifests.outputs.cdn_ver }}" \
+            --arg cdnchange "${{ steps.manifests.outputs.cdn_change }}" \
+            --arg docsver "${{ steps.manifests.outputs.docs_ver }}" \
+            --arg docschange "${{ steps.manifests.outputs.docs_change }}" \
             '{
-              notesForPipelineExecution: ("Unified Release | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha + " | Trigger: " + $triggerrepo),
+              notesForPipelineExecution: ("Apr Release | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha + " | Trigger: " + $triggerrepo),
               pipeline: {
-                identifier: "unifiedreleasebikeshop",
+                identifier: "aprreleasebikeshop",
                 tags: {
                   commitSha: $sha,
                   buildNumber: $build,
@@ -140,12 +154,26 @@ jobs:
                   { name: "repoUrl", type: "String", value: $repo },
                   { name: "runId", type: "String", value: $runid },
                   { name: "triggerRepo", type: "String", value: $triggerrepo },
-                  { name: "dbVer", type: "String", value: $dbver },
-                  { name: "dbChange", type: "String", value: $dbchange },
-                  { name: "svcVer", type: "String", value: $svcver },
-                  { name: "svcChange", type: "String", value: $svcchange },
-                  { name: "uiVer", type: "String", value: $uiver },
-                  { name: "uiChange", type: "String", value: $uichange }
+                  { name: "authVer", type: "String", value: $authver },
+                  { name: "authChange", type: "String", value: $authchange },
+                  { name: "payVer", type: "String", value: $payver },
+                  { name: "payChange", type: "String", value: $paychange },
+                  { name: "invVer", type: "String", value: $invver },
+                  { name: "invChange", type: "String", value: $invchange },
+                  { name: "notifVer", type: "String", value: $notifver },
+                  { name: "notifChange", type: "String", value: $notifchange },
+                  { name: "anlytVer", type: "String", value: $anlytver },
+                  { name: "anlytChange", type: "String", value: $anlytchange },
+                  { name: "sfVer", type: "String", value: $sfver },
+                  { name: "sfChange", type: "String", value: $sfchange },
+                  { name: "adminVer", type: "String", value: $adminver },
+                  { name: "adminChange", type: "String", value: $adminchange },
+                  { name: "mobileVer", type: "String", value: $mobilever },
+                  { name: "mobileChange", type: "String", value: $mobilechange },
+                  { name: "cdnVer", type: "String", value: $cdnver },
+                  { name: "cdnChange", type: "String", value: $cdnchange },
+                  { name: "docsVer", type: "String", value: $docsver },
+                  { name: "docsChange", type: "String", value: $docschange }
                 ]
               }
             }')
@@ -161,7 +189,7 @@ jobs:
           echo ""
           if [ "$EXEC_CODE" -ge 200 ] && [ "$EXEC_CODE" -lt 300 ]; then
             EXEC_ID=$(echo "$EXEC_BODY" | jq -r '.data.planExecution.uuid // "unknown"')
-            echo "✅ Unified Release pipeline executing (HTTP $EXEC_CODE)"
+            echo "✅ Apr Release pipeline executing (HTTP $EXEC_CODE)"
             echo "   Execution: $EXEC_NAME"
             echo "   Commit: $SHORT_SHA"
             echo "   ID: $EXEC_ID"
