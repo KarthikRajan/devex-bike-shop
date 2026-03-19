@@ -5,7 +5,8 @@ on:
     branches: [main]
     paths:
       - 'harness/gated-release-bike-shop.yaml'
-      - '.github/workflows/devonly-devex-bike-shop.yml'
+      - '.github/workflows/gated-release-devex-bike-shop.yml'
+      - 'release-components.json'
   repository_dispatch:
     types: [component-updated]
   workflow_dispatch:
@@ -15,7 +16,7 @@ permissions:
 
 jobs:
   trigger-harness:
-    name: 🚀 Trigger Harness (DEV Only)
+    name: 🚀 Trigger Harness (Gated Release)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,18 +27,31 @@ jobs:
       - name: Fetch component manifests
         id: manifests
         run: |
+          echo "📦 Reading release-components.json..."
+          CONFIG=$(cat release-components.json)
+          ORG=$(echo "$CONFIG" | jq -r '.org')
           BUST=$(date +%s)
-          DB=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-db/main/manifest.json?t=$BUST" || echo '{}')
-          SVC=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-services/main/manifest.json?t=$BUST" || echo '{}')
-          UI=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-ui/main/manifest.json?t=$BUST" || echo '{}')
-          echo "db_ver=$(echo $DB | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "db_change=$(echo $DB | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "svc_ver=$(echo $SVC | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "svc_change=$(echo $SVC | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "ui_ver=$(echo $UI | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "ui_change=$(echo $UI | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
+          COUNT=$(echo "$CONFIG" | jq '.components | length')
+          echo "   Found $COUNT components in config"
+          echo ""
 
-      - name: Deploy via Harness CD Pipeline (DEV Only)
+          # Loop through each component, fetch its manifest
+          echo "$CONFIG" | jq -c '.components[]' | while IFS= read -r COMP; do
+            REPO=$(echo "$COMP" | jq -r '.repo')
+            ALIAS=$(echo "$COMP" | jq -r '.alias')
+            LABEL=$(echo "$COMP" | jq -r '.label')
+            M=$(curl -sf "https://raw.githubusercontent.com/${ORG}/${REPO}/main/manifest.json?t=$BUST" || echo '{}')
+            VER=$(echo "$M" | jq -r '.version // "unknown"')
+            CHANGE=$(echo "$M" | jq -r '.lastChange // "unknown"')
+            echo "  ${LABEL} (${REPO}): v${VER} — ${CHANGE}"
+            echo "${ALIAS}_ver=${VER}" >> $GITHUB_OUTPUT
+            echo "${ALIAS}_change=${CHANGE}" >> $GITHUB_OUTPUT
+          done
+
+          echo ""
+          echo "✅ All $COUNT component manifests fetched"
+
+      - name: Deploy via Harness CD Pipeline (Gated Release)
         env:
           HARNESS_API_KEY: ${{ secrets.HARNESS_API_KEY }}
           HARNESS_ACCOUNT_ID: ${{ secrets.HARNESS_ACCOUNT_ID }}
@@ -54,10 +68,10 @@ jobs:
           SHORT_SHA="${GIT_SHA:0:7}"
           BASE_URL="https://app.harness.io/pipeline/api"
           SCOPE="accountIdentifier=${HARNESS_ACCOUNT_ID}&orgIdentifier=${HARNESS_ORG_ID}&projectIdentifier=${HARNESS_PROJECT_ID}"
-          EXEC_NAME="devonly-${SHORT_SHA}-${GIT_RUN}"
+          EXEC_NAME="gated-${SHORT_SHA}-${GIT_RUN}"
 
           # Step 1: Ensure pipeline exists (create if missing, update if exists)
-          echo "📋 Ensuring DEV-only pipeline exists..."
+          echo "📋 Ensuring Gated Release pipeline exists..."
           YAML=$(cat harness/gated-release-bike-shop.yaml)
           CREATE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "${BASE_URL}/pipelines/v2?${SCOPE}" \
@@ -92,7 +106,7 @@ jobs:
 
           # Step 2: Execute pipeline
           echo ""
-          echo "▶️  Executing DEV-only pipeline: $EXEC_NAME"
+          echo "▶️  Executing Gated Release pipeline: $EXEC_NAME"
           PAYLOAD=$(jq -n \
             --arg name "$EXEC_NAME" \
             --arg sha "$SHORT_SHA" \
@@ -147,7 +161,7 @@ jobs:
           echo ""
           if [ "$EXEC_CODE" -ge 200 ] && [ "$EXEC_CODE" -lt 300 ]; then
             EXEC_ID=$(echo "$EXEC_BODY" | jq -r '.data.planExecution.uuid // "unknown"')
-            echo "✅ DEV-only pipeline executing (HTTP $EXEC_CODE)"
+            echo "✅ Gated Release pipeline executing (HTTP $EXEC_CODE)"
             echo "   Execution: $EXEC_NAME"
             echo "   Commit: $SHORT_SHA"
             echo "   ID: $EXEC_ID"

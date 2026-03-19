@@ -5,7 +5,8 @@ on:
     branches: [main]
     paths:
       - 'harness/apr-release-bike-shop.yaml'
-      - '.github/workflows/apr-release-bike-shop.yml'
+      - '.github/workflows/apr-release-devex-bike-shop.yml'
+      - 'release-components.json'
   repository_dispatch:
     types: [component-updated]
   workflow_dispatch:
@@ -15,7 +16,7 @@ permissions:
 
 jobs:
   trigger-harness:
-    name: 🚀 Trigger Harness - Apr Release
+    name: 🚀 Trigger Harness (Apr Release)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,39 +27,31 @@ jobs:
       - name: Fetch component manifests
         id: manifests
         run: |
+          echo "📦 Reading release-components.json..."
+          CONFIG=$(cat release-components.json)
+          ORG=$(echo "$CONFIG" | jq -r '.org')
           BUST=$(date +%s)
-          AUTH=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-auth/main/manifest.json?t=$BUST" || echo '{}')
-          PAY=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-payments/main/manifest.json?t=$BUST" || echo '{}')
-          INV=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-inventory/main/manifest.json?t=$BUST" || echo '{}')
-          NOTIF=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-notifications/main/manifest.json?t=$BUST" || echo '{}')
-          ANLYT=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-analytics/main/manifest.json?t=$BUST" || echo '{}')
-          SF=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-storefront/main/manifest.json?t=$BUST" || echo '{}')
-          ADMIN=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-admin/main/manifest.json?t=$BUST" || echo '{}')
-          MOBILE=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-mobile-api/main/manifest.json?t=$BUST" || echo '{}')
-          CDN=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-cdn/main/manifest.json?t=$BUST" || echo '{}')
-          DOCS=$(curl -sf "https://raw.githubusercontent.com/pdutta25/bikeshop-docs/main/manifest.json?t=$BUST" || echo '{}')
-          echo "auth_ver=$(echo $AUTH | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "auth_change=$(echo $AUTH | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "pay_ver=$(echo $PAY | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "pay_change=$(echo $PAY | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "inv_ver=$(echo $INV | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "inv_change=$(echo $INV | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "notif_ver=$(echo $NOTIF | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "notif_change=$(echo $NOTIF | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "anlyt_ver=$(echo $ANLYT | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "anlyt_change=$(echo $ANLYT | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "sf_ver=$(echo $SF | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "sf_change=$(echo $SF | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "admin_ver=$(echo $ADMIN | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "admin_change=$(echo $ADMIN | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "mobile_ver=$(echo $MOBILE | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "mobile_change=$(echo $MOBILE | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "cdn_ver=$(echo $CDN | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "cdn_change=$(echo $CDN | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
-          echo "docs_ver=$(echo $DOCS | jq -r '.version // "unknown"')" >> $GITHUB_OUTPUT
-          echo "docs_change=$(echo $DOCS | jq -r '.lastChange // "unknown"')" >> $GITHUB_OUTPUT
+          COUNT=$(echo "$CONFIG" | jq '.components | length')
+          echo "   Found $COUNT components in config"
+          echo ""
 
-      - name: Deploy via Harness CD Pipeline
+          # Loop through each component, fetch its manifest
+          echo "$CONFIG" | jq -c '.components[]' | while IFS= read -r COMP; do
+            REPO=$(echo "$COMP" | jq -r '.repo')
+            ALIAS=$(echo "$COMP" | jq -r '.alias')
+            LABEL=$(echo "$COMP" | jq -r '.label')
+            M=$(curl -sf "https://raw.githubusercontent.com/${ORG}/${REPO}/main/manifest.json?t=$BUST" || echo '{}')
+            VER=$(echo "$M" | jq -r '.version // "unknown"')
+            CHANGE=$(echo "$M" | jq -r '.lastChange // "unknown"')
+            echo "  ${LABEL} (${REPO}): v${VER} — ${CHANGE}"
+            echo "${ALIAS}_ver=${VER}" >> $GITHUB_OUTPUT
+            echo "${ALIAS}_change=${CHANGE}" >> $GITHUB_OUTPUT
+          done
+
+          echo ""
+          echo "✅ All $COUNT component manifests fetched"
+
+      - name: Deploy via Harness CD Pipeline (Apr Release)
         env:
           HARNESS_API_KEY: ${{ secrets.HARNESS_API_KEY }}
           HARNESS_ACCOUNT_ID: ${{ secrets.HARNESS_ACCOUNT_ID }}

@@ -10,11 +10,11 @@ on:
       - 'LICENSE'
       - 'harness/**'
       - 'slides/**'
-      - '.github/workflows/devonly-*'
-      - '.github/workflows/pat*-release-*'
-      - '.github/workflows/unified-*'
-      - '.github/workflows/gated-*'
+      - 'release-components.json'
+      - '.github/workflows/gated-release-*'
+      - '.github/workflows/unified-release-*'
       - '.github/workflows/apr-release-*'
+      - '.github/workflows/trigger-release*'
   pull_request:
     branches: [main]
     paths-ignore:
@@ -22,13 +22,13 @@ on:
       - 'docs/**'
       - '.github/dependabot.yml'
       - 'LICENSE'
-      - '.github/workflows/pat*-release-*'
-      - '.github/workflows/unified-*'
-      - '.github/workflows/gated-*'
-      - '.github/workflows/apr-release-*'
       - 'harness/**'
       - 'slides/**'
-      - '.github/workflows/devonly-*'
+      - 'release-components.json'
+      - '.github/workflows/gated-release-*'
+      - '.github/workflows/unified-release-*'
+      - '.github/workflows/apr-release-*'
+      - '.github/workflows/trigger-release*'
   workflow_dispatch:
     inputs:
       test_deploy:
