@@ -74,6 +74,60 @@ pipeline:
         spec:
           execution:
             steps:
+              # ── Pipeline Briefing ──
+              - step:
+                  name: Pipeline Briefing
+                  identifier: Pipeline_Briefing
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      PIPELINE BRIEFING                            ║"
+                          echo "║  A pre-execution summary of what this release will deploy,        ║"
+                          echo "║  which components are included, and the release strategy.         ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Pipeline ──────────────────────────────────────────────────────"
+                          echo "  Name:           unified-release-devex-bike-shop"
+                          echo "  Pattern:        Unified Release"
+                          echo "  Strategy:       One approval, all components flow —"
+                          echo "                  ship fast when everything's green."
+                          echo "  Target:         DEV"
+                          echo "  Build:          #<+pipeline.variables.buildNumber>"
+                          echo "  Commit:         <+pipeline.variables.commitSha>"
+                          echo "  Branch:         <+pipeline.variables.branch>"
+                          echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
+                          echo ""
+                          echo "── Components in this Release ────────────────────────────────────"
+                          echo "  🗄️  Database     → bikeshop-db         v<+pipeline.variables.dbVer>"
+                          echo "                     <+pipeline.variables.dbChange>"
+                          echo "  ⚙️  Services     → bikeshop-services   v<+pipeline.variables.svcVer>"
+                          echo "                     <+pipeline.variables.svcChange>"
+                          echo "  🎨  UI           → bikeshop-ui         v<+pipeline.variables.uiVer>"
+                          echo "                     <+pipeline.variables.uiChange>"
+                          echo ""
+                          echo "── Release Flow ──────────────────────────────────────────────────"
+                          echo "  Approve All  →  Deploy DB  →  Deploy Svc + UI (parallel)"
+                          echo "       ↓"
+                          echo "  Smoke Tests  →  Certify  →  Pipeline Debrief"
+                          echo ""
+                          echo "── Source Repos ──────────────────────────────────────────────────"
+                          echo "  https://github.com/pdutta25/bikeshop-db"
+                          echo "  https://github.com/pdutta25/bikeshop-services"
+                          echo "  https://github.com/pdutta25/bikeshop-ui"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  Proceeding to approval and deployments..."
+                          echo ""
+
               # ── Gate: Approve Deploys ──
               - step:
                   name: Approve Deploys
@@ -284,10 +338,10 @@ pipeline:
                         action:
                           type: MarkAsSuccess
 
-              # ── DEV Telemetry Report ──
+              # ── Pipeline Debrief ──
               - step:
-                  name: DEV Telemetry
-                  identifier: DEV_Telemetry
+                  name: Pipeline Debrief
+                  identifier: Pipeline_Debrief
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -316,7 +370,9 @@ pipeline:
                           fmt() { date -u -d @$1 +"$FMT" 2>/dev/null || date -u -r $1 +"$FMT"; }
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║              TELEMETRY — UNIFIED RELEASE (DEV)                    ║"
+                          echo "║                      PIPELINE DEBRIEF                             ║"
+                          echo "║  A post-execution record of everything that happened during       ║"
+                          echo "║  this release — timestamps, approvals, results, and governance.   ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
                           echo "── 1. Pipeline ───────────────────────────────────────────────────"
