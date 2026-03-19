@@ -84,6 +84,8 @@ pipeline:
                     approvalMessage: |-
                       🚀 Approving all 3 components for deployment to DEV
                       Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
+                      CI: ✔ Build ✔ Lint ✔ Test — all 3 repos passed
+                      https://github.com/pdutta25/bikeshop-db/actions | bikeshop-services/actions | bikeshop-ui/actions
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:

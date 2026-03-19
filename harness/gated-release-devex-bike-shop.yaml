@@ -84,6 +84,7 @@ pipeline:
                     approvalMessage: |-
                       🗄️ Approving Database component for deployment to DEV
                       Database v<+pipeline.variables.dbVer> — <+pipeline.variables.dbChange>
+                      CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-db/actions
                       Build: #<+pipeline.variables.buildNumber>
                     includePipelineExecutionHistory: true
                     approvers:
@@ -157,6 +158,7 @@ pipeline:
                               approvalMessage: |-
                                 ⚙️ Approving Services component for deployment to DEV
                                 Services v<+pipeline.variables.svcVer> — <+pipeline.variables.svcChange>
+                                CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-services/actions
                                 Build: #<+pipeline.variables.buildNumber>
                               includePipelineExecutionHistory: true
                               approvers:
@@ -223,6 +225,7 @@ pipeline:
                               approvalMessage: |-
                                 🎨 Approving UI component for deployment to DEV
                                 UI v<+pipeline.variables.uiVer> — <+pipeline.variables.uiChange>
+                                CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-ui/actions
                                 Build: #<+pipeline.variables.buildNumber>
                               includePipelineExecutionHistory: true
                               approvers:
