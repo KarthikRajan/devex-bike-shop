@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'harness/apr-release-devex-bike-shop.yaml'
-      - '.github/workflows/apr-release-devex-bike-shop.yml'
+      - 'harness/apr-release-bike-shop.yaml'
+      - '.github/workflows/apr-release-bike-shop.yml'
   repository_dispatch:
     types: [component-updated]
   workflow_dispatch:
@@ -71,7 +71,7 @@ jobs:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           TRIGGER_REPO: ${{ github.event.client_payload.repo || github.repository }}
         run: |
-          PIPELINE_ID="aprreleasedevexbikeshop"
+          PIPELINE_ID="aprreleasebikeshop"
           SHORT_SHA="${GIT_SHA:0:7}"
           BASE_URL="https://app.harness.io/pipeline/api"
           SCOPE="accountIdentifier=${HARNESS_ACCOUNT_ID}&orgIdentifier=${HARNESS_ORG_ID}&projectIdentifier=${HARNESS_PROJECT_ID}"
@@ -79,7 +79,7 @@ jobs:
 
           # Step 1: Ensure pipeline exists (create if missing, update if exists)
           echo "📋 Ensuring Apr Release pipeline exists..."
-          YAML=$(cat harness/apr-release-devex-bike-shop.yaml)
+          YAML=$(cat harness/apr-release-bike-shop.yaml)
           CREATE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "${BASE_URL}/pipelines/v2?${SCOPE}" \
             -H "Content-Type: application/yaml" \
@@ -145,7 +145,7 @@ jobs:
             '{
               notesForPipelineExecution: ("Apr Release | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha + " | Trigger: " + $triggerrepo),
               pipeline: {
-                identifier: "aprreleasedevexbikeshop",
+                identifier: "aprreleasebikeshop",
                 tags: {
                   commitSha: $sha,
                   buildNumber: $build,

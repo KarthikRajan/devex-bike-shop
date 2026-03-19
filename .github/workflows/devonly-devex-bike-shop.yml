@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'harness/gated-release-devex-bike-shop.yaml'
+      - 'harness/gated-release-bike-shop.yaml'
       - '.github/workflows/devonly-devex-bike-shop.yml'
   repository_dispatch:
     types: [component-updated]
@@ -50,7 +50,7 @@ jobs:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           TRIGGER_REPO: ${{ github.event.client_payload.repo || github.repository }}
         run: |
-          PIPELINE_ID="gatedreleasedevexbikeshop"
+          PIPELINE_ID="gatedreleasebikeshop"
           SHORT_SHA="${GIT_SHA:0:7}"
           BASE_URL="https://app.harness.io/pipeline/api"
           SCOPE="accountIdentifier=${HARNESS_ACCOUNT_ID}&orgIdentifier=${HARNESS_ORG_ID}&projectIdentifier=${HARNESS_PROJECT_ID}"
@@ -58,7 +58,7 @@ jobs:
 
           # Step 1: Ensure pipeline exists (create if missing, update if exists)
           echo "📋 Ensuring DEV-only pipeline exists..."
-          YAML=$(cat harness/gated-release-devex-bike-shop.yaml)
+          YAML=$(cat harness/gated-release-bike-shop.yaml)
           CREATE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "${BASE_URL}/pipelines/v2?${SCOPE}" \
             -H "Content-Type: application/yaml" \
@@ -110,7 +110,7 @@ jobs:
             '{
               notesForPipelineExecution: ("Gated Release | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha + " | Trigger: " + $triggerrepo),
               pipeline: {
-                identifier: "gatedreleasedevexbikeshop",
+                identifier: "gatedreleasebikeshop",
                 tags: {
                   commitSha: $sha,
                   buildNumber: $build,

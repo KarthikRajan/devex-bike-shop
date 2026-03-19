@@ -1,6 +1,6 @@
 pipeline:
-  name: apr-release-devex-bike-shop
-  identifier: aprreleasedevexbikeshop
+  name: apr-release-bike-shop
+  identifier: aprreleasebikeshop
   projectIdentifier: devexbikeshop
   orgIdentifier: default
   tags: {}
@@ -156,7 +156,7 @@ pipeline:
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
                           echo "── Pipeline ──────────────────────────────────────────────────────"
-                          echo "  Name:           apr-release-devex-bike-shop"
+                          echo "  Name:           apr-release-bike-shop"
                           echo "  Pattern:        Unified Release (single approval gate)"
                           echo "  Strategy:       One approval, all 10 components flow —"
                           echo "                  ship fast when everything's green."
@@ -1558,8 +1558,8 @@ pipeline:
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
                           echo "── 1. Pipeline ───────────────────────────────────────────────────"
-                          echo "  Pipeline:       apr-release-devex-bike-shop"
-                          echo "  Identifier:     aprreleasedevexbikeshop"
+                          echo "  Pipeline:       apr-release-bike-shop"
+                          echo "  Identifier:     aprreleasebikeshop"
                           echo "  Execution ID:   <+pipeline.executionId>"
                           echo "  Pattern:        Unified (single approval, all 10 components)"
                           echo "  Stages:         DEV → SIT → PROD"
