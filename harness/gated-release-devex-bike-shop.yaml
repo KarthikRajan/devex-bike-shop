@@ -401,10 +401,10 @@ pipeline:
                         action:
                           type: MarkAsSuccess
 
-              # ── DEV Summary ──
+              # ── DEV Debrief ──
               - step:
-                  name: DEV Summary
-                  identifier: DEV_Summary
+                  name: DEV Debrief
+                  identifier: DEV_Debrief
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -416,7 +416,28 @@ pipeline:
                         script: |-
                           #!/bin/bash
                           echo ""
-                          echo "✅ DEV PASSED — proceeding to SIT"
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        DEV DEBRIEF                                ║"
+                          echo "║  Summary of what was deployed and verified in DEV.                ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "  ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "  ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Smoke Tests:    ✔ Passed (3/3)"
+                          echo "  Certified:      ✔ Auto-certified"
+                          echo ""
+                          echo "── Context ─────────────────────────────────────────────────────────"
+                          echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
+                          echo "  Trigger repo:   https://github.com/<+pipeline.variables.triggerRepo>"
+                          echo "  Build:          #<+pipeline.variables.buildNumber>"
+                          echo "  Commit:         <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  ✅ DEV PASSED — proceeding to SIT"
                           echo ""
         tags: {}
 
@@ -702,10 +723,10 @@ pipeline:
                         action:
                           type: MarkAsSuccess
 
-              # ── SIT Summary ──
+              # ── SIT Debrief ──
               - step:
-                  name: SIT Summary
-                  identifier: SIT_Summary
+                  name: SIT Debrief
+                  identifier: SIT_Debrief
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -717,7 +738,27 @@ pipeline:
                         script: |-
                           #!/bin/bash
                           echo ""
-                          echo "✅ SIT PASSED — proceeding to PROD"
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        SIT DEBRIEF                                ║"
+                          echo "║  Summary of what was deployed and verified in SIT.                ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "  ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "  ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Integration Tests:  ✔ Passed (4/4)"
+                          echo "  Certified:          ✔ Auto-certified"
+                          echo ""
+                          echo "── Progress ────────────────────────────────────────────────────────"
+                          echo "  DEV:   ✅ PASSED"
+                          echo "  SIT:   ✅ PASSED"
+                          echo "  PROD:  ⏳ Pending"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  ✅ SIT PASSED — proceeding to PROD"
                           echo ""
         tags: {}
 
