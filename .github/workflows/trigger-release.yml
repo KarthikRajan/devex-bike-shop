@@ -47,8 +47,8 @@ jobs:
       - name: Fetch component manifests
         id: manifests
         run: |
-          echo "📦 Reading release-components.json..."
-          CONFIG=$(cat release-components.json)
+          echo "📦 Reading harness/release-components.json..."
+          CONFIG=$(cat harness/release-components.json)
           ORG=$(echo "$CONFIG" | jq -r '.org')
           BUST=$(date +%s)
           COUNT=$(echo "$CONFIG" | jq '.components | length')

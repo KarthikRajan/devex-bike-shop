@@ -10,7 +10,6 @@ on:
       - 'LICENSE'
       - 'harness/**'
       - 'slides/**'
-      - 'release-components.json'
       - '.github/workflows/*-release-bike-shop*'
       - '.github/workflows/trigger-release*'
   pull_request:
@@ -22,7 +21,6 @@ on:
       - 'LICENSE'
       - 'harness/**'
       - 'slides/**'
-      - 'release-components.json'
       - '.github/workflows/*-release-bike-shop*'
       - '.github/workflows/trigger-release*'
   workflow_dispatch:
