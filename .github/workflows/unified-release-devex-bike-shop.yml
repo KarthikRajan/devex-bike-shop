@@ -48,6 +48,7 @@ jobs:
           GIT_RUN: ${{ github.run_number }}
           GIT_RUN_ID: ${{ github.run_id }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          TRIGGER_REPO: ${{ github.event.client_payload.repo || github.repository }}
         run: |
           PIPELINE_ID="unifiedreleasedevexbikeshop"
           SHORT_SHA="${GIT_SHA:0:7}"
@@ -105,8 +106,9 @@ jobs:
             --arg svcchange "${{ steps.manifests.outputs.svc_change }}" \
             --arg uiver "${{ steps.manifests.outputs.ui_ver }}" \
             --arg uichange "${{ steps.manifests.outputs.ui_change }}" \
+            --arg triggerrepo "$TRIGGER_REPO" \
             '{
-              notesForPipelineExecution: ("Unified Release | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha),
+              notesForPipelineExecution: ("Unified Release | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha + " | Trigger: " + $triggerrepo),
               pipeline: {
                 identifier: "unifiedreleasedevexbikeshop",
                 tags: {
@@ -120,9 +122,10 @@ jobs:
                   { name: "buildNumber", type: "String", value: $build },
                   { name: "branch", type: "String", value: $branch },
                   { name: "prNumber", type: "String", value: "none" },
-                  { name: "triggeredBy", type: "String", value: "GitHub Actions (Unified Release)" },
+                  { name: "triggeredBy", type: "String", value: ("GitHub Actions (" + $triggerrepo + ")") },
                   { name: "repoUrl", type: "String", value: $repo },
                   { name: "runId", type: "String", value: $runid },
+                  { name: "triggerRepo", type: "String", value: $triggerrepo },
                   { name: "dbVer", type: "String", value: $dbver },
                   { name: "dbChange", type: "String", value: $dbchange },
                   { name: "svcVer", type: "String", value: $svcver },
