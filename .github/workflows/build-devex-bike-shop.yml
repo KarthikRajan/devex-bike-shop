@@ -12,6 +12,8 @@ on:
       - 'slides/**'
       - '.github/workflows/devonly-*'
       - '.github/workflows/pat*-release-*'
+      - '.github/workflows/unified-*'
+      - '.github/workflows/gated-*'
   pull_request:
     branches: [main]
     paths-ignore:
@@ -20,6 +22,8 @@ on:
       - '.github/dependabot.yml'
       - 'LICENSE'
       - '.github/workflows/pat*-release-*'
+      - '.github/workflows/unified-*'
+      - '.github/workflows/gated-*'
       - 'harness/**'
       - 'slides/**'
       - '.github/workflows/devonly-*'
