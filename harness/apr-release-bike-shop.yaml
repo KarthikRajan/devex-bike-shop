@@ -134,10 +134,10 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Release Brief ──
+              # ── Whats Shipping ──
               - step:
-                  name: Release Brief
-                  identifier: Release_Brief
+                  name: Whats Shipping
+                  identifier: Whats_Shipping
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -150,7 +150,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      RELEASE BRIEF                                ║"
+                          echo "║                      WHATS SHIPPING                                ║"
                           echo "║  Pipeline identity, release pattern, and trigger details.         ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -166,10 +166,10 @@ pipeline:
                           echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
                           echo "  Trigger repo:   https://github.com/<+pipeline.variables.triggerRepo>"
                           echo ""
-              # ── Release Manifest ──
+              # ── Whats Inside ──
               - step:
-                  name: Release Manifest
-                  identifier: Release_Manifest
+                  name: Whats Inside
+                  identifier: Whats_Inside
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -182,7 +182,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      RELEASE MANIFEST                             ║"
+                          echo "║                      WHATS INSIDE                             ║"
                           echo "║  All components included in this release with versions.           ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -208,10 +208,10 @@ pipeline:
                           echo "  📚 Docs Portal          → bikeshop-docs           v<+pipeline.variables.docsVer>"
                           echo "                            <+pipeline.variables.docsChange>"
                           echo ""
-              # ── Deploy Strategy ──
+              # ── How It Ships ──
               - step:
-                  name: Deploy Strategy
-                  identifier: Deploy_Strategy
+                  name: How It Ships
+                  identifier: How_It_Ships
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -224,7 +224,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      DEPLOY STRATEGY                              ║"
+                          echo "║                      HOW IT SHIPS                              ║"
                           echo "║  Release flow diagram and source repositories.                    ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -1574,10 +1574,10 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Deploy Report ──
+              # ── What Happened ──
               - step:
-                  name: Deploy Report
-                  identifier: Deploy_Report
+                  name: What Happened
+                  identifier: What_Happened
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -1590,7 +1590,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      DEPLOY REPORT                                ║"
+                          echo "║                      WHAT HAPPENED                                ║"
                           echo "║  Components released and per-stage deployment results.            ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -1719,10 +1719,10 @@ pipeline:
                           echo "  │ Result:         ✅ PROD PASSED"
                           echo "  └───────────────────────────────────────────────────────────────"
                           echo ""
-              # ── Audit Trail ──
+              # ── Where to Look ──
               - step:
-                  name: Audit Trail
-                  identifier: Audit_Trail
+                  name: Where to Look
+                  identifier: Where_to_Look
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -1735,7 +1735,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      AUDIT TRAIL                                  ║"
+                          echo "║                      WHERE TO LOOK                                  ║"
                           echo "║  Traceability links for commits, CI runs, and execution.          ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -1754,10 +1754,10 @@ pipeline:
                           echo "  CDN CI:           https://github.com/pdutta25/bikeshop-cdn/actions"
                           echo "  Docs CI:          https://github.com/pdutta25/bikeshop-docs/actions"
                           echo ""
-              # ── Compliance Check ──
+              # ── Template Check ──
               - step:
-                  name: Compliance Check
-                  identifier: Compliance_Check
+                  name: Template Check
+                  identifier: Template_Check
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -1770,7 +1770,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      COMPLIANCE CHECK                             ║"
+                          echo "║                      TEMPLATE CHECK                             ║"
                           echo "║  Pipeline governance, template drift, and customizations.         ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
