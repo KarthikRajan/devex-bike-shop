@@ -1754,10 +1754,10 @@ pipeline:
                           echo "  CDN CI:           https://github.com/pdutta25/bikeshop-cdn/actions"
                           echo "  Docs CI:          https://github.com/pdutta25/bikeshop-docs/actions"
                           echo ""
-              # ── Template Check ──
+              # ── Governance ──
               - step:
-                  name: Template Check
-                  identifier: Template_Check
+                  name: Governance
+                  identifier: Governance
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -1770,7 +1770,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      TEMPLATE CHECK                             ║"
+                          echo "║                      GOVERNANCE                             ║"
                           echo "║  Pipeline governance, template drift, and customizations.         ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""

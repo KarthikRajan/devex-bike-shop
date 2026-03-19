@@ -1284,10 +1284,10 @@ pipeline:
                           echo "  Svc CI:           https://github.com/pdutta25/bikeshop-services/actions"
                           echo "  UI CI:            https://github.com/pdutta25/bikeshop-ui/actions"
                           echo ""
-              # ── Template Check ──
+              # ── Governance ──
               - step:
-                  name: Template Check
-                  identifier: Template_Check
+                  name: Governance
+                  identifier: Governance
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -1300,7 +1300,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      TEMPLATE CHECK                             ║"
+                          echo "║                      GOVERNANCE                             ║"
                           echo "║  Pipeline governance, template drift, and customizations.         ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
