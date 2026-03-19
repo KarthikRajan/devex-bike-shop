@@ -134,10 +134,10 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Pipeline Overview ──
+              # ── Release Brief ──
               - step:
-                  name: Pipeline Overview
-                  identifier: Pipeline_Overview
+                  name: Release Brief
+                  identifier: Release_Brief
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -150,9 +150,8 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      PIPELINE OVERVIEW                            ║"
-                          echo "║  A pre-execution summary of what this release will deploy,        ║"
-                          echo "║  which components are included, and the release strategy.         ║"
+                          echo "║                      RELEASE BRIEF                                ║"
+                          echo "║  Pipeline identity, release pattern, and trigger details.         ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
                           echo "── Pipeline ──────────────────────────────────────────────────────"
@@ -166,6 +165,26 @@ pipeline:
                           echo "  Branch:         <+pipeline.variables.branch>"
                           echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
                           echo "  Trigger repo:   https://github.com/<+pipeline.variables.triggerRepo>"
+                          echo ""
+              # ── Release Manifest ──
+              - step:
+                  name: Release Manifest
+                  identifier: Release_Manifest
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      RELEASE MANIFEST                             ║"
+                          echo "║  All components included in this release with versions.           ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
                           echo "── Components in this Release ────────────────────────────────────"
                           echo "  🔐 Auth Service         → bikeshop-auth           v<+pipeline.variables.authVer>"
@@ -188,6 +207,26 @@ pipeline:
                           echo "                            <+pipeline.variables.cdnChange>"
                           echo "  📚 Docs Portal          → bikeshop-docs           v<+pipeline.variables.docsVer>"
                           echo "                            <+pipeline.variables.docsChange>"
+                          echo ""
+              # ── Deploy Strategy ──
+              - step:
+                  name: Deploy Strategy
+                  identifier: Deploy_Strategy
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      DEPLOY STRATEGY                              ║"
+                          echo "║  Release flow diagram and source repositories.                    ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
                           echo "── Release Flow ──────────────────────────────────────────────────"
                           echo ""
@@ -1535,10 +1574,10 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Pipeline Debrief ──
+              # ── Deploy Report ──
               - step:
-                  name: Pipeline Debrief
-                  identifier: Pipeline_Debrief
+                  name: Deploy Report
+                  identifier: Deploy_Report
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -1549,28 +1588,13 @@ pipeline:
                       spec:
                         script: |-
                           #!/bin/bash
-                          NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      PIPELINE DEBRIEF                             ║"
-                          echo "║  A post-execution record of everything that happened during       ║"
-                          echo "║  this release — timestamps, approvals, results, and governance.   ║"
+                          echo "║                      DEPLOY REPORT                                ║"
+                          echo "║  Components released and per-stage deployment results.            ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
-                          echo "── 1. Pipeline ───────────────────────────────────────────────────"
-                          echo "  Pipeline:       apr-release-bike-shop"
-                          echo "  Identifier:     aprreleasebikeshop"
-                          echo "  Execution ID:   <+pipeline.executionId>"
-                          echo "  Pattern:        Unified (single approval, all 10 components)"
-                          echo "  Stages:         DEV → SIT → PROD"
-                          echo "  Build:          #<+pipeline.variables.buildNumber>"
-                          echo "  Commit:         <+pipeline.variables.commitSha>"
-                          echo "  Branch:         <+pipeline.variables.branch>"
-                          echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
-                          echo "  Trigger repo:   https://github.com/<+pipeline.variables.triggerRepo>"
-                          echo "  Completed:      $NOW"
-                          echo ""
-                          echo "── 2. Components Released ────────────────────────────────────────"
+                          echo "── Components Released ──────────────────────────────────────────"
                           echo ""
                           echo "  ┌─ Auth Service ───────────────────────────────────────────────"
                           echo "  │ Version:        v<+pipeline.variables.authVer>"
@@ -1642,7 +1666,7 @@ pipeline:
                           echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
                           echo "  └──────────────────────────────────────────────────────────────"
                           echo ""
-                          echo "── 3. Stage Results ──────────────────────────────────────────────"
+                          echo "── Stage Results ───────────────────────────────────────────────"
                           echo ""
                           echo "  ┌─ DEV ─────────────────────────────────────────────────────────"
                           echo "  │ Approval:       ✔ Single gate, auto-approved"
@@ -1695,7 +1719,27 @@ pipeline:
                           echo "  │ Result:         ✅ PROD PASSED"
                           echo "  └───────────────────────────────────────────────────────────────"
                           echo ""
-                          echo "── 4. Traceability ───────────────────────────────────────────────"
+              # ── Audit Trail ──
+              - step:
+                  name: Audit Trail
+                  identifier: Audit_Trail
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      AUDIT TRAIL                                  ║"
+                          echo "║  Traceability links for commits, CI runs, and execution.          ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Traceability ────────────────────────────────────────────────"
                           echo "  Commit URL:       <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
                           echo "  CI workflow run:  <+pipeline.variables.repoUrl>/actions/runs/<+pipeline.variables.runId>"
                           echo "  Harness exec:     <+pipeline.executionId>"
@@ -1710,7 +1754,27 @@ pipeline:
                           echo "  CDN CI:           https://github.com/pdutta25/bikeshop-cdn/actions"
                           echo "  Docs CI:          https://github.com/pdutta25/bikeshop-docs/actions"
                           echo ""
-                          echo "── 5. Pipeline Governance ────────────────────────────────────────"
+              # ── Compliance Check ──
+              - step:
+                  name: Compliance Check
+                  identifier: Compliance_Check
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      COMPLIANCE CHECK                             ║"
+                          echo "║  Pipeline governance, template drift, and customizations.         ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Pipeline Governance ─────────────────────────────────────────"
                           echo "  Enterprise template:  v1.0.0 (provisioned at onboarding)"
                           echo "  Current version:      v1.0.0"
                           echo "  Drift:                None — matches template"
@@ -1718,7 +1782,22 @@ pipeline:
                           echo "  Last modified:        2026-03-18"
                           echo "  Compliance:           ✔ Within allowed customization policy"
                           echo ""
-                          echo "── 6. Result ─────────────────────────────────────────────────────"
+              # ── Done ──
+              - step:
+                  name: Done
+                  identifier: Done
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "── Result ──────────────────────────────────────────────────────"
                           echo "  ✅ RELEASE COMPLETE"
                           echo "  All 10 components deployed to DEV → SIT → PROD"
                           echo "  Auth v<+pipeline.variables.authVer> | Payments v<+pipeline.variables.payVer> | Inventory v<+pipeline.variables.invVer>"
