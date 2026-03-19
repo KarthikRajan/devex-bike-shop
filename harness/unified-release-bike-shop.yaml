@@ -78,7 +78,7 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── Whats Shipping ──
+              # ── Whats Releasing ──
               - step:
                   name: Whats Releasing
                   identifier: Whats_Shipping
@@ -94,7 +94,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      WHATS SHIPPING                                ║"
+                          echo "║                      WHATS RELEASING                                ║"
                           echo "║  Pipeline identity, release pattern, and trigger details.         ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -138,7 +138,7 @@ pipeline:
                           echo "  🎨  UI           → bikeshop-ui         v<+pipeline.variables.uiVer>"
                           echo "                     <+pipeline.variables.uiChange>"
                           echo ""
-              # ── How It Ships ──
+              # ── How Its Releasing ──
               - step:
                   name: How Its Releasing
                   identifier: How_It_Ships
@@ -154,7 +154,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      HOW IT SHIPS                              ║"
+                          echo "║                      HOW ITS RELEASING                              ║"
                           echo "║  Release flow diagram and source repositories.                    ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -988,7 +988,7 @@ pipeline:
         spec:
           execution:
             steps:
-              # ── What Happened ──
+              # ── Summary ──
               - step:
                   name: Summary
                   identifier: What_Happened
@@ -1004,7 +1004,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      WHAT HAPPENED                                ║"
+                          echo "║                      SUMMARY                                ║"
                           echo "║  Components released and per-stage deployment results.            ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
@@ -1063,7 +1063,7 @@ pipeline:
                           echo "  │ Result:         🚀 PROD DEPLOYED"
                           echo "  └───────────────────────────────────────────────────────────────"
                           echo ""
-              # ── Where to Look ──
+              # ── Traceability ──
               - step:
                   name: Traceability
                   identifier: Where_to_Look
@@ -1079,7 +1079,7 @@ pipeline:
                           #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      WHERE TO LOOK                                  ║"
+                          echo "║                      TRACEABILITY                                  ║"
                           echo "║  Traceability links for commits, CI runs, and execution.          ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
