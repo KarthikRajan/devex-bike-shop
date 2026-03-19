@@ -7,7 +7,7 @@ on:
       - 'harness/unified-release-devex-bike-shop.yaml'
       - '.github/workflows/unified-release-devex-bike-shop.yml'
   repository_dispatch:
-    types: [unified-release]
+    types: [component-updated]
   workflow_dispatch:
 
 permissions:
