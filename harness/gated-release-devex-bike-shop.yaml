@@ -63,11 +63,11 @@ pipeline:
       value: <+input>
   stages:
     # ════════════════════════════════════════════════════════════
-    # DEV — Deploy and Certify (Auto-Approved)
+    # Start — Pipeline Overview
     # ════════════════════════════════════════════════════════════
     - stage:
-        name: DEV
-        identifier: DEV
+        name: Start
+        identifier: Start
         type: Custom
         failureStrategies:
           - onFailure:
@@ -135,7 +135,24 @@ pipeline:
                           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                           echo "  Proceeding to component approvals and deployments..."
                           echo ""
+        tags: {}
 
+    # ════════════════════════════════════════════════════════════
+    # DEV — Deploy and Certify (Auto-Approved)
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: DEV
+        identifier: DEV
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
               # ── Gate: Approve Database Deploy ──
               - step:
                   name: Approve Database Deploy
@@ -1070,6 +1087,61 @@ pipeline:
                         action:
                           type: MarkAsSuccess
 
+              # ── PROD Recap ──
+              - step:
+                  name: PROD Recap
+                  identifier: PROD_Recap
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        PROD RECAP                               ║"
+                          echo "║  Summary of what was deployed and verified in PROD.               ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "  ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "  ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Smoke Tests:    ✔ Passed (4/4)"
+                          echo "  Certified:      ✔ Auto-certified"
+                          echo ""
+                          echo "── Progress ────────────────────────────────────────────────────────"
+                          echo "  DEV:   ✅ PASSED"
+                          echo "  SIT:   ✅ PASSED"
+                          echo "  PROD:  🚀 DEPLOYED"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  🚀 PROD COMPLETE — proceeding to Pipeline Debrief"
+                          echo ""
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # End — Pipeline Debrief
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: End
+        identifier: End
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
               # ── Pipeline Debrief ──
               - step:
                   name: Pipeline Debrief
