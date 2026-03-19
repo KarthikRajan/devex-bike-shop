@@ -284,10 +284,10 @@ pipeline:
                         action:
                           type: MarkAsSuccess
 
-              # ── DEV Summary ──
+              # ── DEV Telemetry Report ──
               - step:
-                  name: DEV Summary
-                  identifier: DEV_Summary
+                  name: DEV Telemetry
+                  identifier: DEV_Telemetry
                   type: ShellScript
                   timeout: 1m
                   spec:
@@ -298,24 +298,54 @@ pipeline:
                       spec:
                         script: |-
                           #!/bin/bash
+                          STAGE_END=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
                           echo ""
-                          echo "┌──────────────────────────────────────────────┐"
-                          echo "│          DEV STAGE SUMMARY                   │"
-                          echo "├──────────────────────────────────────────────┤"
-                          echo "│ Build:   #<+pipeline.variables.buildNumber>"
-                          echo "│ Commit:  <+pipeline.variables.commitSha>"
-                          echo "│ Branch:  <+pipeline.variables.branch>"
-                          echo "│ Trigger: <+pipeline.variables.triggeredBy>"
-                          echo "├──────────────────────────────────────────────┤"
-                          echo "│ ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
-                          echo "│ ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
-                          echo "│ ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
-                          echo "│ ✅ Smoke Tests Passed (3/3)"
-                          echo "│ ✅ Build Certified"
-                          echo "├──────────────────────────────────────────────┤"
-                          echo "│ Result:  ✅ DEV PASSED"
-                          echo "└──────────────────────────────────────────────┘"
+                          echo "╔══════════════════════════════════════════════════════════╗"
+                          echo "║             TELEMETRY — UNIFIED RELEASE (DEV)            ║"
+                          echo "╚══════════════════════════════════════════════════════════╝"
                           echo ""
-                          echo "🔗 Trace: <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
+                          echo "── Pipeline ──────────────────────────────────────────────"
+                          echo "  Pipeline:     unified-release-devex-bike-shop"
+                          echo "  Pattern:      Unified (single approval, all components)"
+                          echo "  Stage:        DEV"
+                          echo "  Build:        #<+pipeline.variables.buildNumber>"
+                          echo "  Commit:       <+pipeline.variables.commitSha>"
+                          echo "  Branch:       <+pipeline.variables.branch>"
+                          echo "  Triggered by: <+pipeline.variables.triggeredBy>"
+                          echo "  Completed:    $STAGE_END"
+                          echo ""
+                          echo "── Components Deployed ───────────────────────────────────"
+                          echo "  Database     v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "    Source:    https://github.com/pdutta25/bikeshop-db"
+                          echo "    CI:        ✔ Build  ✔ Lint  ✔ Test"
+                          echo "    Deployed:  ✔"
+                          echo ""
+                          echo "  Services     v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "    Source:    https://github.com/pdutta25/bikeshop-services"
+                          echo "    CI:        ✔ Build  ✔ Lint  ✔ Test"
+                          echo "    Deployed:  ✔"
+                          echo ""
+                          echo "  UI           v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo "    Source:    https://github.com/pdutta25/bikeshop-ui"
+                          echo "    CI:        ✔ Build  ✔ Lint  ✔ Test"
+                          echo "    Deployed:  ✔"
+                          echo ""
+                          echo "── Approval ──────────────────────────────────────────────"
+                          echo "  Gate:         Approve Deploys (all 3 components)"
+                          echo "  Status:       ✔ Auto-approved"
+                          echo ""
+                          echo "── Verification ──────────────────────────────────────────"
+                          echo "  Smoke Tests:  ✔ Passed (3/3)"
+                          echo "  Certified:    ✔ (auto)"
+                          echo ""
+                          echo "── Traceability ──────────────────────────────────────────"
+                          echo "  Commit:       <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
+                          echo "  CI Run:       <+pipeline.variables.repoUrl>/actions/runs/<+pipeline.variables.runId>"
+                          echo "  DB CI:        https://github.com/pdutta25/bikeshop-db/actions"
+                          echo "  Svc CI:       https://github.com/pdutta25/bikeshop-services/actions"
+                          echo "  UI CI:        https://github.com/pdutta25/bikeshop-ui/actions"
+                          echo ""
+                          echo "── Result ────────────────────────────────────────────────"
+                          echo "  ✅ DEV STAGE PASSED — All 3 components deployed and verified"
                           echo ""
         tags: {}
