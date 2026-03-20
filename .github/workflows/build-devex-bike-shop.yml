@@ -264,7 +264,7 @@ jobs:
           GIT_RUN_ID: ${{ github.run_id }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: |
-          PIPELINE_ID="releasedevexbikeshop"
+          PIPELINE_ID="springsalereleasebikeshop"
           SHORT_SHA="${GIT_SHA:0:7}"
           BASE_URL="https://app.harness.io/pipeline/api"
           SCOPE="accountIdentifier=${HARNESS_ACCOUNT_ID}&orgIdentifier=${HARNESS_ORG_ID}&projectIdentifier=${HARNESS_PROJECT_ID}"
@@ -285,7 +285,7 @@ jobs:
             "${BASE_URL}/pipelines/v2?${SCOPE}" \
             -H "Content-Type: application/yaml" \
             -H "x-api-key: ${HARNESS_API_KEY}" \
-            --data-binary @harness/release-devex-bike-shop.yaml)
+            --data-binary @harness/springsale-release-bike-shop.yaml)
 
           CREATE_CODE=$(echo "$CREATE_RESPONSE" | tail -1)
           if [ "$CREATE_CODE" -ge 200 ] && [ "$CREATE_CODE" -lt 300 ]; then
@@ -296,7 +296,7 @@ jobs:
               "${BASE_URL}/pipelines/v2/${PIPELINE_ID}?${SCOPE}" \
               -H "Content-Type: application/yaml" \
               -H "x-api-key: ${HARNESS_API_KEY}" \
-              --data-binary @harness/release-devex-bike-shop.yaml)
+              --data-binary @harness/springsale-release-bike-shop.yaml)
             UPDATE_CODE=$(echo "$UPDATE_RESPONSE" | tail -1)
             if [ "$UPDATE_CODE" -ge 200 ] && [ "$UPDATE_CODE" -lt 300 ]; then
               echo "✅ Pipeline updated"
@@ -326,7 +326,7 @@ jobs:
             '{
               notesForPipelineExecution: ("Triggered by GitHub Actions | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha),
               pipeline: {
-                identifier: "releasedevexbikeshop",
+                identifier: "springsalereleasebikeshop",
                 tags: {
                   commitSha: $sha,
                   prNumber: $pr,
