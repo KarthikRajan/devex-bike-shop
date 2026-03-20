@@ -12,6 +12,7 @@ on:
       - 'slides/**'
       - '.github/workflows/*-release-bike-shop*'
       - '.github/workflows/trigger-release*'
+      - '.github/workflows/ci-all-components*'
   pull_request:
     branches: [main]
     paths-ignore:
@@ -23,6 +24,7 @@ on:
       - 'slides/**'
       - '.github/workflows/*-release-bike-shop*'
       - '.github/workflows/trigger-release*'
+      - '.github/workflows/ci-all-components*'
   workflow_dispatch:
     inputs:
       test_deploy:
