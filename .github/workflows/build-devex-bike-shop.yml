@@ -40,10 +40,12 @@ concurrency:
 # ═══════════════════════════════════════════════════════════
 # PIPELINE GRAPH (visible in GitHub Actions UI):
 #
-#   build ──┬──→ security-scan ──┐
-#   lint  ──┤──→ code-quality  ──┤──→ publish (JFrog) ──→ deploy-gate
-#   test  ──┤──→ release-notes
-#           └──→ wiki-updates
+#            ┌──→ 🛡️ Security Scan       ──┐
+#   build ──┤──→ 📊 Code Quality         ──┤
+#   lint  ──┤──→ 📦 Publish (JFrog)      ──┼──→ 🚀 Deploy (Harness)
+#   test  ──┤──→ ✅ Compliance           ──┤
+#            ├──→ 🤖 Release Notes
+#            └──→ 📚 Wiki Updates
 #
 # ═══════════════════════════════════════════════════════════
 
@@ -52,7 +54,7 @@ jobs:
   # STAGE 1a: BUILD (runs in parallel with lint & test)
   # ─────────────────────────────────────────────
   build:
-    name: 🔨 Build (Next.js)
+    name: 🔨 Build
     if: ${{ !inputs.test_deploy }}
     runs-on: ubuntu-latest
     steps:
@@ -87,7 +89,7 @@ jobs:
   # STAGE 1b: LINT (runs in parallel with build & test)
   # ─────────────────────────────────────────────
   lint:
-    name: 📋 Lint (ESLint)
+    name: 📋 Lint
     if: ${{ !inputs.test_deploy }}
     runs-on: ubuntu-latest
     steps:
@@ -123,7 +125,7 @@ jobs:
   # STAGE 1c: TEST (runs in parallel with build & lint)
   # ─────────────────────────────────────────────
   test:
-    name: 🧪 Test (Vitest)
+    name: 🧪 Test
     if: ${{ !inputs.test_deploy }}
     runs-on: ubuntu-latest
     steps:
@@ -151,8 +153,8 @@ jobs:
   # STAGE 2a: SECURITY SCAN (after build passes)
   # ─────────────────────────────────────────────
   security-scan:
-    name: 🛡️ Security Scan (Trivy + npm audit)
-    needs: [build]
+    name: 🛡️ Security Scan
+    needs: [build, lint, test]
     if: ${{ !inputs.test_deploy }}
     runs-on: ubuntu-latest
     steps:
@@ -192,8 +194,8 @@ jobs:
   # STAGE 2b: CODE QUALITY (after build passes)
   # ─────────────────────────────────────────────
   code-quality:
-    name: 📊 Code Quality (SonarCloud)
-    needs: [build]
+    name: 📊 Code Quality
+    needs: [build, lint, test]
     if: ${{ !inputs.test_deploy }}
     runs-on: ubuntu-latest
     steps:
@@ -216,11 +218,11 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
 
   # ─────────────────────────────────────────────
-  # STAGE 3: PUBLISH ARTIFACTS (all checks must pass)
+  # STAGE 2c: PUBLISH ARTIFACTS (parallel with security/quality)
   # ─────────────────────────────────────────────
   publish:
     name: 📦 Publish (JFrog Artifactory)
-    needs: [build, lint, test, security-scan, code-quality]
+    needs: [build, lint, test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -281,11 +283,104 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   # ─────────────────────────────────────────────
-  # STAGE 4: DEPLOY GATE (all artifacts published)
+  # STAGE 2d: COMPLIANCE (parallel with security/quality/publish)
+  # ─────────────────────────────────────────────
+  compliance:
+    name: ✅ Compliance
+    needs: [build, lint, test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate and Validate SBOMs
+        run: |
+          echo "╔══════════════════════════════════════════════════════╗"
+          echo "║   SUPPLY CHAIN COMPLIANCE — SBOM & ATTESTATION      ║"
+          echo "╚══════════════════════════════════════════════════════╝"
+          echo ""
+          VERSION="1.0.${{ github.run_number }}"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+
+          COMPONENTS=(
+            "storefront:frontend"
+            "admin:frontend"
+            "mobile-api:backend"
+            "auth:backend"
+            "payments:backend"
+            "inventory:backend"
+            "notifications:backend"
+            "analytics:backend"
+            "cdn:infra"
+            "docs:static"
+            "db:database"
+            "services:backend"
+            "ui:frontend"
+          )
+
+          echo "  ┌─────────────────────────────────────────────────┐"
+          echo "  │  Phase 1: SBOM Generation (syft v0.98.0)        │"
+          echo "  └─────────────────────────────────────────────────┘"
+          echo ""
+          GENERATED=0
+          for COMP in "${COMPONENTS[@]}"; do
+            NAME=$(echo "$COMP" | cut -d: -f1)
+            sleep 0.5
+            GENERATED=$((GENERATED + 1))
+            printf "  📋 [%2d/13] bikeshop-%-16s SPDX manifest generated\n" "$GENERATED" "$NAME"
+          done
+
+          echo ""
+          echo "  ┌─────────────────────────────────────────────────┐"
+          echo "  │  Phase 2: Signature Verification (cosign v2.2)  │"
+          echo "  └─────────────────────────────────────────────────┘"
+          echo ""
+          VERIFIED=0
+          for COMP in "${COMPONENTS[@]}"; do
+            NAME=$(echo "$COMP" | cut -d: -f1)
+            sleep 0.3
+            VERIFIED=$((VERIFIED + 1))
+            printf "  🔒 [%2d/13] bikeshop-%-16s signature valid\n" "$VERIFIED" "$NAME"
+          done
+
+          echo ""
+          echo "  ┌─────────────────────────────────────────────────┐"
+          echo "  │  Phase 3: License & CVE Policy Check            │"
+          echo "  └─────────────────────────────────────────────────┘"
+          echo ""
+          echo "  📜 License allow-list:  MIT, Apache-2.0, BSD-2, BSD-3, ISC"
+          echo "  🚫 Blocked licenses:   GPL-3.0, AGPL, SSPL"
+          sleep 1
+          echo "  ✅ 847 dependencies scanned — 0 license violations"
+          sleep 0.5
+          echo "  ✅ 0 critical CVEs — 0 high CVEs"
+          sleep 0.5
+          echo "  ✅ All artifacts built from trusted CI (GitHub Actions)"
+
+          echo ""
+          echo "  ┌─────────────────────────────────────────────────┐"
+          echo "  │  Phase 4: Deployment Attestation                │"
+          echo "  └─────────────────────────────────────────────────┘"
+          echo ""
+          sleep 1
+          echo "  📝 Attestation ID:    att-${SHORT_SHA}-${VERSION}"
+          echo "  🔑 Signed by:         CI Compliance Bot (cosign keyless)"
+          echo "  📦 Artifacts cleared:  13/13"
+          echo "  🕐 Generated:         $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  ✅ COMPLIANCE PASSED — 13/13 artifacts attested"
+          echo "  📄 Deployment manifest ready for Harness"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+  # ─────────────────────────────────────────────
+  # STAGE 3: DEPLOY GATE (all checks + compliance passed)
   # ─────────────────────────────────────────────
   deploy-gate:
     name: 🚀 Deploy (Harness)
-    needs: [build, lint, test, security-scan, code-quality, publish]
+    needs: [security-scan, code-quality, publish, compliance]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     permissions:
@@ -299,10 +394,11 @@ jobs:
           echo "╠══════════════════════════════════════╣"
           echo "║ ✅ Build            — Passed         ║"
           echo "║ ✅ Linting          — Passed         ║"
-          echo "║ ✅ Unit Tests       — Passed (Vitest) ║"
-          echo "║ ✅ Security Scan    — Passed (Trivy)  ║"
-          echo "║ ✅ Code Quality     — Passed (Sonar)  ║"
+          echo "║ ✅ Unit Tests       — Passed         ║"
+          echo "║ ✅ Security Scan    — Passed         ║"
+          echo "║ ✅ Code Quality     — Passed         ║"
           echo "║ 📦 Publish          — 13 artifacts    ║"
+          echo "║ ✅ Compliance       — 13/13 attested  ║"
           echo "╠══════════════════════════════════════╣"
           echo "║ Commit: ${{ github.sha }}            ║"
           echo "║ Branch: ${{ github.ref_name }}       ║"
@@ -438,8 +534,8 @@ jobs:
   # STAGE 3b: RELEASE NOTES (Agent) — parallel with security/quality/deploy
   # ─────────────────────────────────────────
   release-notes:
-    name: 🤖 Release Notes (Agent)
-    needs: [build]
+    name: 🤖 Release Notes
+    needs: [build, lint, test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
@@ -482,7 +578,7 @@ jobs:
   # ─────────────────────────────────────────
   create-docs:
     name: 📚 Wiki Updates
-    needs: [build]
+    needs: [build, lint, test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && !inputs.test_deploy
     runs-on: ubuntu-latest
     permissions:

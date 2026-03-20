@@ -1,8 +1,6 @@
 name: "CI — All 13 Components"
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 # ═══════════════════════════════════════════════════════════
