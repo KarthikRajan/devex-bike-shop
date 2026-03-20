@@ -38,21 +38,21 @@ concurrency:
   cancel-in-progress: true
 
 # ═══════════════════════════════════════════════════════════
-# PIPELINE GRAPH (visible in GitHub Actions UI):
+# PIPELINE GRAPH (4 columns — visible in GitHub Actions UI):
 #
-#            ┌──→ 🛡️ Security Scan       ──┐
-#   build ──┤──→ 📊 Code Quality         ──┤
-#   lint  ──┤──→ 📦 Publish              ──┼──→ 🚀 Deploy (Harness)
-#   test  ──┤──→ ✅ Compliance           ──┤
-#            ├──→ 🤖 Release Notes
-#            └──→ 📚 Wiki Updates
+#              ┌──→ 🛡️ Security Scan ──┬──→ 📦 Publish ──→ ✅ Compliance ──→ 🚀 Deploy
+#   build  ──┤                         ├──→ 🤖 Release Notes
+#   lint   ──┤──→ 📊 Code Quality   ──┼──→ 📚 Wiki Updates
+#   test   ──┘
 #
-# Demo line: "Build, lint, test pass — then 6 things fire
-# in parallel: security scan, code quality, publish 13
-# artifacts to JFrog, compliance validates every SBOM and
-# signs an attestation, plus release notes and wiki. Only
-# when everything clears does the deployment gate open and
-# trigger Harness."
+#   Col 1: Build it    Col 2: Scan it    Col 3: Publish it    Col 4: Attest it    Col 5: Deploy it
+#   (3 parallel)       (2 parallel)      (3 parallel)         (validates SBOMs)   (triggers Harness)
+#
+# Demo line: "Build, lint, test — then security scan and code
+# quality gate in parallel — only clean code gets published
+# to JFrog. Compliance validates every published artifact's
+# SBOM, checks licenses, signs an attestation. Only attested
+# artifacts reach Harness for deployment."
 # ═══════════════════════════════════════════════════════════
 
 jobs:
@@ -224,11 +224,11 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
 
   # ─────────────────────────────────────────────
-  # STAGE 2c: PUBLISH — push clean artifacts to registry
+  # STAGE 3a: PUBLISH — only clean code gets published
   # ─────────────────────────────────────────────
   c-publish:
     name: 📦 Publish
-    needs: [build, lint, test]
+    needs: [a-security-scan, b-code-quality]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -289,18 +289,18 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   # ─────────────────────────────────────────────
-  # STAGE 2d: COMPLIANCE — attest everything before deploy
+  # STAGE 4: COMPLIANCE — validate published artifacts
   # ─────────────────────────────────────────────
   d-compliance:
     name: ✅ Compliance
-    needs: [build, lint, test]
+    needs: [c-publish]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Generate and Validate SBOMs
+      - name: Validate Published Artifacts
         run: |
           echo "╔══════════════════════════════════════════════════════╗"
           echo "║   SUPPLY CHAIN COMPLIANCE — SBOM & ATTESTATION      ║"
@@ -382,11 +382,11 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   # ─────────────────────────────────────────────
-  # STAGE 3: DEPLOY GATE (all checks + compliance passed)
+  # STAGE 5: DEPLOY (only attested artifacts reach Harness)
   # ─────────────────────────────────────────────
   deploy-gate:
     name: 🚀 Deploy (Harness)
-    needs: [a-security-scan, b-code-quality, c-publish, d-compliance]
+    needs: [d-compliance]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     permissions:
@@ -537,11 +537,11 @@ jobs:
 
 
   # ─────────────────────────────────────────
-  # STAGE 3b: RELEASE NOTES (Agent) — parallel with security/quality/deploy
+  # STAGE 3b: RELEASE NOTES — parallel with publish
   # ─────────────────────────────────────────
   release-notes:
     name: 🤖 Release Notes
-    needs: [build, lint, test]
+    needs: [a-security-scan, b-code-quality]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
@@ -580,11 +580,11 @@ jobs:
           echo "✅ Release $TAG created with AI-generated notes"
 
   # ─────────────────────────────────────────
-  # STAGE 3c: WIKI UPDATES — parallel with security/quality/deploy
+  # STAGE 3c: WIKI UPDATES — parallel with publish
   # ─────────────────────────────────────────
   create-docs:
     name: 📚 Wiki Updates
-    needs: [build, lint, test]
+    needs: [a-security-scan, b-code-quality]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && !inputs.test_deploy
     runs-on: ubuntu-latest
     permissions:
