@@ -5,17 +5,21 @@ on:
 
 # ═══════════════════════════════════════════════════════════
 # Orchestrator: dispatches all 13 component CI workflows
-# in dependency waves, waits for each wave, then triggers
+# in dependency waves, waits for each, then triggers
 # unified-release on Harness CD.
 #
-#   Foundation  →  bikeshop-db
-#   Core        →  bikeshop-services, bikeshop-auth, bikeshop-payments
-#   Platform    →  bikeshop-inventory, bikeshop-notifications, bikeshop-analytics
-#   Frontend    →  bikeshop-ui, bikeshop-storefront, bikeshop-admin
-#   Edge        →  bikeshop-mobile-api, bikeshop-cdn, bikeshop-docs
-#   Deploy      →  trigger unified-release (Harness)
+# Graph (4 columns × 6 rows — stage-friendly):
 #
-# Requires: DISPATCH_TOKEN secret (PAT with repo scope)
+#                  ┌ Core — services
+#                  ├ Core — auth
+#                  ├ Core — payments        ┌ Frontend — ui
+#   Foundation →   ├ Platform — inventory → ├ Frontend — storefront  → Deploy
+#                  ├ Platform — notifs      ├ Frontend — admin          Summary
+#                  └ Platform — analytics   ├ Edge — mobile-api
+#                                           ├ Edge — cdn
+#                                           └ Edge — docs
+#
+# Requires: DISPATCH_TOKEN secret (PAT with repo + workflow scope)
 # ═══════════════════════════════════════════════════════════
 
 concurrency:
@@ -24,18 +28,18 @@ concurrency:
 
 jobs:
   # ─────────────────────────────────────────────
-  # WAVE 1: Foundation (schema must be first)
+  # COLUMN 1: Foundation (schema must be first)
   # ─────────────────────────────────────────────
   foundation:
-    name: "🏗️ Foundation"
+    name: "🏗️ Foundation — bikeshop-db"
     runs-on: ubuntu-latest
     steps:
-      - name: "Dispatch bikeshop-db"
+      - name: "Dispatch & wait for bikeshop-db"
         env:
           GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
         run: |
           echo "╔══════════════════════════════════════╗"
-          echo "║  WAVE: Foundation                    ║"
+          echo "║  FOUNDATION — bikeshop-db            ║"
           echo "╚══════════════════════════════════════╝"
           echo ""
 
@@ -43,13 +47,11 @@ jobs:
           echo "▶️  Dispatching CI for ${REPO}..."
           gh workflow run ci.yml --repo "$REPO" --ref main
 
-          # Wait for the run to appear
           sleep 3
 
-          # Poll until complete
           echo "⏳ Waiting for ${REPO}..."
           while true; do
-            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status,conclusion --jq '.[0].status')
+            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status --jq '.[0].status')
             if [ "$STATUS" = "completed" ]; then
               CONCLUSION=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion')
               echo "✅ bikeshop-db — ${CONCLUSION}"
@@ -59,7 +61,7 @@ jobs:
           done
 
   # ─────────────────────────────────────────────
-  # WAVE 2: Core Services (parallel)
+  # COLUMN 2: Core + Platform (6 jobs parallel)
   # ─────────────────────────────────────────────
   core-services:
     name: "⚙️ Core — ${{ matrix.repo }}"
@@ -69,24 +71,17 @@ jobs:
       matrix:
         repo: [bikeshop-services, bikeshop-auth, bikeshop-payments]
     steps:
-      - name: "Dispatch ${{ matrix.repo }}"
+      - name: "Dispatch & wait for ${{ matrix.repo }}"
         env:
           GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
         run: |
-          echo "╔══════════════════════════════════════╗"
-          echo "║  WAVE: Core Services                 ║"
-          echo "╚══════════════════════════════════════╝"
-          echo ""
-
           REPO="pdutta25/${{ matrix.repo }}"
           echo "▶️  Dispatching CI for ${REPO}..."
           gh workflow run ci.yml --repo "$REPO" --ref main
-
           sleep 3
-
           echo "⏳ Waiting for ${REPO}..."
           while true; do
-            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status,conclusion --jq '.[0].status')
+            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status --jq '.[0].status')
             if [ "$STATUS" = "completed" ]; then
               CONCLUSION=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion')
               echo "✅ ${{ matrix.repo }} — ${CONCLUSION}"
@@ -95,35 +90,25 @@ jobs:
             sleep 5
           done
 
-  # ─────────────────────────────────────────────
-  # WAVE 3: Platform (parallel)
-  # ─────────────────────────────────────────────
   platform:
     name: "🔌 Platform — ${{ matrix.repo }}"
-    needs: [core-services]
+    needs: [foundation]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         repo: [bikeshop-inventory, bikeshop-notifications, bikeshop-analytics]
     steps:
-      - name: "Dispatch ${{ matrix.repo }}"
+      - name: "Dispatch & wait for ${{ matrix.repo }}"
         env:
           GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
         run: |
-          echo "╔══════════════════════════════════════╗"
-          echo "║  WAVE: Platform                      ║"
-          echo "╚══════════════════════════════════════╝"
-          echo ""
-
           REPO="pdutta25/${{ matrix.repo }}"
           echo "▶️  Dispatching CI for ${REPO}..."
           gh workflow run ci.yml --repo "$REPO" --ref main
-
           sleep 3
-
           echo "⏳ Waiting for ${REPO}..."
           while true; do
-            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status,conclusion --jq '.[0].status')
+            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status --jq '.[0].status')
             if [ "$STATUS" = "completed" ]; then
               CONCLUSION=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion')
               echo "✅ ${{ matrix.repo }} — ${CONCLUSION}"
@@ -133,34 +118,27 @@ jobs:
           done
 
   # ─────────────────────────────────────────────
-  # WAVE 4: Frontend (parallel)
+  # COLUMN 3: Frontend + Edge (6 jobs parallel)
   # ─────────────────────────────────────────────
   frontend:
     name: "🖥️ Frontend — ${{ matrix.repo }}"
-    needs: [platform]
+    needs: [core-services, platform]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         repo: [bikeshop-ui, bikeshop-storefront, bikeshop-admin]
     steps:
-      - name: "Dispatch ${{ matrix.repo }}"
+      - name: "Dispatch & wait for ${{ matrix.repo }}"
         env:
           GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
         run: |
-          echo "╔══════════════════════════════════════╗"
-          echo "║  WAVE: Frontend                      ║"
-          echo "╚══════════════════════════════════════╝"
-          echo ""
-
           REPO="pdutta25/${{ matrix.repo }}"
           echo "▶️  Dispatching CI for ${REPO}..."
           gh workflow run ci.yml --repo "$REPO" --ref main
-
           sleep 3
-
           echo "⏳ Waiting for ${REPO}..."
           while true; do
-            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status,conclusion --jq '.[0].status')
+            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status --jq '.[0].status')
             if [ "$STATUS" = "completed" ]; then
               CONCLUSION=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion')
               echo "✅ ${{ matrix.repo }} — ${CONCLUSION}"
@@ -169,35 +147,25 @@ jobs:
             sleep 5
           done
 
-  # ─────────────────────────────────────────────
-  # WAVE 5: Edge (parallel)
-  # ─────────────────────────────────────────────
   edge:
     name: "🌐 Edge — ${{ matrix.repo }}"
-    needs: [frontend]
+    needs: [core-services, platform]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         repo: [bikeshop-mobile-api, bikeshop-cdn, bikeshop-docs]
     steps:
-      - name: "Dispatch ${{ matrix.repo }}"
+      - name: "Dispatch & wait for ${{ matrix.repo }}"
         env:
           GH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
         run: |
-          echo "╔══════════════════════════════════════╗"
-          echo "║  WAVE: Edge                          ║"
-          echo "╚══════════════════════════════════════╝"
-          echo ""
-
           REPO="pdutta25/${{ matrix.repo }}"
           echo "▶️  Dispatching CI for ${REPO}..."
           gh workflow run ci.yml --repo "$REPO" --ref main
-
           sleep 3
-
           echo "⏳ Waiting for ${REPO}..."
           while true; do
-            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status,conclusion --jq '.[0].status')
+            STATUS=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json status --jq '.[0].status')
             if [ "$STATUS" = "completed" ]; then
               CONCLUSION=$(gh run list --repo "$REPO" --workflow ci.yml --limit 1 --json conclusion --jq '.[0].conclusion')
               echo "✅ ${{ matrix.repo }} — ${CONCLUSION}"
@@ -207,11 +175,11 @@ jobs:
           done
 
   # ─────────────────────────────────────────────
-  # DEPLOY: Trigger Unified Release on Harness
+  # COLUMN 4: Deploy + Summary
   # ─────────────────────────────────────────────
   deploy:
     name: "🚀 Unified Release (Harness)"
-    needs: [foundation, core-services, platform, frontend, edge]
+    needs: [frontend, edge]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -364,12 +332,9 @@ jobs:
             exit 1
           fi
 
-  # ─────────────────────────────────────────────
-  # SUMMARY: Roll-up of all 13 components
-  # ─────────────────────────────────────────────
   summary:
     name: "📊 CI Summary"
-    needs: [foundation, core-services, platform, frontend, edge, deploy]
+    needs: [frontend, edge]
     if: always()
     runs-on: ubuntu-latest
     steps:
