@@ -42,11 +42,17 @@ concurrency:
 #
 #            ┌──→ 🛡️ Security Scan       ──┐
 #   build ──┤──→ 📊 Code Quality         ──┤
-#   lint  ──┤──→ 📦 Publish (JFrog)      ──┼──→ 🚀 Deploy (Harness)
+#   lint  ──┤──→ 📦 Publish              ──┼──→ 🚀 Deploy (Harness)
 #   test  ──┤──→ ✅ Compliance           ──┤
 #            ├──→ 🤖 Release Notes
 #            └──→ 📚 Wiki Updates
 #
+# Demo line: "Build, lint, test pass — then 6 things fire
+# in parallel: security scan, code quality, publish 13
+# artifacts to JFrog, compliance validates every SBOM and
+# signs an attestation, plus release notes and wiki. Only
+# when everything clears does the deployment gate open and
+# trigger Harness."
 # ═══════════════════════════════════════════════════════════
 
 jobs:
@@ -150,9 +156,9 @@ jobs:
           echo "✅ Unit tests passed"
 
   # ─────────────────────────────────────────────
-  # STAGE 2a: SECURITY SCAN (after build passes)
+  # STAGE 2a: SECURITY SCAN — find vulnerabilities first
   # ─────────────────────────────────────────────
-  security-scan:
+  a-security-scan:
     name: 🛡️ Security Scan
     needs: [build, lint, test]
     if: ${{ !inputs.test_deploy }}
@@ -191,9 +197,9 @@ jobs:
           format: 'table'
 
   # ─────────────────────────────────────────────
-  # STAGE 2b: CODE QUALITY (after build passes)
+  # STAGE 2b: CODE QUALITY — check code standards
   # ─────────────────────────────────────────────
-  code-quality:
+  b-code-quality:
     name: 📊 Code Quality
     needs: [build, lint, test]
     if: ${{ !inputs.test_deploy }}
@@ -218,10 +224,10 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
 
   # ─────────────────────────────────────────────
-  # STAGE 2c: PUBLISH ARTIFACTS (parallel with security/quality)
+  # STAGE 2c: PUBLISH — push clean artifacts to registry
   # ─────────────────────────────────────────────
-  publish:
-    name: 📦 Publish (JFrog Artifactory)
+  c-publish:
+    name: 📦 Publish
     needs: [build, lint, test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -283,9 +289,9 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   # ─────────────────────────────────────────────
-  # STAGE 2d: COMPLIANCE (parallel with security/quality/publish)
+  # STAGE 2d: COMPLIANCE — attest everything before deploy
   # ─────────────────────────────────────────────
-  compliance:
+  d-compliance:
     name: ✅ Compliance
     needs: [build, lint, test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -380,7 +386,7 @@ jobs:
   # ─────────────────────────────────────────────
   deploy-gate:
     name: 🚀 Deploy (Harness)
-    needs: [security-scan, code-quality, publish, compliance]
+    needs: [a-security-scan, b-code-quality, c-publish, d-compliance]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     permissions:
