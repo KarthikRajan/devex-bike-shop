@@ -1510,8 +1510,8 @@ pipeline:
 
               # ── Deploy Auth Service (sequential) ──
               - step:
-                  name: Deploy Auth Service
-                  identifier: Deploy_Auth_Service
+                  name: Deploy Auth
+                  identifier: Deploy_Auth
                   type: ShellScript
                   timeout: 5m
                   spec:
@@ -1535,8 +1535,8 @@ pipeline:
 
               # ── Deploy Payment Service (sequential after Auth) ──
               - step:
-                  name: Deploy Payment Service
-                  identifier: Deploy_Payment_Service
+                  name: Deploy Payments
+                  identifier: Deploy_Payments
                   type: ShellScript
                   timeout: 5m
                   spec:
@@ -1565,8 +1565,8 @@ pipeline:
                       identifier: Backend_Group
                       steps:
                         - step:
-                            name: Deploy Inventory Service
-                            identifier: Deploy_Inventory_Service
+                            name: Deploy Inventory
+                            identifier: Deploy_Inventory
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -1588,8 +1588,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Inventory Service deployed to DEV"
                         - step:
-                            name: Deploy Notification Service
-                            identifier: Deploy_Notification_Service
+                            name: Deploy Notifications
+                            identifier: Deploy_Notifications
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -1611,8 +1611,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Notification Service deployed to DEV"
                         - step:
-                            name: Deploy Analytics Service
-                            identifier: Deploy_Analytics_Service
+                            name: Deploy Analytics
+                            identifier: Deploy_Analytics
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -1634,10 +1634,10 @@ pipeline:
                                     echo ""
                                     echo "✅ Analytics Service deployed to DEV"
                         - step:
-                            name: Reserved Backend Slot 1
-                            identifier: Reserved_Backend_Slot_1
+                            name: Deploy DB
+                            identifier: Deploy_DB
                             type: ShellScript
-                            timeout: 1m
+                            timeout: 5m
                             spec:
                               shell: Bash
                               onDelegate: true
@@ -1646,12 +1646,21 @@ pipeline:
                                 spec:
                                   script: |-
                                     #!/bin/bash
-                                    echo "⏸️  Reserved backend slot — no component assigned"
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — DB                         ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: DB v<+pipeline.variables.dbVer>"
+                                    echo "   Change:   <+pipeline.variables.dbChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-db"
+                                    echo ""
+                                    echo "✅ DB deployed to DEV"
                         - step:
-                            name: Reserved Backend Slot 2
-                            identifier: Reserved_Backend_Slot_2
+                            name: Deploy Services
+                            identifier: Deploy_Services
                             type: ShellScript
-                            timeout: 1m
+                            timeout: 5m
                             spec:
                               shell: Bash
                               onDelegate: true
@@ -1660,14 +1669,23 @@ pipeline:
                                 spec:
                                   script: |-
                                     #!/bin/bash
-                                    echo "⏸️  Reserved backend slot — no component assigned"
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — SERVICES                   ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                                    echo "   Change:   <+pipeline.variables.svcChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-services"
+                                    echo ""
+                                    echo "✅ Services deployed to DEV"
                   - stepGroup:
                       name: Frontend Group
                       identifier: Frontend_Group
                       steps:
                         - step:
-                            name: Deploy Storefront App
-                            identifier: Deploy_Storefront_App
+                            name: Deploy Storefront
+                            identifier: Deploy_Storefront
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -1689,8 +1707,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Storefront App deployed to DEV"
                         - step:
-                            name: Deploy Admin Dashboard
-                            identifier: Deploy_Admin_Dashboard
+                            name: Deploy Admin
+                            identifier: Deploy_Admin
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -1712,8 +1730,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Admin Dashboard deployed to DEV"
                         - step:
-                            name: Deploy Mobile API
-                            identifier: Deploy_Mobile_API
+                            name: Deploy Mobile-API
+                            identifier: Deploy_MobileAPI
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -1735,8 +1753,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Mobile API deployed to DEV"
                         - step:
-                            name: Deploy CDN Assets
-                            identifier: Deploy_CDN_Assets
+                            name: Deploy CDN
+                            identifier: Deploy_CDN
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -1758,8 +1776,8 @@ pipeline:
                                     echo ""
                                     echo "✅ CDN Assets deployed to DEV"
                         - step:
-                            name: Deploy Docs Portal
-                            identifier: Deploy_Docs_Portal
+                            name: Deploy Docs
+                            identifier: Deploy_Docs
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -1780,6 +1798,29 @@ pipeline:
                                     echo "   Source:   https://github.com/pdutta25/bikeshop-docs"
                                     echo ""
                                     echo "✅ Docs Portal deployed to DEV"
+                        - step:
+                            name: Deploy UI
+                            identifier: Deploy_UI
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — UI                         ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                                    echo "   Change:   <+pipeline.variables.uiChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-ui"
+                                    echo ""
+                                    echo "✅ UI deployed to DEV"
 
               # ── DEV Smoke Tests ──
               - step:
@@ -1941,8 +1982,8 @@ pipeline:
 
               # ── Deploy Auth Service (sequential) ──
               - step:
-                  name: Deploy Auth Service
-                  identifier: SIT_Deploy_Auth_Service
+                  name: Deploy Auth
+                  identifier: SIT_Deploy_Auth
                   type: ShellScript
                   timeout: 5m
                   spec:
@@ -1966,8 +2007,8 @@ pipeline:
 
               # ── Deploy Payment Service (sequential after Auth) ──
               - step:
-                  name: Deploy Payment Service
-                  identifier: SIT_Deploy_Payment_Service
+                  name: Deploy Payments
+                  identifier: SIT_Deploy_Payments
                   type: ShellScript
                   timeout: 5m
                   spec:
@@ -1996,8 +2037,8 @@ pipeline:
                       identifier: SIT_Backend_Group
                       steps:
                         - step:
-                            name: Deploy Inventory Service
-                            identifier: SIT_Deploy_Inventory_Service
+                            name: Deploy Inventory
+                            identifier: SIT_Deploy_Inventory
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2019,8 +2060,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Inventory Service deployed to SIT"
                         - step:
-                            name: Deploy Notification Service
-                            identifier: SIT_Deploy_Notification_Service
+                            name: Deploy Notifications
+                            identifier: SIT_Deploy_Notifications
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2042,8 +2083,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Notification Service deployed to SIT"
                         - step:
-                            name: Deploy Analytics Service
-                            identifier: SIT_Deploy_Analytics_Service
+                            name: Deploy Analytics
+                            identifier: SIT_Deploy_Analytics
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2065,10 +2106,10 @@ pipeline:
                                     echo ""
                                     echo "✅ Analytics Service deployed to SIT"
                         - step:
-                            name: Reserved Backend Slot 1
-                            identifier: SIT_Reserved_Backend_Slot_1
+                            name: Deploy DB
+                            identifier: SIT_Deploy_DB
                             type: ShellScript
-                            timeout: 1m
+                            timeout: 5m
                             spec:
                               shell: Bash
                               onDelegate: true
@@ -2077,12 +2118,21 @@ pipeline:
                                 spec:
                                   script: |-
                                     #!/bin/bash
-                                    echo "⏸️  Reserved backend slot — no component assigned"
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — DB                         ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: DB v<+pipeline.variables.dbVer>"
+                                    echo "   Change:   <+pipeline.variables.dbChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-db"
+                                    echo ""
+                                    echo "✅ DB deployed to SIT"
                         - step:
-                            name: Reserved Backend Slot 2
-                            identifier: SIT_Reserved_Backend_Slot_2
+                            name: Deploy Services
+                            identifier: SIT_Deploy_Services
                             type: ShellScript
-                            timeout: 1m
+                            timeout: 5m
                             spec:
                               shell: Bash
                               onDelegate: true
@@ -2091,14 +2141,23 @@ pipeline:
                                 spec:
                                   script: |-
                                     #!/bin/bash
-                                    echo "⏸️  Reserved backend slot — no component assigned"
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — SERVICES                   ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                                    echo "   Change:   <+pipeline.variables.svcChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-services"
+                                    echo ""
+                                    echo "✅ Services deployed to SIT"
                   - stepGroup:
                       name: Frontend Group
                       identifier: SIT_Frontend_Group
                       steps:
                         - step:
-                            name: Deploy Storefront App
-                            identifier: SIT_Deploy_Storefront_App
+                            name: Deploy Storefront
+                            identifier: SIT_Deploy_Storefront
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2120,8 +2179,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Storefront App deployed to SIT"
                         - step:
-                            name: Deploy Admin Dashboard
-                            identifier: SIT_Deploy_Admin_Dashboard
+                            name: Deploy Admin
+                            identifier: SIT_Deploy_Admin
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2143,8 +2202,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Admin Dashboard deployed to SIT"
                         - step:
-                            name: Deploy Mobile API
-                            identifier: SIT_Deploy_Mobile_API
+                            name: Deploy Mobile-API
+                            identifier: SIT_Deploy_MobileAPI
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2166,8 +2225,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Mobile API deployed to SIT"
                         - step:
-                            name: Deploy CDN Assets
-                            identifier: SIT_Deploy_CDN_Assets
+                            name: Deploy CDN
+                            identifier: SIT_Deploy_CDN
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2189,8 +2248,8 @@ pipeline:
                                     echo ""
                                     echo "✅ CDN Assets deployed to SIT"
                         - step:
-                            name: Deploy Docs Portal
-                            identifier: SIT_Deploy_Docs_Portal
+                            name: Deploy Docs
+                            identifier: SIT_Deploy_Docs
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2211,6 +2270,29 @@ pipeline:
                                     echo "   Source:   https://github.com/pdutta25/bikeshop-docs"
                                     echo ""
                                     echo "✅ Docs Portal deployed to SIT"
+                        - step:
+                            name: Deploy UI
+                            identifier: SIT_Deploy_UI
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — UI                         ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                                    echo "   Change:   <+pipeline.variables.uiChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-ui"
+                                    echo ""
+                                    echo "✅ UI deployed to SIT"
 
               # ── SIT Integration Tests ──
               - step:
@@ -2375,8 +2457,8 @@ pipeline:
 
               # ── Deploy Auth Service (sequential) ──
               - step:
-                  name: Deploy Auth Service
-                  identifier: PROD_Deploy_Auth_Service
+                  name: Deploy Auth
+                  identifier: PROD_Deploy_Auth
                   type: ShellScript
                   timeout: 5m
                   spec:
@@ -2400,8 +2482,8 @@ pipeline:
 
               # ── Deploy Payment Service (sequential after Auth) ──
               - step:
-                  name: Deploy Payment Service
-                  identifier: PROD_Deploy_Payment_Service
+                  name: Deploy Payments
+                  identifier: PROD_Deploy_Payments
                   type: ShellScript
                   timeout: 5m
                   spec:
@@ -2430,8 +2512,8 @@ pipeline:
                       identifier: PROD_Backend_Group
                       steps:
                         - step:
-                            name: Deploy Inventory Service
-                            identifier: PROD_Deploy_Inventory_Service
+                            name: Deploy Inventory
+                            identifier: PROD_Deploy_Inventory
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2453,8 +2535,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Inventory Service deployed to PROD"
                         - step:
-                            name: Deploy Notification Service
-                            identifier: PROD_Deploy_Notification_Service
+                            name: Deploy Notifications
+                            identifier: PROD_Deploy_Notifications
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2476,8 +2558,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Notification Service deployed to PROD"
                         - step:
-                            name: Deploy Analytics Service
-                            identifier: PROD_Deploy_Analytics_Service
+                            name: Deploy Analytics
+                            identifier: PROD_Deploy_Analytics
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2499,10 +2581,10 @@ pipeline:
                                     echo ""
                                     echo "✅ Analytics Service deployed to PROD"
                         - step:
-                            name: Reserved Backend Slot 1
-                            identifier: PROD_Reserved_Backend_Slot_1
+                            name: Deploy DB
+                            identifier: PROD_Deploy_DB
                             type: ShellScript
-                            timeout: 1m
+                            timeout: 5m
                             spec:
                               shell: Bash
                               onDelegate: true
@@ -2511,12 +2593,21 @@ pipeline:
                                 spec:
                                   script: |-
                                     #!/bin/bash
-                                    echo "⏸️  Reserved backend slot — no component assigned"
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — DB                         ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: DB v<+pipeline.variables.dbVer>"
+                                    echo "   Change:   <+pipeline.variables.dbChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-db"
+                                    echo ""
+                                    echo "✅ DB deployed to PROD"
                         - step:
-                            name: Reserved Backend Slot 2
-                            identifier: PROD_Reserved_Backend_Slot_2
+                            name: Deploy Services
+                            identifier: PROD_Deploy_Services
                             type: ShellScript
-                            timeout: 1m
+                            timeout: 5m
                             spec:
                               shell: Bash
                               onDelegate: true
@@ -2525,14 +2616,23 @@ pipeline:
                                 spec:
                                   script: |-
                                     #!/bin/bash
-                                    echo "⏸️  Reserved backend slot — no component assigned"
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — SERVICES                   ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                                    echo "   Change:   <+pipeline.variables.svcChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-services"
+                                    echo ""
+                                    echo "✅ Services deployed to PROD"
                   - stepGroup:
                       name: Frontend Group
                       identifier: PROD_Frontend_Group
                       steps:
                         - step:
-                            name: Deploy Storefront App - Render
-                            identifier: PROD_Deploy_Storefront_App
+                            name: Deploy Storefront
+                            identifier: PROD_Deploy_Storefront
                             type: ShellScript
                             timeout: 10m
                             spec:
@@ -2623,8 +2723,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Storefront App deployed to PROD via Render"
                         - step:
-                            name: Deploy Admin Dashboard
-                            identifier: PROD_Deploy_Admin_Dashboard
+                            name: Deploy Admin
+                            identifier: PROD_Deploy_Admin
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2646,8 +2746,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Admin Dashboard deployed to PROD"
                         - step:
-                            name: Deploy Mobile API
-                            identifier: PROD_Deploy_Mobile_API
+                            name: Deploy Mobile-API
+                            identifier: PROD_Deploy_MobileAPI
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2669,8 +2769,8 @@ pipeline:
                                     echo ""
                                     echo "✅ Mobile API deployed to PROD"
                         - step:
-                            name: Deploy CDN Assets
-                            identifier: PROD_Deploy_CDN_Assets
+                            name: Deploy CDN
+                            identifier: PROD_Deploy_CDN
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2692,8 +2792,8 @@ pipeline:
                                     echo ""
                                     echo "✅ CDN Assets deployed to PROD"
                         - step:
-                            name: Deploy Docs Portal
-                            identifier: PROD_Deploy_Docs_Portal
+                            name: Deploy Docs
+                            identifier: PROD_Deploy_Docs
                             type: ShellScript
                             timeout: 5m
                             spec:
@@ -2714,6 +2814,29 @@ pipeline:
                                     echo "   Source:   https://github.com/pdutta25/bikeshop-docs"
                                     echo ""
                                     echo "✅ Docs Portal deployed to PROD"
+                        - step:
+                            name: Deploy UI
+                            identifier: PROD_Deploy_UI
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — UI                         ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                                    echo "   Change:   <+pipeline.variables.uiChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-ui"
+                                    echo ""
+                                    echo "✅ UI deployed to PROD"
 
               # ── PROD Smoke Tests ──
               - step:
