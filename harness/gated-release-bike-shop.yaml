@@ -379,58 +379,6 @@ pipeline:
                           echo "══════════════════════════════════════════════════════════════════"
                           echo ""
                           
-                          # ── Pipeline Annotation ──
-                          cat > /tmp/pipeline_annotations.md << 'ANNOT_WHO'
-                          ## 🔔 Who Triggered This Release
-                          
-                          | Field | Value |
-                          |-------|-------|
-                          | **Repository** | `<+pipeline.variables.triggerRepo>` |
-                          | **Branch** | `<+pipeline.variables.branch>` |
-                          | **Commit** | `<+pipeline.variables.commitSha>` |
-                          | **Author** | `<+pipeline.variables.triggeredBy>` |
-                          | **Build** | #<+pipeline.variables.buildNumber> |
-                          | **Pipeline** | gated-release-bike-shop |
-                          | **Execution** | `<+pipeline.executionId>` |
-                          
-                          ### CI Build Telemetry — 3 Components
-                          
-                          #### bikeshop-db
-                          
-                          | Metric | Result |
-                          |--------|--------|
-                          | Archetype | database-flyway |
-                          | Build | ✅ PASS (12.4 MB) |
-                          | Tests | 48/48 passed · 91.2% coverage |
-                          | Quality | ✅ 0 bugs · 4 smells · 1.3% dup |
-                          | Security | ✅ 0 crit · 0 high · 1 med · 2 low |
-                          | Artifact | `bikeshop-db-<+pipeline.variables.dbVer>` |
-                          
-                          #### bikeshop-services
-                          
-                          | Metric | Result |
-                          |--------|--------|
-                          | Archetype | java-spring-boot |
-                          | Build | ✅ PASS (48.2 MB) |
-                          | Tests | 340/342 passed · 87.4% coverage |
-                          | Quality | ✅ 0 bugs · 12 smells · 2.1% dup |
-                          | Security | ✅ 0 crit · 0 high · 2 med · 5 low |
-                          | Artifact | `bikeshop-services-<+pipeline.variables.svcVer>` |
-                          
-                          #### bikeshop-ui
-                          
-                          | Metric | Result |
-                          |--------|--------|
-                          | Archetype | typescript-nextjs |
-                          | Build | ✅ PASS (22.7 MB) |
-                          | Tests | 189/189 passed · 82.1% coverage |
-                          | Quality | ✅ 0 bugs · 8 smells · 1.7% dup |
-                          | Security | ✅ 0 crit · 0 high · 1 med · 3 low |
-                          | Artifact | `bikeshop-ui-<+pipeline.variables.uiVer>` |
-                          
-                          **Total:** 3 components · 177 data points · All CI gates PASSED
-                          ANNOT_WHO
-                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Whats Releasing ──
               - step:
@@ -466,19 +414,6 @@ pipeline:
                           echo "               <+pipeline.variables.uiChange>"
                           echo ""
                           
-                          # ── Pipeline Annotation ──
-                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_REL'
-                          ## 📦 What's Releasing
-                          
-                          | Component | Version | Last Change |
-                          |-----------|---------|-------------|
-                          | Database | v<+pipeline.variables.dbVer> | <+pipeline.variables.dbChange> |
-                          | Services | v<+pipeline.variables.svcVer> | <+pipeline.variables.svcChange> |
-                          | UI | v<+pipeline.variables.uiVer> | <+pipeline.variables.uiChange> |
-                          
-                          **Strategy:** Gated Release — Approve each component independently
-                          ANNOT_REL
-                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Whats Inside ──
               - step:
@@ -515,19 +450,6 @@ pipeline:
                           echo "  in the Who Triggered step above."
                           echo ""
                           
-                          # ── Pipeline Annotation ──
-                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_INSIDE'
-                          ## 🔍 What's Inside
-                          
-                          | Component | Version | CI Status |
-                          |-----------|---------|-----------|
-                          | Database | v<+pipeline.variables.dbVer> | ✅ All gates passed |
-                          | Services | v<+pipeline.variables.svcVer> | ✅ All gates passed |
-                          | UI | v<+pipeline.variables.uiVer> | ✅ All gates passed |
-                          
-                          **Bundle:** 3 components · 177 CI data points · All gates PASSED
-                          ANNOT_INSIDE
-                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── How Its Releasing ──
               - step:
@@ -566,25 +488,6 @@ pipeline:
                           echo "  Proceeding to component approvals and deployments..."
                           echo ""
                           
-                          # ── Pipeline Annotation ──
-                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_HOW'
-                          ## 🚀 How It's Releasing
-                          
-                          ```
-                          Approve DB  → Deploy DB
-                                ↓
-                          Approve Svc → Deploy Svc ┐ parallel
-                          Approve UI  → Deploy UI  ┘
-                                ↓
-                          Smoke Tests → Certify → Pipeline Debrief
-                          ```
-                          
-                          **Source Repos:**
-                          - [bikeshop-db](https://github.com/pdutta25/bikeshop-db)
-                          - [bikeshop-services](https://github.com/pdutta25/bikeshop-services)
-                          - [bikeshop-ui](https://github.com/pdutta25/bikeshop-ui)
-                          ANNOT_HOW
-                          echo "---" >> /tmp/pipeline_annotations.md
                           
         tags: {}
 
@@ -1669,25 +1572,6 @@ pipeline:
                           echo "  └───────────────────────────────────────────────────────────────"
                           echo ""
                           
-                          # ── Pipeline Annotation ──
-                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_SUM'
-                          ## 📊 Release Summary
-                          
-                          ### Components Released
-                          | Component | Version | Change |
-                          |-----------|---------|--------|
-                          | Database | v<+pipeline.variables.dbVer> | <+pipeline.variables.dbChange> |
-                          | Services | v<+pipeline.variables.svcVer> | <+pipeline.variables.svcChange> |
-                          | UI | v<+pipeline.variables.uiVer> | <+pipeline.variables.uiChange> |
-                          
-                          ### Stage Results
-                          | Environment | Status | Tests | Approvals |
-                          |-------------|--------|-------|-----------|
-                          | DEV | ✅ PASSED | 3/3 smoke | Auto-approved |
-                          | SIT | ✅ PASSED | 4/4 integration | Auto-approved |
-                          | PROD | 🚀 DEPLOYED | 4/4 smoke | Manually approved |
-                          ANNOT_SUM
-                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Traceability ──
               - step:
@@ -1718,20 +1602,6 @@ pipeline:
                           echo "  UI CI:            https://github.com/pdutta25/bikeshop-ui/actions"
                           echo ""
                           
-                          # ── Pipeline Annotation ──
-                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_TRACE'
-                          ## 🔗 Traceability
-                          
-                          | Link | URL |
-                          |------|-----|
-                          | Commit | `<+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>` |
-                          | CI Run | `<+pipeline.variables.repoUrl>/actions/runs/<+pipeline.variables.runId>` |
-                          | Harness Execution | `<+pipeline.executionId>` |
-                          | Db CI | `https://github.com/pdutta25/bikeshop-db/actions` |
-                          | Services CI | `https://github.com/pdutta25/bikeshop-services/actions` |
-                          | Ui CI | `https://github.com/pdutta25/bikeshop-ui/actions` |
-                          ANNOT_TRACE
-                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Governance ──
               - step:
@@ -1766,23 +1636,6 @@ pipeline:
                           echo "  Compliance:           ✔ Within allowed customization policy"
                           echo ""
                           
-                          # ── Pipeline Annotation ──
-                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_GOV'
-                          ## 🏛️ Governance
-                          
-                          | Attribute | Value |
-                          |-----------|-------|
-                          | Enterprise Template | v1.0.0 |
-                          | Current Version | v1.3.0 |
-                          | Drift | ⚠️ Modified (3 customizations) |
-                          | Compliance | ✅ Within allowed policy |
-                          
-                          **Customizations:**
-                          - Added per-component approval gates
-                          - Added parallel deploy with independent tracks
-                          - Added telemetry reporting step
-                          ANNOT_GOV
-                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Telemetry ──
               - step:
@@ -1944,52 +1797,6 @@ pipeline:
                           echo "  ☑ Payload shipped to all 3 destinations"
                           echo ""
                           
-                          # ── Pipeline Annotation ──
-                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_TEL'
-                          ## 📈 Telemetry
-                          
-                          ### Pipeline Identity
-                          | Field | Value |
-                          |-------|-------|
-                          | Pipeline | gated-release-bike-shop (`gatedreleasebikeshop`) |
-                          | Execution | `<+pipeline.executionId>` |
-                          | Build # | #<+pipeline.variables.buildNumber> |
-                          | Trigger | `<+pipeline.variables.triggeredBy>` |
-                          | Status | `<+pipeline.status>` |
-                          
-                          ### DORA Metrics
-                          | Metric | Value |
-                          |--------|-------|
-                          | Lead Time | 1m 22s (commit → prod) |
-                          | Deploy Frequency | 3.2 deploys/day (7d avg) |
-                          | Change Failure Rate | 0.0% |
-                          | MTTR | 0s (no incidents) |
-                          
-                          ### Environment Progression
-                          | Env | Status | Duration | Tests | Approvals |
-                          |-----|--------|----------|-------|-----------|
-                          | DEV | ✅ | 16s | 3/3 | none |
-                          | SIT | ✅ | 18s | 3/3 | 2/2 |
-                          | UAT | ✅ | 18s | 3/3 | 2/2 |
-                          | PROD | ✅ | 18s | 3/3 | 2/2 |
-                          
-                          ### Artifacts
-                          | Component | Artifact | Size |
-                          |-----------|----------|------|
-                          | bikeshop-db | `bikeshop-db-<+pipeline.variables.dbVer>.tar.gz` | 2.4 MB |
-                          | bikeshop-services | `bikeshop-services-<+pipeline.variables.svcVer>.jar` | 28 MB |
-                          | bikeshop-ui | `bikeshop-ui-<+pipeline.variables.uiVer>.tgz` | 12 MB |
-                          
-                          ### Security & Compliance
-                          | Check | Status |
-                          |-------|--------|
-                          | SonarQube | ✅ PASSED (3/3 components) |
-                          | Checkmarx | ✅ 0 critical, 0 high |
-                          | Snyk | ✅ 0 critical, 0 high |
-                          | License | ✅ All MIT/Apache-2.0 |
-                          | SBOM | ✅ Generated |
-                          ANNOT_TEL
-                          echo "---" >> /tmp/pipeline_annotations.md
 
 
               # ── Done ──
@@ -2001,10 +1808,6 @@ pipeline:
                   spec:
                     shell: Bash
                     onDelegate: true
-                    environmentVariables:
-                      - name: HARNESS_API_KEY
-                        type: Secret
-                        value: harness_api_key
                     source:
                       type: Inline
                       spec:
@@ -2016,28 +1819,4 @@ pipeline:
                           echo "  All 3 components deployed across DEV → SIT → PROD"
                           echo "  Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>"
                           echo ""
-                          
-                          # ── Pipeline Annotation ──
-                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_DONE'
-                          ## ✅ Release Complete
-                          
-                          All 3 components deployed across DEV → SIT → PROD
-                          
-                          | Component | Version |
-                          |-----------|---------|
-                          | Database | v<+pipeline.variables.dbVer> |
-                          | Services | v<+pipeline.variables.svcVer> |
-                          | UI | v<+pipeline.variables.uiVer> |
-                          ANNOT_DONE
-                          echo "" >> /tmp/pipeline_annotations.md
-                          # ── Post all annotations to Harness execution notes ──
-                          NOTES_PAYLOAD=$(jq -Rs '.' < /tmp/pipeline_annotations.md)
-                          curl -sf -X PUT \
-                            "https://app.harness.io/pipeline/api/pipelines/execution/<+pipeline.executionId>/notes?accountIdentifier=<+account.identifier>&orgIdentifier=<+org.identifier>&projectIdentifier=<+project.identifier>" \
-                            -H "x-api-key: $HARNESS_API_KEY" \
-                            -H "Content-Type: application/json" \
-                            -d "$NOTES_PAYLOAD" \
-                            && echo "  ✅ Annotations posted to execution notes" \
-                            || echo "  ⚠️  Could not post annotations (check harness_api_key secret)"
-                          
         tags: {}
