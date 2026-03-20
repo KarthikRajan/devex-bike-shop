@@ -1012,6 +1012,137 @@ pipeline:
                           echo "  TOTAL: 10 components | 590 data points | All CI gates PASSED"
                           echo "=================================================================="
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_WHO'
+                          ## 🔔 Who Triggered This Release
+                          
+                          | Field | Value |
+                          |-------|-------|
+                          | **Repository** | `<+pipeline.variables.triggerRepo>` |
+                          | **Branch** | `<+pipeline.variables.branch>` |
+                          | **Commit** | `<+pipeline.variables.commitSha>` |
+                          | **Author** | `<+pipeline.variables.triggeredBy>` |
+                          | **Build** | #<+pipeline.variables.buildNumber> |
+                          | **Pipeline** | apr-release-bike-shop |
+                          | **Execution** | `<+pipeline.executionId>` |
+                          
+                          ### CI Build Telemetry — 10 Components
+                          
+                          #### bikeshop-auth
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | node-express |
+                          | Build | ✅ PASS (18.3 MB) |
+                          | Tests | 156/156 passed · 88.7% coverage |
+                          | Quality | ✅ 0 bugs · 6 smells · 1.8% dup |
+                          | Security | ✅ 0 crit · 0 high · 1 med · 3 low |
+                          | Artifact | `bikeshop-auth-<+pipeline.variables.authVer>` |
+                          
+                          #### bikeshop-payments
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | java-spring-boot |
+                          | Build | ✅ PASS (42.1 MB) |
+                          | Tests | 289/289 passed · 92.3% coverage |
+                          | Quality | ✅ 0 bugs · 8 smells · 1.4% dup |
+                          | Security | ✅ 0 crit · 0 high · 0 med · 2 low |
+                          | Artifact | `bikeshop-payments-<+pipeline.variables.payVer>` |
+                          
+                          #### bikeshop-inventory
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | python-fastapi |
+                          | Build | ✅ PASS (15.6 MB) |
+                          | Tests | 203/203 passed · 85.1% coverage |
+                          | Quality | ✅ 0 bugs · 5 smells · 2.0% dup |
+                          | Security | ✅ 0 crit · 0 high · 1 med · 4 low |
+                          | Artifact | `bikeshop-inventory-<+pipeline.variables.invVer>` |
+                          
+                          #### bikeshop-notifications
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | node-express |
+                          | Build | ✅ PASS (12.8 MB) |
+                          | Tests | 98/98 passed · 79.5% coverage |
+                          | Quality | ✅ 0 bugs · 3 smells · 1.1% dup |
+                          | Security | ✅ 0 crit · 0 high · 0 med · 1 low |
+                          | Artifact | `bikeshop-notifications-<+pipeline.variables.notifVer>` |
+                          
+                          #### bikeshop-analytics
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | python-fastapi |
+                          | Build | ✅ PASS (22.4 MB) |
+                          | Tests | 167/167 passed · 83.2% coverage |
+                          | Quality | ✅ 0 bugs · 7 smells · 1.9% dup |
+                          | Security | ✅ 0 crit · 0 high · 1 med · 2 low |
+                          | Artifact | `bikeshop-analytics-<+pipeline.variables.anlytVer>` |
+                          
+                          #### bikeshop-storefront
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | typescript-nextjs |
+                          | Build | ✅ PASS (34.5 MB) |
+                          | Tests | 245/245 passed · 86.8% coverage |
+                          | Quality | ✅ 0 bugs · 11 smells · 2.3% dup |
+                          | Security | ✅ 0 crit · 0 high · 2 med · 4 low |
+                          | Artifact | `bikeshop-storefront-<+pipeline.variables.sfVer>` |
+                          
+                          #### bikeshop-admin
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | typescript-react |
+                          | Build | ✅ PASS (28.1 MB) |
+                          | Tests | 178/178 passed · 81.4% coverage |
+                          | Quality | ✅ 0 bugs · 9 smells · 1.6% dup |
+                          | Security | ✅ 0 crit · 0 high · 1 med · 3 low |
+                          | Artifact | `bikeshop-admin-<+pipeline.variables.adminVer>` |
+                          
+                          #### bikeshop-mobile-api
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | go-gin |
+                          | Build | ✅ PASS (8.2 MB) |
+                          | Tests | 134/134 passed · 90.1% coverage |
+                          | Quality | ✅ 0 bugs · 2 smells · 0.8% dup |
+                          | Security | ✅ 0 crit · 0 high · 0 med · 1 low |
+                          | Artifact | `bikeshop-mobile-api-<+pipeline.variables.mobileVer>` |
+                          
+                          #### bikeshop-cdn
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | static-assets |
+                          | Build | ✅ PASS (5.1 MB) |
+                          | Tests | 42/42 passed · 95.0% coverage |
+                          | Quality | ✅ 0 bugs · 1 smells · 0.5% dup |
+                          | Security | ✅ 0 crit · 0 high · 0 med · 0 low |
+                          | Artifact | `bikeshop-cdn-<+pipeline.variables.cdnVer>` |
+                          
+                          #### bikeshop-docs
+                          
+                          | Metric | Result |
+                          |--------|--------|
+                          | Archetype | mkdocs |
+                          | Build | ✅ PASS (3.7 MB) |
+                          | Tests | 28/28 passed · 100.0% coverage |
+                          | Quality | ✅ 0 bugs · 0 smells · 0.0% dup |
+                          | Security | ✅ 0 crit · 0 high · 0 med · 0 low |
+                          | Artifact | `bikeshop-docs-<+pipeline.variables.docsVer>` |
+                          
+                          **Total:** 10 components · 590 data points · All CI gates PASSED
+                          ANNOT_WHO
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          
               # ── Whats Releasing ──
               - step:
                   name: Whats Releasing
@@ -1061,6 +1192,28 @@ pipeline:
                           echo "  10. Docs ............. bikeshop-docs           v<+pipeline.variables.docsVer>"
                           echo "                         <+pipeline.variables.docsChange>"
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_REL'
+                          ## 📦 What's Releasing
+                          
+                          | Component | Version | Last Change |
+                          |-----------|---------|-------------|
+                          | Auth | v<+pipeline.variables.authVer> | <+pipeline.variables.authChange> |
+                          | Payments | v<+pipeline.variables.payVer> | <+pipeline.variables.payChange> |
+                          | Inventory | v<+pipeline.variables.invVer> | <+pipeline.variables.invChange> |
+                          | Notifications | v<+pipeline.variables.notifVer> | <+pipeline.variables.notifChange> |
+                          | Analytics | v<+pipeline.variables.anlytVer> | <+pipeline.variables.anlytChange> |
+                          | Storefront | v<+pipeline.variables.sfVer> | <+pipeline.variables.sfChange> |
+                          | Admin | v<+pipeline.variables.adminVer> | <+pipeline.variables.adminChange> |
+                          | Mobile API | v<+pipeline.variables.mobileVer> | <+pipeline.variables.mobileChange> |
+                          | CDN | v<+pipeline.variables.cdnVer> | <+pipeline.variables.cdnChange> |
+                          | Docs | v<+pipeline.variables.docsVer> | <+pipeline.variables.docsChange> |
+                          
+                          **Strategy:** Auto-Progressive Release — Ship fast when everything is green
+                          ANNOT_REL
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          
               # ── Whats Inside ──
               - step:
                   name: Whats Inside
@@ -1102,6 +1255,28 @@ pipeline:
                           echo "  Full CI telemetry for the triggering component is shown"
                           echo "  in the Who Triggered step above."
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_INSIDE'
+                          ## 🔍 What's Inside
+                          
+                          | Component | Version | CI Status |
+                          |-----------|---------|-----------|
+                          | Auth | v<+pipeline.variables.authVer> | ✅ All gates passed |
+                          | Payments | v<+pipeline.variables.payVer> | ✅ All gates passed |
+                          | Inventory | v<+pipeline.variables.invVer> | ✅ All gates passed |
+                          | Notifications | v<+pipeline.variables.notifVer> | ✅ All gates passed |
+                          | Analytics | v<+pipeline.variables.anlytVer> | ✅ All gates passed |
+                          | Storefront | v<+pipeline.variables.sfVer> | ✅ All gates passed |
+                          | Admin | v<+pipeline.variables.adminVer> | ✅ All gates passed |
+                          | Mobile API | v<+pipeline.variables.mobileVer> | ✅ All gates passed |
+                          | CDN | v<+pipeline.variables.cdnVer> | ✅ All gates passed |
+                          | Docs | v<+pipeline.variables.docsVer> | ✅ All gates passed |
+                          
+                          **Bundle:** 10 components · 590 CI data points · All gates PASSED
+                          ANNOT_INSIDE
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          
               # ── How Its Releasing ──
               - step:
                   name: How Its Releasing
@@ -1151,6 +1326,34 @@ pipeline:
                           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                           echo "  Proceeding to approval and deployments..."
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_HOW'
+                          ## 🚀 How It's Releasing
+                          
+                          ```
+                          Deploy All 10 Components (auto-progressive)
+                            Wave 1: Auth, Payments, Inventory
+                            Wave 2: Notifications, Analytics, Storefront
+                            Wave 3: Admin, Mobile API, CDN, Docs
+                                ↓
+                          Smoke Tests → Certify → Auto-Promote
+                          ```
+                          
+                          **Source Repos:**
+                          - [bikeshop-auth](https://github.com/pdutta25/bikeshop-auth)
+                          - [bikeshop-payments](https://github.com/pdutta25/bikeshop-payments)
+                          - [bikeshop-inventory](https://github.com/pdutta25/bikeshop-inventory)
+                          - [bikeshop-notifications](https://github.com/pdutta25/bikeshop-notifications)
+                          - [bikeshop-analytics](https://github.com/pdutta25/bikeshop-analytics)
+                          - [bikeshop-storefront](https://github.com/pdutta25/bikeshop-storefront)
+                          - [bikeshop-admin](https://github.com/pdutta25/bikeshop-admin)
+                          - [bikeshop-mobile-api](https://github.com/pdutta25/bikeshop-mobile-api)
+                          - [bikeshop-cdn](https://github.com/pdutta25/bikeshop-cdn)
+                          - [bikeshop-docs](https://github.com/pdutta25/bikeshop-docs)
+                          ANNOT_HOW
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          
         tags: {}
 
     # ════════════════════════════════════════════════════════════
@@ -2613,6 +2816,34 @@ pipeline:
                           echo "  │ Result:         ✅ PROD PASSED"
                           echo "  └───────────────────────────────────────────────────────────────"
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_SUM'
+                          ## 📊 Release Summary
+                          
+                          ### Components Released
+                          | Component | Version | Change |
+                          |-----------|---------|--------|
+                          | Auth | v<+pipeline.variables.authVer> | <+pipeline.variables.authChange> |
+                          | Payments | v<+pipeline.variables.payVer> | <+pipeline.variables.payChange> |
+                          | Inventory | v<+pipeline.variables.invVer> | <+pipeline.variables.invChange> |
+                          | Notifications | v<+pipeline.variables.notifVer> | <+pipeline.variables.notifChange> |
+                          | Analytics | v<+pipeline.variables.anlytVer> | <+pipeline.variables.anlytChange> |
+                          | Storefront | v<+pipeline.variables.sfVer> | <+pipeline.variables.sfChange> |
+                          | Admin | v<+pipeline.variables.adminVer> | <+pipeline.variables.adminChange> |
+                          | Mobile API | v<+pipeline.variables.mobileVer> | <+pipeline.variables.mobileChange> |
+                          | CDN | v<+pipeline.variables.cdnVer> | <+pipeline.variables.cdnChange> |
+                          | Docs | v<+pipeline.variables.docsVer> | <+pipeline.variables.docsChange> |
+                          
+                          ### Stage Results
+                          | Environment | Status | Tests | Approvals |
+                          |-------------|--------|-------|-----------|
+                          | DEV | ✅ PASSED | 10/10 smoke | Auto-approved |
+                          | SIT | ✅ PASSED | 10/10 integration | Auto-approved |
+                          | PROD | 🚀 DEPLOYED | 10/10 smoke | Auto-approved |
+                          ANNOT_SUM
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          
               # ── Traceability ──
               - step:
                   name: Traceability
@@ -2648,6 +2879,29 @@ pipeline:
                           echo "  CDN CI:           https://github.com/pdutta25/bikeshop-cdn/actions"
                           echo "  Docs CI:          https://github.com/pdutta25/bikeshop-docs/actions"
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_TRACE'
+                          ## 🔗 Traceability
+                          
+                          | Link | URL |
+                          |------|-----|
+                          | Commit | `<+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>` |
+                          | CI Run | `<+pipeline.variables.repoUrl>/actions/runs/<+pipeline.variables.runId>` |
+                          | Harness Execution | `<+pipeline.executionId>` |
+                          | Auth CI | `https://github.com/pdutta25/bikeshop-auth/actions` |
+                          | Payments CI | `https://github.com/pdutta25/bikeshop-payments/actions` |
+                          | Inventory CI | `https://github.com/pdutta25/bikeshop-inventory/actions` |
+                          | Notifications CI | `https://github.com/pdutta25/bikeshop-notifications/actions` |
+                          | Analytics CI | `https://github.com/pdutta25/bikeshop-analytics/actions` |
+                          | Storefront CI | `https://github.com/pdutta25/bikeshop-storefront/actions` |
+                          | Admin CI | `https://github.com/pdutta25/bikeshop-admin/actions` |
+                          | Mobile-Api CI | `https://github.com/pdutta25/bikeshop-mobile-api/actions` |
+                          | Cdn CI | `https://github.com/pdutta25/bikeshop-cdn/actions` |
+                          | Docs CI | `https://github.com/pdutta25/bikeshop-docs/actions` |
+                          ANNOT_TRACE
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          
               # ── Governance ──
               - step:
                   name: Governance
@@ -2676,6 +2930,25 @@ pipeline:
                           echo "  Last modified:        2026-03-18"
                           echo "  Compliance:           ✔ Within allowed customization policy"
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_GOV'
+                          ## 🏛️ Governance
+                          
+                          | Attribute | Value |
+                          |-----------|-------|
+                          | Enterprise Template | v1.0.0 |
+                          | Current Version | v1.3.0 |
+                          | Drift | ⚠️ Modified (3 customizations) |
+                          | Compliance | ✅ Within allowed policy |
+                          
+                          **Customizations:**
+                          - Added per-component approval gates
+                          - Added parallel deploy with independent tracks
+                          - Added telemetry reporting step
+                          ANNOT_GOV
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          
               # ── Telemetry ──
               - step:
                   name: Telemetry
@@ -2849,6 +3122,61 @@ pipeline:
                           echo "  tags:                 env:prod, team:platform, app:bikeshop"
                           echo "  ☑ Payload shipped to all 3 destinations"
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_TEL'
+                          ## 📈 Telemetry
+                          
+                          ### Pipeline Identity
+                          | Field | Value |
+                          |-------|-------|
+                          | Pipeline | apr-release-bike-shop (`aprreleasebikeshop`) |
+                          | Execution | `<+pipeline.executionId>` |
+                          | Build # | #<+pipeline.variables.buildNumber> |
+                          | Trigger | `<+pipeline.variables.triggeredBy>` |
+                          | Status | `<+pipeline.status>` |
+                          
+                          ### DORA Metrics
+                          | Metric | Value |
+                          |--------|-------|
+                          | Lead Time | 1m 22s (commit → prod) |
+                          | Deploy Frequency | 3.2 deploys/day (7d avg) |
+                          | Change Failure Rate | 0.0% |
+                          | MTTR | 0s (no incidents) |
+                          
+                          ### Environment Progression
+                          | Env | Status | Duration | Tests | Approvals |
+                          |-----|--------|----------|-------|-----------|
+                          | DEV | ✅ | 24s | 10/10 | auto |
+                          | SIT | ✅ | 28s | 10/10 | auto |
+                          | UAT | ✅ | 28s | 10/10 | auto |
+                          | PROD | ✅ | 28s | 10/10 | auto |
+                          
+                          ### Artifacts
+                          | Component | Artifact | Size |
+                          |-----------|----------|------|
+                          | bikeshop-auth | `bikeshop-auth-<+pipeline.variables.authVer>` | 18.3 MB |
+                          | bikeshop-payments | `bikeshop-payments-<+pipeline.variables.payVer>` | 42.1 MB |
+                          | bikeshop-inventory | `bikeshop-inventory-<+pipeline.variables.invVer>` | 15.6 MB |
+                          | bikeshop-notifications | `bikeshop-notifications-<+pipeline.variables.notifVer>` | 12.8 MB |
+                          | bikeshop-analytics | `bikeshop-analytics-<+pipeline.variables.anlytVer>` | 22.4 MB |
+                          | bikeshop-storefront | `bikeshop-storefront-<+pipeline.variables.sfVer>` | 34.5 MB |
+                          | bikeshop-admin | `bikeshop-admin-<+pipeline.variables.adminVer>` | 28.1 MB |
+                          | bikeshop-mobile-api | `bikeshop-mobile-api-<+pipeline.variables.mobileVer>` | 8.2 MB |
+                          | bikeshop-cdn | `bikeshop-cdn-<+pipeline.variables.cdnVer>` | 5.1 MB |
+                          | bikeshop-docs | `bikeshop-docs-<+pipeline.variables.docsVer>` | 3.7 MB |
+                          
+                          ### Security & Compliance
+                          | Check | Status |
+                          |-------|--------|
+                          | SonarQube | ✅ PASSED (10/10 components) |
+                          | Checkmarx | ✅ 0 critical, 0 high |
+                          | Snyk | ✅ 0 critical, 0 high |
+                          | License | ✅ All MIT/Apache-2.0 |
+                          | SBOM | ✅ Generated |
+                          ANNOT_TEL
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+
 
               # ── Done ──
               - step:
@@ -2873,4 +3201,26 @@ pipeline:
                           echo "  Storefront v<+pipeline.variables.sfVer> | Admin v<+pipeline.variables.adminVer> | Mobile API v<+pipeline.variables.mobileVer>"
                           echo "  CDN v<+pipeline.variables.cdnVer> | Docs v<+pipeline.variables.docsVer>"
                           echo ""
+                          
+                          # ── Pipeline Annotation ──
+                          cat > /tmp/annotation.md << 'ANNOT_DONE'
+                          ## ✅ Release Complete
+                          
+                          All 10 components deployed across DEV → SIT → PROD
+                          
+                          | Component | Version |
+                          |-----------|---------|
+                          | Auth | v<+pipeline.variables.authVer> |
+                          | Payments | v<+pipeline.variables.payVer> |
+                          | Inventory | v<+pipeline.variables.invVer> |
+                          | Notifications | v<+pipeline.variables.notifVer> |
+                          | Analytics | v<+pipeline.variables.anlytVer> |
+                          | Storefront | v<+pipeline.variables.sfVer> |
+                          | Admin | v<+pipeline.variables.adminVer> |
+                          | Mobile API | v<+pipeline.variables.mobileVer> |
+                          | CDN | v<+pipeline.variables.cdnVer> |
+                          | Docs | v<+pipeline.variables.docsVer> |
+                          ANNOT_DONE
+                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          
         tags: {}
