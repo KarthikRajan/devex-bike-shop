@@ -1014,7 +1014,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_WHO'
+                          cat > /tmp/pipeline_annotations.md << 'ANNOT_WHO'
                           ## 🔔 Who Triggered This Release
                           
                           | Field | Value |
@@ -1141,7 +1141,7 @@ pipeline:
                           
                           **Total:** 10 components · 590 data points · All CI gates PASSED
                           ANNOT_WHO
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Whats Releasing ──
               - step:
@@ -1194,7 +1194,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_REL'
+                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_REL'
                           ## 📦 What's Releasing
                           
                           | Component | Version | Last Change |
@@ -1212,7 +1212,7 @@ pipeline:
                           
                           **Strategy:** Auto-Progressive Release — Ship fast when everything is green
                           ANNOT_REL
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Whats Inside ──
               - step:
@@ -1257,7 +1257,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_INSIDE'
+                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_INSIDE'
                           ## 🔍 What's Inside
                           
                           | Component | Version | CI Status |
@@ -1275,7 +1275,7 @@ pipeline:
                           
                           **Bundle:** 10 components · 590 CI data points · All gates PASSED
                           ANNOT_INSIDE
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── How Its Releasing ──
               - step:
@@ -1328,7 +1328,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_HOW'
+                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_HOW'
                           ## 🚀 How It's Releasing
                           
                           ```
@@ -1352,7 +1352,7 @@ pipeline:
                           - [bikeshop-cdn](https://github.com/pdutta25/bikeshop-cdn)
                           - [bikeshop-docs](https://github.com/pdutta25/bikeshop-docs)
                           ANNOT_HOW
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "---" >> /tmp/pipeline_annotations.md
                           
         tags: {}
 
@@ -2818,7 +2818,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_SUM'
+                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_SUM'
                           ## 📊 Release Summary
                           
                           ### Components Released
@@ -2842,7 +2842,7 @@ pipeline:
                           | SIT | ✅ PASSED | 10/10 integration | Auto-approved |
                           | PROD | 🚀 DEPLOYED | 10/10 smoke | Auto-approved |
                           ANNOT_SUM
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Traceability ──
               - step:
@@ -2881,7 +2881,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_TRACE'
+                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_TRACE'
                           ## 🔗 Traceability
                           
                           | Link | URL |
@@ -2900,7 +2900,7 @@ pipeline:
                           | Cdn CI | `https://github.com/pdutta25/bikeshop-cdn/actions` |
                           | Docs CI | `https://github.com/pdutta25/bikeshop-docs/actions` |
                           ANNOT_TRACE
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Governance ──
               - step:
@@ -2932,7 +2932,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_GOV'
+                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_GOV'
                           ## 🏛️ Governance
                           
                           | Attribute | Value |
@@ -2947,7 +2947,7 @@ pipeline:
                           - Added parallel deploy with independent tracks
                           - Added telemetry reporting step
                           ANNOT_GOV
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "---" >> /tmp/pipeline_annotations.md
                           
               # ── Telemetry ──
               - step:
@@ -3124,7 +3124,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_TEL'
+                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_TEL'
                           ## 📈 Telemetry
                           
                           ### Pipeline Identity
@@ -3175,7 +3175,7 @@ pipeline:
                           | License | ✅ All MIT/Apache-2.0 |
                           | SBOM | ✅ Generated |
                           ANNOT_TEL
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "---" >> /tmp/pipeline_annotations.md
 
 
               # ── Done ──
@@ -3203,7 +3203,7 @@ pipeline:
                           echo ""
                           
                           # ── Pipeline Annotation ──
-                          cat > /tmp/annotation.md << 'ANNOT_DONE'
+                          cat >> /tmp/pipeline_annotations.md << 'ANNOT_DONE'
                           ## ✅ Release Complete
                           
                           All 10 components deployed across DEV → SIT → PROD
@@ -3221,6 +3221,15 @@ pipeline:
                           | CDN | v<+pipeline.variables.cdnVer> |
                           | Docs | v<+pipeline.variables.docsVer> |
                           ANNOT_DONE
-                          hcli annotate --summary-file /tmp/annotation.md --mode "append" 2>/dev/null || echo "  (hcli annotate not available — skipping annotation)"
+                          echo "" >> /tmp/pipeline_annotations.md
+                          # ── Post all annotations to Harness execution notes ──
+                          NOTES_PAYLOAD=$(jq -Rs '.' < /tmp/pipeline_annotations.md)
+                          curl -sf -X PUT \
+                            "https://app.harness.io/pipeline/api/pipelines/execution/<+pipeline.executionId>/notes?accountIdentifier=<+account.identifier>&orgIdentifier=<+org.identifier>&projectIdentifier=<+project.identifier>" \
+                            -H "x-api-key: <+secrets.getValue("harness_api_key")>" \
+                            -H "Content-Type: application/json" \
+                            -d "$NOTES_PAYLOAD" \
+                            && echo "  ✅ Annotations posted to execution notes" \
+                            || echo "  ⚠️  Could not post annotations (check harness_api_key secret)"
                           
         tags: {}
