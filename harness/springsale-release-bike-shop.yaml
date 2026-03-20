@@ -2531,7 +2531,7 @@ pipeline:
                       identifier: PROD_Frontend_Group
                       steps:
                         - step:
-                            name: Deploy Storefront App (Render)
+                            name: Deploy Storefront App - Render
                             identifier: PROD_Deploy_Storefront_App
                             type: ShellScript
                             timeout: 10m
