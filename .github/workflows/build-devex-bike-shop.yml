@@ -87,14 +87,16 @@ jobs:
 
       - name: Build Summary
         run: |
-          echo "┌─────────────────────────────────────┐"
-          echo "│  ✅ BUILD SUMMARY                    │"
-          echo "├─────────────────────────────────────┤"
-          echo "│  Framework:  Next.js 14.2            │"
-          echo "│  Node:       v20 LTS                 │"
-          echo "│  Output:     .next/ (SSR + static)   │"
-          echo "│  Status:     PASSED                  │"
-          echo "└─────────────────────────────────────┘"
+          cat <<'EOF'
+          ┌─────────────────────────────────────┐
+          │  ✅ BUILD SUMMARY                    │
+          ├─────────────────────────────────────┤
+          │  Framework:  Next.js 14.2            │
+          │  Node:       v20 LTS                 │
+          │  Output:     .next/ (SSR + static)   │
+          │  Status:     PASSED                  │
+          └─────────────────────────────────────┘
+          EOF
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -134,14 +136,16 @@ jobs:
 
       - name: Lint Summary
         run: |
-          echo "┌─────────────────────────────────────┐"
-          echo "│  ✅ LINT SUMMARY                     │"
-          echo "├─────────────────────────────────────┤"
-          echo "│  Engine:   ESLint + Next.js config   │"
-          echo "│  Files:    127 files checked         │"
-          echo "│  Issues:   3 warnings (non-blocking) │"
-          echo "│  Status:   PASSED                    │"
-          echo "└─────────────────────────────────────┘"
+          cat <<'EOF'
+          ┌─────────────────────────────────────┐
+          │  ✅ LINT SUMMARY                     │
+          ├─────────────────────────────────────┤
+          │  Engine:   ESLint + Next.js config   │
+          │  Files:    127 files checked         │
+          │  Issues:   3 warnings (non-blocking) │
+          │  Status:   PASSED                    │
+          └─────────────────────────────────────┘
+          EOF
 
   # ─────────────────────────────────────────────
   # STAGE 1c: TEST (runs in parallel with build & lint)
@@ -172,15 +176,17 @@ jobs:
 
       - name: Test Summary
         run: |
-          echo "┌─────────────────────────────────────┐"
-          echo "│  ✅ TEST SUMMARY                     │"
-          echo "├─────────────────────────────────────┤"
-          echo "│  Runner:    Vitest 3.x               │"
-          echo "│  Suites:    8 passed                 │"
-          echo "│  Tests:     24 passed, 0 failed      │"
-          echo "│  Coverage:  87.3% statements         │"
-          echo "│  Status:    PASSED                   │"
-          echo "└─────────────────────────────────────┘"
+          cat <<'EOF'
+          ┌─────────────────────────────────────┐
+          │  ✅ TEST SUMMARY                     │
+          ├─────────────────────────────────────┤
+          │  Runner:    Vitest 3.x               │
+          │  Suites:    8 passed                 │
+          │  Tests:     24 passed, 0 failed      │
+          │  Coverage:  87.3% statements         │
+          │  Status:    PASSED                   │
+          └─────────────────────────────────────┘
+          EOF
 
   # ─────────────────────────────────────────────
   # STAGE 2a: SECURITY SCAN — find vulnerabilities first
@@ -225,15 +231,16 @@ jobs:
 
       - name: Security Scan Summary
         run: |
-          echo ""
-          echo "┌─────────────────────────────────────────┐"
-          echo "│  ✅ SECURITY SCAN SUMMARY                │"
-          echo "├─────────────────────────────────────────┤"
-          echo "│  npm audit:     0 critical, 0 high       │"
-          echo "│  Trivy:         0 CRITICAL, 0 HIGH       │"
-          echo "│  Dependencies:  847 scanned              │"
-          echo "│  Status:        PASSED — no blockers     │"
-          echo "└─────────────────────────────────────────┘"
+          cat <<'EOF'
+          ┌─────────────────────────────────────────┐
+          │  ✅ SECURITY SCAN SUMMARY                │
+          ├─────────────────────────────────────────┤
+          │  npm audit:     0 critical, 0 high       │
+          │  Trivy:         0 CRITICAL, 0 HIGH       │
+          │  Dependencies:  847 scanned              │
+          │  Status:        PASSED — no blockers     │
+          └─────────────────────────────────────────┘
+          EOF
 
   # ─────────────────────────────────────────────
   # STAGE 2b: CODE QUALITY — check code standards
@@ -264,17 +271,18 @@ jobs:
 
       - name: Code Quality Summary
         run: |
-          echo ""
-          echo "┌─────────────────────────────────────────┐"
-          echo "│  ✅ CODE QUALITY SUMMARY                 │"
-          echo "├─────────────────────────────────────────┤"
-          echo "│  Engine:       SonarCloud                │"
-          echo "│  Quality Gate: Passed                    │"
-          echo "│  Rating:       A                         │"
-          echo "│  Code smells:  2 (minor)                 │"
-          echo "│  Duplication:  1.2%                      │"
-          echo "│  Status:       PASSED                    │"
-          echo "└─────────────────────────────────────────┘"
+          cat <<'EOF'
+          ┌─────────────────────────────────────────┐
+          │  ✅ CODE QUALITY SUMMARY                 │
+          ├─────────────────────────────────────────┤
+          │  Engine:       SonarCloud                │
+          │  Quality Gate: Passed                    │
+          │  Rating:       A                         │
+          │  Code smells:  2 (minor)                 │
+          │  Duplication:  1.2%                      │
+          │  Status:       PASSED                    │
+          └─────────────────────────────────────────┘
+          EOF
 
   # ─────────────────────────────────────────────
   # STAGE 3a: PUBLISH — only clean code gets published
