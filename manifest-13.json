@@ -1,0 +1,19 @@
+{
+  "version": "1.3.0",
+  "registry": "bikeshop.jfrog.io/bikeshop-docker",
+  "components": [
+    { "name": "storefront",     "type": "frontend",  "size": "248MB", "artifact": "tar.gz", "harnessVar": "sfVer",     "harnessChange": "sfChange" },
+    { "name": "admin",          "type": "frontend",  "size": "185MB", "artifact": "tar.gz", "harnessVar": "adminVer",  "harnessChange": "adminChange" },
+    { "name": "mobile-api",     "type": "backend",   "size": "142MB", "artifact": "jar",    "harnessVar": "mobileVer", "harnessChange": "mobileChange" },
+    { "name": "auth",           "type": "backend",   "size": "98MB",  "artifact": "jar",    "harnessVar": "authVer",   "harnessChange": "authChange" },
+    { "name": "payments",       "type": "backend",   "size": "112MB", "artifact": "jar",    "harnessVar": "payVer",    "harnessChange": "payChange" },
+    { "name": "inventory",      "type": "backend",   "size": "105MB", "artifact": "whl",    "harnessVar": "invVer",    "harnessChange": "invChange" },
+    { "name": "notifications",  "type": "backend",   "size": "87MB",  "artifact": "tar.gz", "harnessVar": "notifVer",  "harnessChange": "notifChange" },
+    { "name": "analytics",      "type": "backend",   "size": "134MB", "artifact": "whl",    "harnessVar": "anlytVer",  "harnessChange": "anlytChange" },
+    { "name": "cdn",            "type": "infra",     "size": "67MB",  "artifact": "tar.gz", "harnessVar": "cdnVer",    "harnessChange": "cdnChange" },
+    { "name": "docs",           "type": "static",    "size": "34MB",  "artifact": "tar.gz", "harnessVar": "docsVer",   "harnessChange": "docsChange" },
+    { "name": "db",             "type": "database",  "size": "156MB", "artifact": "tar.gz", "harnessVar": "dbVer",     "harnessChange": "dbChange" },
+    { "name": "services",       "type": "backend",   "size": "178MB", "artifact": "jar",    "harnessVar": "svcVer",    "harnessChange": "svcChange" },
+    { "name": "ui",             "type": "frontend",  "size": "203MB", "artifact": "tar.gz", "harnessVar": "uiVer",     "harnessChange": "uiChange" }
+  ]
+}

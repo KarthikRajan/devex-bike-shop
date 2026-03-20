@@ -40,7 +40,7 @@ concurrency:
 # ═══════════════════════════════════════════════════════════
 # PIPELINE GRAPH (4 columns — visible in GitHub Actions UI):
 #
-#              ┌──→ 🛡️ Security Scan ──┬──→ 📦 Publish ──→ ✅ Compliance ──→ 🚀 Deploy
+#              ┌──→  Security Scan ──┬──→  Publish ──→  Compliance ──→  Deploy
 #   build  ──┤                         ├──→ 🤖 Release Notes
 #   lint   ──┤──→ 📊 Code Quality   ──┼──→ 📚 Wiki Updates
 #   test   ──┘
@@ -242,42 +242,26 @@ jobs:
           echo "╚══════════════════════════════════════════════════════╝"
           echo ""
           SHORT_SHA="${GITHUB_SHA:0:7}"
-          VERSION="1.0.${{ github.run_number }}"
-          REGISTRY="bikeshop.jfrog.io/bikeshop-docker"
+          MANIFEST=$(cat manifest-13.json)
+          VERSION=$(echo "$MANIFEST" | jq -r '.version')
+          REGISTRY=$(echo "$MANIFEST" | jq -r '.registry')
+          COUNT=$(echo "$MANIFEST" | jq '.components | length')
           echo "  Registry:  $REGISTRY"
           echo "  Version:   $VERSION"
           echo "  Commit:    $SHORT_SHA"
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-          COMPONENTS=(
-            "storefront:frontend:248MB"
-            "admin:frontend:185MB"
-            "mobile-api:backend:142MB"
-            "auth:backend:98MB"
-            "payments:backend:112MB"
-            "inventory:backend:105MB"
-            "notifications:backend:87MB"
-            "analytics:backend:134MB"
-            "cdn:infra:67MB"
-            "docs:static:34MB"
-            "db:database:156MB"
-            "services:backend:178MB"
-            "ui:frontend:203MB"
-          )
-
           PUBLISHED=0
-          for COMP in "${COMPONENTS[@]}"; do
-            NAME=$(echo "$COMP" | cut -d: -f1)
-            TYPE=$(echo "$COMP" | cut -d: -f2)
-            SIZE=$(echo "$COMP" | cut -d: -f3)
-            IMAGE="$REGISTRY/bikeshop-${NAME}:${VERSION}"
+          for i in $(seq 0 $((COUNT - 1))); do
+            NAME=$(echo "$MANIFEST" | jq -r ".components[$i].name")
+            TYPE=$(echo "$MANIFEST" | jq -r ".components[$i].type")
+            SIZE=$(echo "$MANIFEST" | jq -r ".components[$i].size")
 
-            # Simulate docker build + push timing
             sleep 1
 
             PUBLISHED=$((PUBLISHED + 1))
-            printf "  ✅ [%2d/13] %-24s  %s  (%s)\n" "$PUBLISHED" "bikeshop-${NAME}:${VERSION}" "$SIZE" "$TYPE"
+            printf "  ✅ [%2d/%d] %-24s  %s  (%s)\n" "$PUBLISHED" "$COUNT" "bikeshop-${NAME}:${VERSION}" "$SIZE" "$TYPE"
           done
 
           echo ""
@@ -306,35 +290,21 @@ jobs:
           echo "║   SUPPLY CHAIN COMPLIANCE — SBOM & ATTESTATION      ║"
           echo "╚══════════════════════════════════════════════════════╝"
           echo ""
-          VERSION="1.0.${{ github.run_number }}"
+          MANIFEST=$(cat manifest-13.json)
+          VERSION=$(echo "$MANIFEST" | jq -r '.version')
           SHORT_SHA="${GITHUB_SHA:0:7}"
-
-          COMPONENTS=(
-            "storefront:frontend"
-            "admin:frontend"
-            "mobile-api:backend"
-            "auth:backend"
-            "payments:backend"
-            "inventory:backend"
-            "notifications:backend"
-            "analytics:backend"
-            "cdn:infra"
-            "docs:static"
-            "db:database"
-            "services:backend"
-            "ui:frontend"
-          )
+          COUNT=$(echo "$MANIFEST" | jq '.components | length')
+          NAMES=$(echo "$MANIFEST" | jq -r '.components[].name')
 
           echo "  ┌─────────────────────────────────────────────────┐"
           echo "  │  Phase 1: SBOM Generation (syft v0.98.0)        │"
           echo "  └─────────────────────────────────────────────────┘"
           echo ""
           GENERATED=0
-          for COMP in "${COMPONENTS[@]}"; do
-            NAME=$(echo "$COMP" | cut -d: -f1)
+          for NAME in $NAMES; do
             sleep 0.5
             GENERATED=$((GENERATED + 1))
-            printf "  📋 [%2d/13] bikeshop-%-16s SPDX manifest generated\n" "$GENERATED" "$NAME"
+            printf "  📋 [%2d/%d] bikeshop-%-16s SPDX manifest generated\n" "$GENERATED" "$COUNT" "$NAME"
           done
 
           echo ""
@@ -343,11 +313,10 @@ jobs:
           echo "  └─────────────────────────────────────────────────┘"
           echo ""
           VERIFIED=0
-          for COMP in "${COMPONENTS[@]}"; do
-            NAME=$(echo "$COMP" | cut -d: -f1)
+          for NAME in $NAMES; do
             sleep 0.3
             VERIFIED=$((VERIFIED + 1))
-            printf "  🔒 [%2d/13] bikeshop-%-16s signature valid\n" "$VERIFIED" "$NAME"
+            printf "  🔒 [%2d/%d] bikeshop-%-16s signature valid\n" "$VERIFIED" "$COUNT" "$NAME"
           done
 
           echo ""
@@ -372,12 +341,12 @@ jobs:
           sleep 1
           echo "  📝 Attestation ID:    att-${SHORT_SHA}-${VERSION}"
           echo "  🔑 Signed by:         CI Compliance Bot (cosign keyless)"
-          echo "  📦 Artifacts cleared:  13/13"
+          echo "  📦 Artifacts cleared:  ${COUNT}/${COUNT}"
           echo "  🕐 Generated:         $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "  ✅ COMPLIANCE PASSED — 13/13 artifacts attested"
+          echo "  ✅ COMPLIANCE PASSED — ${COUNT}/${COUNT} artifacts attested"
           echo "  📄 Deployment manifest ready for Harness"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -385,7 +354,7 @@ jobs:
   # STAGE 5: DEPLOY (only attested artifacts reach Harness)
   # ─────────────────────────────────────────────
   deploy-gate:
-    name: 🚀 Deploy (Harness)
+    name: 🚀 Deploy
     needs: [d-compliance]
     if: ${{ always() }}
     runs-on: ubuntu-latest
@@ -414,13 +383,13 @@ jobs:
           echo "╚══════════════════════════════════════╝"
 
       - name: Checkout code
-        if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || inputs.test_deploy == true
+        if: (github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')) || inputs.test_deploy == true
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Deploy via Harness CD Pipeline
-        if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || inputs.test_deploy == true
+        if: (github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')) || inputs.test_deploy == true
         env:
           HARNESS_API_KEY: ${{ secrets.HARNESS_API_KEY }}
           HARNESS_ACCOUNT_ID: ${{ secrets.HARNESS_ACCOUNT_ID }}
@@ -437,8 +406,13 @@ jobs:
           BASE_URL="https://app.harness.io/pipeline/api"
           SCOPE="accountIdentifier=${HARNESS_ACCOUNT_ID}&orgIdentifier=${HARNESS_ORG_ID}&projectIdentifier=${HARNESS_PROJECT_ID}"
 
+          # Read manifest for version + component Harness variable mapping
+          MANIFEST=$(cat manifest-13.json)
+          VERSION=$(echo "$MANIFEST" | jq -r '.version')
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
           # Extract PR number from merge commit message (e.g. "Merge pull request #42 from ...")
-          PR_NUM=$(git log -1 --pretty=%s | grep -oP '#\K[0-9]+' || echo "")
+          PR_NUM=$(echo "$COMMIT_MSG" | grep -oP '#\K[0-9]+' || echo "")
 
           # Build execution name for traceability
           if [ -n "$PR_NUM" ]; then
@@ -480,9 +454,19 @@ jobs:
             exit 1
           fi
 
-          # Step 2: Execute pipeline with tags for traceability
+          # Step 2: Build variables array from manifest (version + change for each component)
+          COMP_VARS=""
+          COUNT=$(echo "$MANIFEST" | jq '.components | length')
+          for i in $(seq 0 $((COUNT - 1))); do
+            VAR_KEY=$(echo "$MANIFEST" | jq -r ".components[$i].harnessVar")
+            CHANGE_KEY=$(echo "$MANIFEST" | jq -r ".components[$i].harnessChange")
+            COMP_VARS="$COMP_VARS { \"name\": \"$VAR_KEY\", \"type\": \"String\", \"value\": \"$VERSION\" },"
+            COMP_VARS="$COMP_VARS { \"name\": \"$CHANGE_KEY\", \"type\": \"String\", \"value\": \"spring-sale\" },"
+          done
+
+          # Step 3: Execute pipeline with tags + manifest versions
           echo ""
-          echo "▶️  Executing pipeline: $EXEC_NAME"
+          echo "▶️  Executing pipeline: $EXEC_NAME (v${VERSION})"
           PAYLOAD=$(jq -n \
             --arg name "$EXEC_NAME" \
             --arg sha "$SHORT_SHA" \
@@ -491,6 +475,7 @@ jobs:
             --arg branch "$GIT_BRANCH" \
             --arg repo "$REPO_URL" \
             --arg runid "$GIT_RUN_ID" \
+            --argjson compVars "[ ${COMP_VARS%,} ]" \
             '{
               notesForPipelineExecution: ("Triggered by GitHub Actions | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha),
               pipeline: {
@@ -502,7 +487,7 @@ jobs:
                   branch: $branch,
                   executionName: $name
                 },
-                variables: [
+                variables: ([
                   { name: "commitSha", type: "String", value: $sha },
                   { name: "buildNumber", type: "String", value: $build },
                   { name: "branch", type: "String", value: $branch },
@@ -510,7 +495,7 @@ jobs:
                   { name: "triggeredBy", type: "String", value: "GitHub Actions" },
                   { name: "repoUrl", type: "String", value: $repo },
                   { name: "runId", type: "String", value: $runid }
-                ]
+                ] + $compVars)
               }
             }')
 
@@ -527,6 +512,7 @@ jobs:
             EXEC_ID=$(echo "$EXEC_BODY" | jq -r '.data.planExecution.uuid // "unknown"')
             echo "✅ Pipeline executing (HTTP $EXEC_CODE)"
             echo "   Execution: $EXEC_NAME"
+            echo "   Version: $VERSION"
             echo "   PR: ${PR_NUM:-N/A}"
             echo "   Commit: $SHORT_SHA"
             echo "   ID: $EXEC_ID"
