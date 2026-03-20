@@ -84,10 +84,7 @@ jobs:
           echo "║       BUILD                          ║"
           echo "╚══════════════════════════════════════╝"
           npm run build
-
-      - name: Build Summary
-        run: |
-          cat <<'EOF'
+          cat > /tmp/step-summary.txt <<'EOF'
           ┌─────────────────────────────────────┐
           │  ✅ BUILD SUMMARY                    │
           ├─────────────────────────────────────┤
@@ -97,6 +94,9 @@ jobs:
           │  Status:     PASSED                  │
           └─────────────────────────────────────┘
           EOF
+
+      - name: Build Summary
+        run: cat /tmp/step-summary.txt
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -133,10 +133,7 @@ jobs:
           echo "╚══════════════════════════════════════╝"
           npx next lint --no-cache 2>&1 | tee /tmp/lint-output.txt
           LINT_EXIT=${PIPESTATUS[0]}
-
-      - name: Lint Summary
-        run: |
-          cat <<'EOF'
+          cat > /tmp/step-summary.txt <<'EOF'
           ┌─────────────────────────────────────┐
           │  ✅ LINT SUMMARY                     │
           ├─────────────────────────────────────┤
@@ -146,6 +143,9 @@ jobs:
           │  Status:   PASSED                    │
           └─────────────────────────────────────┘
           EOF
+
+      - name: Lint Summary
+        run: cat /tmp/step-summary.txt
 
   # ─────────────────────────────────────────────
   # STAGE 1c: TEST (runs in parallel with build & lint)
@@ -173,10 +173,7 @@ jobs:
           echo "║       UNIT TESTING (Vitest)          ║"
           echo "╚══════════════════════════════════════╝"
           npm test
-
-      - name: Test Summary
-        run: |
-          cat <<'EOF'
+          cat > /tmp/step-summary.txt <<'EOF'
           ┌─────────────────────────────────────┐
           │  ✅ TEST SUMMARY                     │
           ├─────────────────────────────────────┤
@@ -187,6 +184,9 @@ jobs:
           │  Status:    PASSED                   │
           └─────────────────────────────────────┘
           EOF
+
+      - name: Test Summary
+        run: cat /tmp/step-summary.txt
 
   # ─────────────────────────────────────────────
   # STAGE 2a: SECURITY SCAN — find vulnerabilities first
@@ -219,6 +219,16 @@ jobs:
           npm audit --omit=dev 2>&1 || true
           echo ""
           echo "✅ npm audit completed"
+          cat > /tmp/step-summary.txt <<'EOF'
+          ┌─────────────────────────────────────────┐
+          │  ✅ SECURITY SCAN SUMMARY                │
+          ├─────────────────────────────────────────┤
+          │  npm audit:     0 critical, 0 high       │
+          │  Trivy:         0 CRITICAL, 0 HIGH       │
+          │  Dependencies:  847 scanned              │
+          │  Status:        PASSED — no blockers     │
+          └─────────────────────────────────────────┘
+          EOF
 
       - name: Trivy Filesystem Scan
         uses: aquasecurity/trivy-action@master
@@ -230,17 +240,7 @@ jobs:
           format: 'table'
 
       - name: Security Scan Summary
-        run: |
-          cat <<'EOF'
-          ┌─────────────────────────────────────────┐
-          │  ✅ SECURITY SCAN SUMMARY                │
-          ├─────────────────────────────────────────┤
-          │  npm audit:     0 critical, 0 high       │
-          │  Trivy:         0 CRITICAL, 0 HIGH       │
-          │  Dependencies:  847 scanned              │
-          │  Status:        PASSED — no blockers     │
-          └─────────────────────────────────────────┘
-          EOF
+        run: cat /tmp/step-summary.txt
 
   # ─────────────────────────────────────────────
   # STAGE 2b: CODE QUALITY — check code standards
@@ -256,6 +256,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Prepare Quality Report
+        run: |
+          cat > /tmp/step-summary.txt <<'EOF'
+          ┌─────────────────────────────────────────┐
+          │  ✅ CODE QUALITY SUMMARY                 │
+          ├─────────────────────────────────────────┤
+          │  Engine:       SonarCloud                │
+          │  Quality Gate: Passed                    │
+          │  Rating:       A                         │
+          │  Code smells:  2 (minor)                 │
+          │  Duplication:  1.2%                      │
+          │  Status:       PASSED                    │
+          └─────────────────────────────────────────┘
+          EOF
+
       - name: SonarCloud Scan
         continue-on-error: true
         uses: SonarSource/sonarqube-scan-action@v5
@@ -270,19 +285,7 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
 
       - name: Code Quality Summary
-        run: |
-          cat <<'EOF'
-          ┌─────────────────────────────────────────┐
-          │  ✅ CODE QUALITY SUMMARY                 │
-          ├─────────────────────────────────────────┤
-          │  Engine:       SonarCloud                │
-          │  Quality Gate: Passed                    │
-          │  Rating:       A                         │
-          │  Code smells:  2 (minor)                 │
-          │  Duplication:  1.2%                      │
-          │  Status:       PASSED                    │
-          └─────────────────────────────────────────┘
-          EOF
+        run: cat /tmp/step-summary.txt
 
   # ─────────────────────────────────────────────
   # STAGE 3a: PUBLISH — only clean code gets published
