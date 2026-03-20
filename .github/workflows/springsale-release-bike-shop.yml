@@ -1,14 +1,12 @@
-name: Gated Release - Bike Shop
+name: Spring Sale Release - Bike Shop
 
 on:
   push:
     branches: [main]
     paths:
-      - 'harness/gated-release-bike-shop.yaml'
-      - '.github/workflows/gated-release-bike-shop.yml'
+      - 'harness/springsale-release-bike-shop.yaml'
+      - '.github/workflows/springsale-release-bike-shop.yml'
       - 'harness/release-components.json'
-  repository_dispatch:
-    types: [component-updated]
   workflow_dispatch:
 
 permissions:
@@ -16,7 +14,7 @@ permissions:
 
 jobs:
   trigger-harness:
-    name: 🚀 Trigger Harness (Gated Release)
+    name: 🚀 Trigger Harness (Spring Sale Release)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,7 +49,7 @@ jobs:
           echo ""
           echo "✅ All $COUNT component manifests fetched"
 
-      - name: Deploy via Harness CD Pipeline (Gated Release)
+      - name: Deploy via Harness CD Pipeline (Spring Sale Release)
         env:
           HARNESS_API_KEY: ${{ secrets.HARNESS_API_KEY }}
           HARNESS_ACCOUNT_ID: ${{ secrets.HARNESS_ACCOUNT_ID }}
@@ -64,19 +62,19 @@ jobs:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           TRIGGER_REPO: ${{ github.event.client_payload.repo || github.repository }}
         run: |
-          PIPELINE_ID="gatedreleasebikeshop"
+          PIPELINE_ID="springsalereleasebikeshop"
           SHORT_SHA="${GIT_SHA:0:7}"
           BASE_URL="https://app.harness.io/pipeline/api"
           SCOPE="accountIdentifier=${HARNESS_ACCOUNT_ID}&orgIdentifier=${HARNESS_ORG_ID}&projectIdentifier=${HARNESS_PROJECT_ID}"
-          EXEC_NAME="gated-${SHORT_SHA}-${GIT_RUN}"
+          EXEC_NAME="springsale-${SHORT_SHA}-${GIT_RUN}"
 
           # Step 1: Ensure pipeline exists (create if missing, update if exists)
-          echo "📋 Ensuring Gated Release pipeline exists..."
+          echo "📋 Ensuring Spring Sale Release pipeline exists..."
           CREATE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "${BASE_URL}/pipelines/v2?${SCOPE}" \
             -H "Content-Type: application/yaml" \
             -H "x-api-key: ${HARNESS_API_KEY}" \
-            --data-binary @harness/gated-release-bike-shop.yaml)
+            --data-binary @harness/springsale-release-bike-shop.yaml)
 
           CREATE_CODE=$(echo "$CREATE_RESPONSE" | tail -1)
           if [ "$CREATE_CODE" -ge 200 ] && [ "$CREATE_CODE" -lt 300 ]; then
@@ -87,7 +85,7 @@ jobs:
               "${BASE_URL}/pipelines/v2/${PIPELINE_ID}?${SCOPE}" \
               -H "Content-Type: application/yaml" \
               -H "x-api-key: ${HARNESS_API_KEY}" \
-              --data-binary @harness/gated-release-bike-shop.yaml)
+              --data-binary @harness/springsale-release-bike-shop.yaml)
             UPDATE_CODE=$(echo "$UPDATE_RESPONSE" | tail -1)
             if [ "$UPDATE_CODE" -ge 200 ] && [ "$UPDATE_CODE" -lt 300 ]; then
               echo "✅ Pipeline updated"
@@ -105,7 +103,7 @@ jobs:
 
           # Step 2: Execute pipeline
           echo ""
-          echo "▶️  Executing Gated Release pipeline: $EXEC_NAME"
+          echo "▶️  Executing Spring Sale Release pipeline: $EXEC_NAME"
           PAYLOAD=$(jq -n \
             --arg name "$EXEC_NAME" \
             --arg sha "$SHORT_SHA" \
@@ -141,9 +139,9 @@ jobs:
             --arg docsver "${{ steps.manifests.outputs.docs_ver }}" \
             --arg docschange "${{ steps.manifests.outputs.docs_change }}" \
             '{
-              notesForPipelineExecution: ("Gated Release | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha + " | Trigger: " + $triggerrepo),
+              notesForPipelineExecution: ("Spring Sale Release | Run #" + $build + " | Branch: " + $branch + " | Commit: " + $sha + " | Trigger: " + $triggerrepo),
               pipeline: {
-                identifier: "gatedreleasebikeshop",
+                identifier: "springsalereleasebikeshop",
                 tags: {
                   commitSha: $sha,
                   buildNumber: $build,
@@ -200,7 +198,7 @@ jobs:
           echo ""
           if [ "$EXEC_CODE" -ge 200 ] && [ "$EXEC_CODE" -lt 300 ]; then
             EXEC_ID=$(echo "$EXEC_BODY" | jq -r '.data.planExecution.uuid // "unknown"')
-            echo "✅ Gated Release pipeline executing (HTTP $EXEC_CODE)"
+            echo "✅ Spring Sale Release pipeline executing (HTTP $EXEC_CODE)"
             echo "   Execution: $EXEC_NAME"
             echo "   Commit: $SHORT_SHA"
             echo "   ID: $EXEC_ID"

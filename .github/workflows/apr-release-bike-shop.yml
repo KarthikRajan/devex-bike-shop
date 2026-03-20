@@ -72,12 +72,11 @@ jobs:
 
           # Step 1: Ensure pipeline exists (create if missing, update if exists)
           echo "📋 Ensuring Apr Release pipeline exists..."
-          YAML=$(cat harness/apr-release-bike-shop.yaml)
           CREATE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "${BASE_URL}/pipelines/v2?${SCOPE}" \
             -H "Content-Type: application/yaml" \
             -H "x-api-key: ${HARNESS_API_KEY}" \
-            -d "$YAML")
+            --data-binary @harness/apr-release-bike-shop.yaml)
 
           CREATE_CODE=$(echo "$CREATE_RESPONSE" | tail -1)
           if [ "$CREATE_CODE" -ge 200 ] && [ "$CREATE_CODE" -lt 300 ]; then
@@ -88,7 +87,7 @@ jobs:
               "${BASE_URL}/pipelines/v2/${PIPELINE_ID}?${SCOPE}" \
               -H "Content-Type: application/yaml" \
               -H "x-api-key: ${HARNESS_API_KEY}" \
-              -d "$YAML")
+              --data-binary @harness/apr-release-bike-shop.yaml)
             UPDATE_CODE=$(echo "$UPDATE_RESPONSE" | tail -1)
             if [ "$UPDATE_CODE" -ge 200 ] && [ "$UPDATE_CODE" -lt 300 ]; then
               echo "✅ Pipeline updated"
@@ -115,6 +114,12 @@ jobs:
             --arg repo "$REPO_URL" \
             --arg runid "$GIT_RUN_ID" \
             --arg triggerrepo "$TRIGGER_REPO" \
+            --arg dbver "${{ steps.manifests.outputs.db_ver }}" \
+            --arg dbchange "${{ steps.manifests.outputs.db_change }}" \
+            --arg svcver "${{ steps.manifests.outputs.svc_ver }}" \
+            --arg svcchange "${{ steps.manifests.outputs.svc_change }}" \
+            --arg uiver "${{ steps.manifests.outputs.ui_ver }}" \
+            --arg uichange "${{ steps.manifests.outputs.ui_change }}" \
             --arg authver "${{ steps.manifests.outputs.auth_ver }}" \
             --arg authchange "${{ steps.manifests.outputs.auth_change }}" \
             --arg payver "${{ steps.manifests.outputs.pay_ver }}" \
@@ -154,6 +159,12 @@ jobs:
                   { name: "repoUrl", type: "String", value: $repo },
                   { name: "runId", type: "String", value: $runid },
                   { name: "triggerRepo", type: "String", value: $triggerrepo },
+                  { name: "dbVer", type: "String", value: $dbver },
+                  { name: "dbChange", type: "String", value: $dbchange },
+                  { name: "svcVer", type: "String", value: $svcver },
+                  { name: "svcChange", type: "String", value: $svcchange },
+                  { name: "uiVer", type: "String", value: $uiver },
+                  { name: "uiChange", type: "String", value: $uichange },
                   { name: "authVer", type: "String", value: $authver },
                   { name: "authChange", type: "String", value: $authchange },
                   { name: "payVer", type: "String", value: $payver },
