@@ -172,73 +172,10 @@ pipeline:
                           echo "  A component CI completed successfully and dispatched this"
                           echo "  release pipeline. Review the build details below."
                           echo ""
-              # ── Whats Releasing ──
-              - step:
-                  name: Whats Releasing
-                  identifier: Whats_Releasing
-                  type: ShellScript
-                  timeout: 1m
-                  spec:
-                    shell: Bash
-                    onDelegate: true
-                    source:
-                      type: Inline
-                      spec:
-                        script: |-
-                          #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      WHATS RELEASING                           ║"
-                          echo "║  Release pattern, strategy, and component manifest.             ║"
-                          echo "╚══════════════════════════════════════════════════════════════════╝"
-                          echo ""
-                          echo "── Release Overview ──────────────────────────────────────────────"
-                          echo "  Release Pattern .... APR Release (All Platform Release)"
-                          echo "  Strategy ........... One approval, all 10 components flow"
-                          echo "  Components ......... 10"
-                          echo "  Target Env ......... DEV"
-                          echo "  Build Number ....... #<+pipeline.variables.buildNumber>"
-                          echo ""
-                          echo "── Component Manifest ────────────────────────────────────────────"
-                          echo "   1. Auth ............. bikeshop-auth           v<+pipeline.variables.authVer>"
-                          echo "                         <+pipeline.variables.authChange>"
-                          echo "   2. Payments ......... bikeshop-payments       v<+pipeline.variables.payVer>"
-                          echo "                         <+pipeline.variables.payChange>"
-                          echo "   3. Inventory ........ bikeshop-inventory      v<+pipeline.variables.invVer>"
-                          echo "                         <+pipeline.variables.invChange>"
-                          echo "   4. Notifications .... bikeshop-notifications  v<+pipeline.variables.notifVer>"
-                          echo "                         <+pipeline.variables.notifChange>"
-                          echo "   5. Analytics ........ bikeshop-analytics      v<+pipeline.variables.anlytVer>"
-                          echo "                         <+pipeline.variables.anlytChange>"
-                          echo "   6. Storefront ....... bikeshop-storefront     v<+pipeline.variables.sfVer>"
-                          echo "                         <+pipeline.variables.sfChange>"
-                          echo "   7. Admin ............ bikeshop-admin          v<+pipeline.variables.adminVer>"
-                          echo "                         <+pipeline.variables.adminChange>"
-                          echo "   8. Mobile API ....... bikeshop-mobile-api     v<+pipeline.variables.mobileVer>"
-                          echo "                         <+pipeline.variables.mobileChange>"
-                          echo "   9. CDN .............. bikeshop-cdn            v<+pipeline.variables.cdnVer>"
-                          echo "                         <+pipeline.variables.cdnChange>"
-                          echo "  10. Docs ............. bikeshop-docs           v<+pipeline.variables.docsVer>"
-                          echo "                         <+pipeline.variables.docsChange>"
-                          echo ""
-              # ── Whats Inside ──
-              - step:
-                  name: Whats Inside
-                  identifier: Whats_Inside
-                  type: ShellScript
-                  timeout: 1m
-                  spec:
-                    shell: Bash
-                    onDelegate: true
-                    source:
-                      type: Inline
-                      spec:
-                        script: |-
-                          #!/bin/bash
-                          echo ""
-                          echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      WHATS INSIDE                              ║"
-                          echo "║  Full CI build summary — all 59 data points per component.      ║"
+                          echo "║                CI BUILD TELEMETRY                              ║"
+                          echo "║  Full CI build summary from the triggering component.           ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
                           echo "=================================================================="
@@ -1074,6 +1011,96 @@ pipeline:
                           echo "=================================================================="
                           echo "  TOTAL: 10 components | 590 data points | All CI gates PASSED"
                           echo "=================================================================="
+                          echo ""
+              # ── Whats Releasing ──
+              - step:
+                  name: Whats Releasing
+                  identifier: Whats_Releasing
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      WHATS RELEASING                           ║"
+                          echo "║  Release pattern, strategy, and component manifest.             ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Release Overview ──────────────────────────────────────────────"
+                          echo "  Release Pattern .... APR Release (All Platform Release)"
+                          echo "  Strategy ........... One approval, all 10 components flow"
+                          echo "  Components ......... 10"
+                          echo "  Target Env ......... DEV"
+                          echo "  Build Number ....... #<+pipeline.variables.buildNumber>"
+                          echo ""
+                          echo "── Component Manifest ────────────────────────────────────────────"
+                          echo "   1. Auth ............. bikeshop-auth           v<+pipeline.variables.authVer>"
+                          echo "                         <+pipeline.variables.authChange>"
+                          echo "   2. Payments ......... bikeshop-payments       v<+pipeline.variables.payVer>"
+                          echo "                         <+pipeline.variables.payChange>"
+                          echo "   3. Inventory ........ bikeshop-inventory      v<+pipeline.variables.invVer>"
+                          echo "                         <+pipeline.variables.invChange>"
+                          echo "   4. Notifications .... bikeshop-notifications  v<+pipeline.variables.notifVer>"
+                          echo "                         <+pipeline.variables.notifChange>"
+                          echo "   5. Analytics ........ bikeshop-analytics      v<+pipeline.variables.anlytVer>"
+                          echo "                         <+pipeline.variables.anlytChange>"
+                          echo "   6. Storefront ....... bikeshop-storefront     v<+pipeline.variables.sfVer>"
+                          echo "                         <+pipeline.variables.sfChange>"
+                          echo "   7. Admin ............ bikeshop-admin          v<+pipeline.variables.adminVer>"
+                          echo "                         <+pipeline.variables.adminChange>"
+                          echo "   8. Mobile API ....... bikeshop-mobile-api     v<+pipeline.variables.mobileVer>"
+                          echo "                         <+pipeline.variables.mobileChange>"
+                          echo "   9. CDN .............. bikeshop-cdn            v<+pipeline.variables.cdnVer>"
+                          echo "                         <+pipeline.variables.cdnChange>"
+                          echo "  10. Docs ............. bikeshop-docs           v<+pipeline.variables.docsVer>"
+                          echo "                         <+pipeline.variables.docsChange>"
+                          echo ""
+              # ── Whats Inside ──
+              - step:
+                  name: Whats Inside
+                  identifier: Whats_Inside
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      WHATS INSIDE                              ║"
+                          echo "║  Release bundle composition and readiness.                      ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Release Bundle ────────────────────────────────────────────────"
+                          echo "  Components .......... 10"
+                          echo "  CI Data Points ...... 590 (10 x 59)"
+                          echo "  All Gates ........... PASSED"
+                          echo "  Bundle Status ....... Ready for deployment"
+                          echo ""
+                          echo "── Component Readiness ───────────────────────────────────────────"
+                          echo "  Auth ............... v<+pipeline.variables.authVer>  ✅ CI passed"
+                          echo "  Payments ........... v<+pipeline.variables.payVer>  ✅ CI passed"
+                          echo "  Inventory .......... v<+pipeline.variables.invVer>  ✅ CI passed"
+                          echo "  Notifications ...... v<+pipeline.variables.notifVer>  ✅ CI passed"
+                          echo "  Analytics .......... v<+pipeline.variables.anlytVer>  ✅ CI passed"
+                          echo "  Storefront ......... v<+pipeline.variables.sfVer>  ✅ CI passed"
+                          echo "  Admin .............. v<+pipeline.variables.adminVer>  ✅ CI passed"
+                          echo "  Mobile API ......... v<+pipeline.variables.mobileVer>  ✅ CI passed"
+                          echo "  CDN ................ v<+pipeline.variables.cdnVer>  ✅ CI passed"
+                          echo "  Docs ............... v<+pipeline.variables.docsVer>  ✅ CI passed"
+                          echo ""
+                          echo "  Full CI telemetry for the triggering component is shown"
+                          echo "  in the Who Triggered step above."
                           echo ""
               # ── How Its Releasing ──
               - step:

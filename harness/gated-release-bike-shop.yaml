@@ -116,57 +116,10 @@ pipeline:
                           echo "  A component CI completed successfully and dispatched this"
                           echo "  release pipeline. Review the build details below."
                           echo ""
-              # ── Whats Releasing ──
-              - step:
-                  name: Whats Releasing
-                  identifier: Whats_Shipping
-                  type: ShellScript
-                  timeout: 1m
-                  spec:
-                    shell: Bash
-                    onDelegate: true
-                    source:
-                      type: Inline
-                      spec:
-                        script: |-
-                          #!/bin/bash
                           echo ""
                           echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      WHATS RELEASING                            ║"
-                          echo "╚══════════════════════════════════════════════════════════════════╝"
-                          echo ""
-                          echo "  Release Pattern ..... Gated Release"
-                          echo "  Strategy ............ Approve each component independently"
-                          echo "  Components .......... 3"
-                          echo "  Target Env .......... DEV"
-                          echo "  Build Number ........ #<+pipeline.variables.buildNumber>"
-                          echo ""
-                          echo "── Components ────────────────────────────────────────────────────"
-                          echo "  Database     bikeshop-db         v<+pipeline.variables.dbVer>"
-                          echo "               <+pipeline.variables.dbChange>"
-                          echo "  Services     bikeshop-services   v<+pipeline.variables.svcVer>"
-                          echo "               <+pipeline.variables.svcChange>"
-                          echo "  UI           bikeshop-ui         v<+pipeline.variables.uiVer>"
-                          echo "               <+pipeline.variables.uiChange>"
-                          echo ""
-              # ── Whats Inside ──
-              - step:
-                  name: Whats Inside
-                  identifier: Whats_Inside
-                  type: ShellScript
-                  timeout: 1m
-                  spec:
-                    shell: Bash
-                    onDelegate: true
-                    source:
-                      type: Inline
-                      spec:
-                        script: |-
-                          #!/bin/bash
-                          echo ""
-                          echo "╔══════════════════════════════════════════════════════════════════╗"
-                          echo "║                      WHATS INSIDE                               ║"
-                          echo "║         CI Build Summary - Full Telemetry Per Component          ║"
+                          echo "║                CI BUILD TELEMETRY                              ║"
+                          echo "║  Full CI build summary from the triggering component.           ║"
                           echo "╚══════════════════════════════════════════════════════════════════╝"
                           echo ""
                           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -424,6 +377,73 @@ pipeline:
                           echo "══════════════════════════════════════════════════════════════════"
                           echo "  TOTAL: 3 components | 177 data points | All CI gates PASSED"
                           echo "══════════════════════════════════════════════════════════════════"
+                          echo ""
+              # ── Whats Releasing ──
+              - step:
+                  name: Whats Releasing
+                  identifier: Whats_Shipping
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      WHATS RELEASING                            ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "  Release Pattern ..... Gated Release"
+                          echo "  Strategy ............ Approve each component independently"
+                          echo "  Components .......... 3"
+                          echo "  Target Env .......... DEV"
+                          echo "  Build Number ........ #<+pipeline.variables.buildNumber>"
+                          echo ""
+                          echo "── Components ────────────────────────────────────────────────────"
+                          echo "  Database     bikeshop-db         v<+pipeline.variables.dbVer>"
+                          echo "               <+pipeline.variables.dbChange>"
+                          echo "  Services     bikeshop-services   v<+pipeline.variables.svcVer>"
+                          echo "               <+pipeline.variables.svcChange>"
+                          echo "  UI           bikeshop-ui         v<+pipeline.variables.uiVer>"
+                          echo "               <+pipeline.variables.uiChange>"
+                          echo ""
+              # ── Whats Inside ──
+              - step:
+                  name: Whats Inside
+                  identifier: Whats_Inside
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      WHATS INSIDE                              ║"
+                          echo "║  Release bundle composition and readiness.                      ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Release Bundle ────────────────────────────────────────────────"
+                          echo "  Components .......... 3"
+                          echo "  CI Data Points ...... 177 (3 x 59)"
+                          echo "  All Gates ........... PASSED"
+                          echo "  Bundle Status ....... Ready for deployment"
+                          echo ""
+                          echo "── Component Readiness ───────────────────────────────────────────"
+                          echo "  Database ........... v<+pipeline.variables.dbVer>  ✅ CI passed"
+                          echo "  Services ........... v<+pipeline.variables.svcVer>  ✅ CI passed"
+                          echo "  UI ................. v<+pipeline.variables.uiVer>  ✅ CI passed"
+                          echo ""
+                          echo "  Full CI telemetry for the triggering component is shown"
+                          echo "  in the Who Triggered step above."
                           echo ""
               # ── How Its Releasing ──
               - step:
