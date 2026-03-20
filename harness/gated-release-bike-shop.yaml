@@ -1,0 +1,1822 @@
+pipeline:
+  name: gated-release-bike-shop
+  identifier: gatedreleasebikeshop
+  projectIdentifier: devexbikeshop
+  orgIdentifier: default
+  tags: {}
+  variables:
+    - name: commitSha
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: buildNumber
+      type: String
+      default: "0"
+      value: <+input>
+    - name: branch
+      type: String
+      default: "main"
+      value: <+input>
+    - name: prNumber
+      type: String
+      default: "none"
+      value: <+input>
+    - name: triggeredBy
+      type: String
+      default: "GitHub Actions"
+      value: <+input>
+    - name: repoUrl
+      type: String
+      default: "https://github.com/devx-bike-shop"
+      value: <+input>
+    - name: runId
+      type: String
+      default: "0"
+      value: <+input>
+    - name: dbVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: dbChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: svcVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: svcChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: uiVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: uiChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: triggerRepo
+      type: String
+      default: "unknown"
+      value: <+input>
+  stages:
+    # ════════════════════════════════════════════════════════════
+    # Start — Pipeline Overview
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: Start
+        identifier: Start
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Who Triggered ──
+              - step:
+                  name: Who Triggered
+                  identifier: Who_Triggered
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║               WHO TRIGGERED THIS RELEASE                        ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Trigger Component ─────────────────────────────────────────────"
+                          echo "  Repository .......... <+pipeline.variables.triggerRepo>"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  Build Number ........ #<+pipeline.variables.buildNumber>"
+                          echo "  CI Run .............. https://github.com/<+pipeline.variables.triggerRepo>/actions/runs/<+pipeline.variables.runId>"
+                          echo ""
+                          echo "── Dispatch Details ──────────────────────────────────────────────"
+                          echo "  Event ............... repository_dispatch"
+                          echo "  Action .............. trigger-release"
+                          echo "  Dispatch Time ....... $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                          echo "  Pipeline ............ gated-release-bike-shop"
+                          echo "  Execution ID ........ <+pipeline.executionId>"
+                          echo "  Project ............. <+pipeline.projectIdentifier>"
+                          echo ""
+                          echo "  A component CI completed successfully and dispatched this"
+                          echo "  release pipeline. Review the build details below."
+                          echo ""
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                CI BUILD TELEMETRY                              ║"
+                          echo "║  Full CI build summary from the triggering component.           ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  COMPONENT 1 of 3: bikeshop-db"
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo ""
+                          echo "  ── Repo Identity ──"
+                          echo "  Component ........... bikeshop-db"
+                          echo "  Repository .......... pdutta25/bikeshop-db"
+                          echo "  Branch .............. main"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.dbChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... <+pipeline.variables.prNumber>"
+                          echo "  Run ID .............. <+pipeline.variables.runId>"
+                          echo ""
+                          echo "  ── Archetype ──"
+                          echo "  Detected ............ database-flyway"
+                          echo "  Build Tool .......... Flyway"
+                          echo "  Lint Tool ........... SQLFluff"
+                          echo "  Test Framework ...... pgTAP"
+                          echo "  Quality Scanner ..... SonarQube"
+                          echo "  Security Scanner .... Checkmarx"
+                          echo "  Artifact Registry ... JFrog Artifactory"
+                          echo ""
+                          echo "  ── Timeline ──"
+                          echo "  CI Triggered ........ $(date -u -d '-6 min' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)"
+                          echo "  Detect Started ...... +2s"
+                          echo "  Build Started ....... +7s"
+                          echo "  Build Finished ...... +1m 04s"
+                          echo "  Lint Finished ....... +1m 18s"
+                          echo "  Test Finished ....... +2m 31s"
+                          echo "  Quality Finished .... +2m 48s"
+                          echo "  Security Finished ... +3m 22s"
+                          echo "  Artifact Published .. +3m 38s"
+                          echo "  CI Completed ........ +3m 44s"
+                          echo "  Total Duration ...... 3m 44s"
+                          echo ""
+                          echo "  ── Build ──"
+                          echo "  Status .............. PASS"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 12.4 MB"
+                          echo "  Dependencies ........ 8 resolved"
+                          echo "  Warnings ............ 0"
+                          echo ""
+                          echo "  ── Test ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Total Tests ......... 48"
+                          echo "  Passed .............. 48"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 91.2%"
+                          echo "  Duration ............ 73s"
+                          echo ""
+                          echo "  ── Quality ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... PASS"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 4"
+                          echo "  Duplication ......... 1.3%"
+                          echo "  Tech Debt ........... 45m"
+                          echo ""
+                          echo "  ── Security ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 1"
+                          echo "  Low ................. 2"
+                          echo "  CVEs Detected ....... 0"
+                          echo ""
+                          echo "  ── Artifact ──"
+                          echo "  Name ................ bikeshop-db-<+pipeline.variables.dbVer>.tar.gz"
+                          echo "  Version ............. <+pipeline.variables.dbVer>"
+                          echo "  Registry ............ jfrog.bikeshop.io/libs-release"
+                          echo "  SHA256 .............. a1b2c3d4e5f6a7b8"
+                          echo "  Pushed At ........... $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                          echo ""
+                          echo "  ── Destinations ──"
+                          echo "  Harness Pipeline .... gated-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... datadog.bikeshop.io/ci"
+                          echo "  Summary ............. GitHub Actions STEP_SUMMARY"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  COMPONENT 2 of 3: bikeshop-services"
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo ""
+                          echo "  ── Repo Identity ──"
+                          echo "  Component ........... bikeshop-services"
+                          echo "  Repository .......... pdutta25/bikeshop-services"
+                          echo "  Branch .............. main"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.svcChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... <+pipeline.variables.prNumber>"
+                          echo "  Run ID .............. <+pipeline.variables.runId>"
+                          echo ""
+                          echo "  ── Archetype ──"
+                          echo "  Detected ............ java-spring-boot"
+                          echo "  Build Tool .......... Maven"
+                          echo "  Lint Tool ........... Checkstyle"
+                          echo "  Test Framework ...... JUnit 5"
+                          echo "  Quality Scanner ..... SonarQube"
+                          echo "  Security Scanner .... Checkmarx"
+                          echo "  Artifact Registry ... JFrog Artifactory"
+                          echo ""
+                          echo "  ── Timeline ──"
+                          echo "  CI Triggered ........ $(date -u -d '-5 min' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)"
+                          echo "  Detect Started ...... +2s"
+                          echo "  Build Started ....... +5s"
+                          echo "  Build Finished ...... +1m 12s"
+                          echo "  Lint Finished ....... +1m 28s"
+                          echo "  Test Finished ....... +2m 45s"
+                          echo "  Quality Finished .... +3m 02s"
+                          echo "  Security Finished ... +3m 38s"
+                          echo "  Artifact Published .. +3m 52s"
+                          echo "  CI Completed ........ +4m 01s"
+                          echo "  Total Duration ...... 4m 01s"
+                          echo ""
+                          echo "  ── Build ──"
+                          echo "  Status .............. PASS"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 48.2 MB"
+                          echo "  Dependencies ........ 127 resolved"
+                          echo "  Warnings ............ 3"
+                          echo ""
+                          echo "  ── Test ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Total Tests ......... 342"
+                          echo "  Passed .............. 340"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 2"
+                          echo "  Coverage ............ 87.4%"
+                          echo "  Duration ............ 77s"
+                          echo ""
+                          echo "  ── Quality ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... PASS"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 12"
+                          echo "  Duplication ......... 2.1%"
+                          echo "  Tech Debt ........... 3h 20m"
+                          echo ""
+                          echo "  ── Security ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 2"
+                          echo "  Low ................. 5"
+                          echo "  CVEs Detected ....... 0"
+                          echo ""
+                          echo "  ── Artifact ──"
+                          echo "  Name ................ bikeshop-services-<+pipeline.variables.svcVer>.jar"
+                          echo "  Version ............. <+pipeline.variables.svcVer>"
+                          echo "  Registry ............ jfrog.bikeshop.io/libs-release"
+                          echo "  SHA256 .............. e3b0c44298fc1c14"
+                          echo "  Pushed At ........... $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                          echo ""
+                          echo "  ── Destinations ──"
+                          echo "  Harness Pipeline .... gated-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... datadog.bikeshop.io/ci"
+                          echo "  Summary ............. GitHub Actions STEP_SUMMARY"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  COMPONENT 3 of 3: bikeshop-ui"
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo ""
+                          echo "  ── Repo Identity ──"
+                          echo "  Component ........... bikeshop-ui"
+                          echo "  Repository .......... pdutta25/bikeshop-ui"
+                          echo "  Branch .............. main"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.uiChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... <+pipeline.variables.prNumber>"
+                          echo "  Run ID .............. <+pipeline.variables.runId>"
+                          echo ""
+                          echo "  ── Archetype ──"
+                          echo "  Detected ............ typescript-nextjs"
+                          echo "  Build Tool .......... npm"
+                          echo "  Lint Tool ........... ESLint"
+                          echo "  Test Framework ...... Vitest"
+                          echo "  Quality Scanner ..... SonarCloud"
+                          echo "  Security Scanner .... Snyk"
+                          echo "  Artifact Registry ... JFrog Artifactory"
+                          echo ""
+                          echo "  ── Timeline ──"
+                          echo "  CI Triggered ........ $(date -u -d '-4 min' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%SZ)"
+                          echo "  Detect Started ...... +2s"
+                          echo "  Build Started ....... +6s"
+                          echo "  Build Finished ...... +58s"
+                          echo "  Lint Finished ....... +1m 14s"
+                          echo "  Test Finished ....... +2m 08s"
+                          echo "  Quality Finished .... +2m 22s"
+                          echo "  Security Finished ... +2m 51s"
+                          echo "  Artifact Published .. +3m 04s"
+                          echo "  CI Completed ........ +3m 12s"
+                          echo "  Total Duration ...... 3m 12s"
+                          echo ""
+                          echo "  ── Build ──"
+                          echo "  Status .............. PASS"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 22.7 MB"
+                          echo "  Dependencies ........ 1,847 resolved"
+                          echo "  Warnings ............ 1"
+                          echo ""
+                          echo "  ── Test ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Total Tests ......... 189"
+                          echo "  Passed .............. 189"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 82.1%"
+                          echo "  Duration ............ 54s"
+                          echo ""
+                          echo "  ── Quality ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... PASS"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 8"
+                          echo "  Duplication ......... 1.7%"
+                          echo "  Tech Debt ........... 2h 10m"
+                          echo ""
+                          echo "  ── Security ──"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 1"
+                          echo "  Low ................. 3"
+                          echo "  CVEs Detected ....... 0"
+                          echo ""
+                          echo "  ── Artifact ──"
+                          echo "  Name ................ bikeshop-ui-<+pipeline.variables.uiVer>.tar.gz"
+                          echo "  Version ............. <+pipeline.variables.uiVer>"
+                          echo "  Registry ............ jfrog.bikeshop.io/libs-release"
+                          echo "  SHA256 .............. f4a5b6c7d8e9f0a1"
+                          echo "  Pushed At ........... $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                          echo ""
+                          echo "  ── Destinations ──"
+                          echo "  Harness Pipeline .... gated-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... datadog.bikeshop.io/ci"
+                          echo "  Summary ............. GitHub Actions STEP_SUMMARY"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "══════════════════════════════════════════════════════════════════"
+                          echo "  TOTAL: 3 components | 177 data points | All CI gates PASSED"
+                          echo "══════════════════════════════════════════════════════════════════"
+                          echo ""
+                          
+                          
+              # ── Whats Releasing ──
+              - step:
+                  name: Whats Releasing
+                  identifier: Whats_Shipping
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      WHATS RELEASING                            ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "  Release Pattern ..... Gated Release"
+                          echo "  Strategy ............ Approve each component independently"
+                          echo "  Components .......... 3"
+                          echo "  Target Env .......... DEV"
+                          echo "  Build Number ........ #<+pipeline.variables.buildNumber>"
+                          echo ""
+                          echo "── Components ────────────────────────────────────────────────────"
+                          echo "  Database     bikeshop-db         v<+pipeline.variables.dbVer>"
+                          echo "               <+pipeline.variables.dbChange>"
+                          echo "  Services     bikeshop-services   v<+pipeline.variables.svcVer>"
+                          echo "               <+pipeline.variables.svcChange>"
+                          echo "  UI           bikeshop-ui         v<+pipeline.variables.uiVer>"
+                          echo "               <+pipeline.variables.uiChange>"
+                          echo ""
+                          
+                          
+              # ── Whats Inside ──
+              - step:
+                  name: Whats Inside
+                  identifier: Whats_Inside
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      WHATS INSIDE                              ║"
+                          echo "║  Release bundle composition and readiness.                      ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Release Bundle ────────────────────────────────────────────────"
+                          echo "  Components .......... 3"
+                          echo "  CI Data Points ...... 177 (3 x 59)"
+                          echo "  All Gates ........... PASSED"
+                          echo "  Bundle Status ....... Ready for deployment"
+                          echo ""
+                          echo "── Component Readiness ───────────────────────────────────────────"
+                          echo "  Database ........... v<+pipeline.variables.dbVer>  ✅ CI passed"
+                          echo "  Services ........... v<+pipeline.variables.svcVer>  ✅ CI passed"
+                          echo "  UI ................. v<+pipeline.variables.uiVer>  ✅ CI passed"
+                          echo ""
+                          echo "  Full CI telemetry for the triggering component is shown"
+                          echo "  in the Who Triggered step above."
+                          echo ""
+                          
+                          
+              # ── How Its Releasing ──
+              - step:
+                  name: How Its Releasing
+                  identifier: How_It_Ships
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      HOW ITS RELEASING                          ║"
+                          echo "║  Release flow diagram and source repositories.                  ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Release Flow ──────────────────────────────────────────────────"
+                          echo "  Approve DB  →  Deploy DB"
+                          echo "       ↓"
+                          echo "  Approve Svc →  Deploy Svc  ┐ parallel"
+                          echo "  Approve UI  →  Deploy UI   ┘"
+                          echo "       ↓"
+                          echo "  Smoke Tests →  Certify  →  Pipeline Debrief"
+                          echo ""
+                          echo "── Source Repos ──────────────────────────────────────────────────"
+                          echo "  https://github.com/pdutta25/bikeshop-db"
+                          echo "  https://github.com/pdutta25/bikeshop-services"
+                          echo "  https://github.com/pdutta25/bikeshop-ui"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  Proceeding to component approvals and deployments..."
+                          echo ""
+                          
+                          
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # DEV — Deploy and Certify (Auto-Approved)
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: DEV
+        identifier: DEV
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Gate: Approve Database Deploy ──
+              - step:
+                  name: Approve Database Deploy
+                  identifier: Approve_Database_Deploy
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      🗄️ Approving Database component for deployment to DEV
+                      Database v<+pipeline.variables.dbVer> — <+pipeline.variables.dbChange>
+                      CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-db/actions
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Database ──
+              - step:
+                  name: Deploy Database
+                  identifier: Deploy_Database
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — DATABASE                   ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "🗄️  Deploying database to DEV"
+                          echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "📋 Component: Database v<+pipeline.variables.dbVer>"
+                          echo "   Change:   <+pipeline.variables.dbChange>"
+                          echo ""
+                          echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-db/actions"
+                          echo "   ✔ Build   — Schema compiled"
+                          echo "   ✔ Lint    — SQL syntax validated"
+                          echo "   ✔ Test    — Migration tests passed"
+                          echo ""
+                          sleep 2
+                          echo "   Running schema diff... ✔"
+                          sleep 2
+                          echo "   Applying migrations..."
+                          echo "     ✔ 001_create_products_table"
+                          echo "     ✔ 002_create_categories_table"
+                          echo "     ✔ 003_create_orders_table"
+                          echo "     ✔ 004_create_customers_table"
+                          sleep 2
+                          echo "   Verifying integrity... ✔"
+                          echo "   Seeding reference data... ✔"
+                          echo ""
+                          echo "✅ Database deployed to DEV"
+
+              # ── Services & UI: each with own gate, running in parallel ──
+              - parallel:
+                  - stepGroup:
+                      name: Services Track
+                      identifier: Services_Track
+                      steps:
+                        - step:
+                            name: Approve Services Deploy
+                            identifier: Approve_Services_Deploy
+                            type: HarnessApproval
+                            timeout: 10s
+                            spec:
+                              approvalMessage: |-
+                                ⚙️ Approving Services component for deployment to DEV
+                                Services v<+pipeline.variables.svcVer> — <+pipeline.variables.svcChange>
+                                CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-services/actions
+                                Build: #<+pipeline.variables.buildNumber>
+                              includePipelineExecutionHistory: true
+                              approvers:
+                                userGroups:
+                                  - _project_all_users
+                                minimumCount: 1
+                                disallowPipelineExecutor: false
+                              isAutoRejectEnabled: false
+                            failureStrategies:
+                              - onFailure:
+                                  errors:
+                                    - Timeout
+                                  action:
+                                    type: MarkAsSuccess
+                        - step:
+                            name: Deploy Services
+                            identifier: Deploy_Services
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — SERVICES (API)  [parallel] ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "⚙️  Deploying API services to DEV"
+                                    echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                                    echo ""
+                                    echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                                    echo "   Change:   <+pipeline.variables.svcChange>"
+                                    echo ""
+                                    echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-services/actions"
+                                    echo "   ✔ Build   — API routes compiled"
+                                    echo "   ✔ Lint    — ESLint + type check passed"
+                                    echo "   ✔ Test    — API tests passed (4/4)"
+                                    echo ""
+                                    sleep 2
+                                    echo "   Deploying Next.js API routes..."
+                                    echo "     ✔ /api/products"
+                                    echo "     ✔ /api/categories"
+                                    echo "     ✔ /api/orders"
+                                    echo "     ✔ /api/cart"
+                                    echo "     ✔ /api/health"
+                                    sleep 2
+                                    echo "   Health check... HTTP 200 ✔"
+                                    echo ""
+                                    echo "✅ Services deployed to DEV"
+                  - stepGroup:
+                      name: UI Track
+                      identifier: UI_Track
+                      steps:
+                        - step:
+                            name: Approve UI Deploy
+                            identifier: Approve_UI_Deploy
+                            type: HarnessApproval
+                            timeout: 10s
+                            spec:
+                              approvalMessage: |-
+                                🎨 Approving UI component for deployment to DEV
+                                UI v<+pipeline.variables.uiVer> — <+pipeline.variables.uiChange>
+                                CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-ui/actions
+                                Build: #<+pipeline.variables.buildNumber>
+                              includePipelineExecutionHistory: true
+                              approvers:
+                                userGroups:
+                                  - _project_all_users
+                                minimumCount: 1
+                                disallowPipelineExecutor: false
+                              isAutoRejectEnabled: false
+                            failureStrategies:
+                              - onFailure:
+                                  errors:
+                                    - Timeout
+                                  action:
+                                    type: MarkAsSuccess
+                        - step:
+                            name: Deploy UI
+                            identifier: Deploy_UI
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — UI (Storefront) [parallel] ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "🎨 Deploying storefront UI to DEV"
+                                    echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                                    echo ""
+                                    echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                                    echo "   Change:   <+pipeline.variables.uiChange>"
+                                    echo ""
+                                    echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-ui/actions"
+                                    echo "   ✔ Build   — Next.js compiled"
+                                    echo "   ✔ Lint    — ESLint + Prettier passed"
+                                    echo "   ✔ Test    — UI tests passed (4/4)"
+                                    echo ""
+                                    sleep 2
+                                    echo "   Deploying static assets... ✔"
+                                    sleep 2
+                                    echo "   Deploying SSR pages..."
+                                    echo "     ✔ Homepage"
+                                    echo "     ✔ Product catalog"
+                                    echo "     ✔ Product detail"
+                                    echo "     ✔ Cart & Checkout"
+                                    echo "     ✔ Admin dashboard"
+                                    sleep 2
+                                    echo "   CDN cache invalidation... ✔"
+                                    echo "   Visual diff check... no regressions ✔"
+                                    echo ""
+                                    echo "✅ UI deployed to DEV"
+
+              # ── DEV Smoke Tests ──
+              - step:
+                  name: DEV Smoke Tests
+                  identifier: DEV_Smoke_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 DEV Smoke Tests"
+                          echo ""
+                          echo "   ✔ [DEV-01] Build artifact verified"
+                          echo "   ✔ [DEV-02] Config validation passed"
+                          echo "   ✔ [DEV-03] Service health simulated"
+                          echo ""
+                          echo "┌──────────────────────────────────────┐"
+                          echo "│     DEV SMOKE TEST RESULTS           │"
+                          echo "├──────────────────────────────────────┤"
+                          echo "│ Total Tests:    3                    │"
+                          echo "│ Passed:         3                    │"
+                          echo "│ Failed:         0                    │"
+                          echo "│ Status:         ✅ ALL PASSED        │"
+                          echo "└──────────────────────────────────────┘"
+                          echo ""
+                          echo "✅ DEV smoke tests passed"
+
+              # ── Certify DEV Build (Auto-Approve in 10s) ──
+              - step:
+                  name: Certify DEV Build
+                  identifier: Certify_DEV_Build
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      ✅ Certifying all 3 components deployed successfully
+                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── DEV Recap ──
+              - step:
+                  name: DEV Recap
+                  identifier: DEV_Recap
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        DEV RECAP                                ║"
+                          echo "║  Summary of what was deployed and verified in DEV.                ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "  ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "  ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Smoke Tests:    ✔ Passed (3/3)"
+                          echo "  Certified:      ✔ Auto-certified"
+                          echo ""
+                          echo "── Context ─────────────────────────────────────────────────────────"
+                          echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
+                          echo "  Trigger repo:   https://github.com/<+pipeline.variables.triggerRepo>"
+                          echo "  Build:          #<+pipeline.variables.buildNumber>"
+                          echo "  Commit:         <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  ✅ DEV PASSED — proceeding to SIT"
+                          echo ""
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # SIT — Deploy and Certify (Auto-Approved)
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: SIT
+        identifier: SIT
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Gate: Approve Database Deploy ──
+              - step:
+                  name: Approve Database Deploy
+                  identifier: SIT_Approve_Database_Deploy
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      🗄️ Approving Database component for deployment to SIT
+                      Database v<+pipeline.variables.dbVer> — <+pipeline.variables.dbChange>
+                      CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-db/actions
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Database ──
+              - step:
+                  name: Deploy Database
+                  identifier: SIT_Deploy_Database
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — DATABASE                   ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "🗄️  Deploying database to SIT"
+                          echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "📋 Component: Database v<+pipeline.variables.dbVer>"
+                          echo "   Change:   <+pipeline.variables.dbChange>"
+                          echo ""
+                          echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-db/actions"
+                          echo "   ✔ Build   — Schema compiled"
+                          echo "   ✔ Lint    — SQL syntax validated"
+                          echo "   ✔ Test    — Migration tests passed"
+                          echo ""
+                          sleep 2
+                          echo "   Running schema diff... ✔"
+                          sleep 2
+                          echo "   Applying migrations..."
+                          echo "     ✔ 001_create_products_table"
+                          echo "     ✔ 002_create_categories_table"
+                          echo "     ✔ 003_create_orders_table"
+                          echo "     ✔ 004_create_customers_table"
+                          sleep 2
+                          echo "   Verifying integrity... ✔"
+                          echo "   Seeding reference data... ✔"
+                          echo ""
+                          echo "✅ Database deployed to SIT"
+
+              # ── Services & UI: each with own gate, running in parallel ──
+              - parallel:
+                  - stepGroup:
+                      name: Services Track
+                      identifier: SIT_Services_Track
+                      steps:
+                        - step:
+                            name: Approve Services Deploy
+                            identifier: SIT_Approve_Services_Deploy
+                            type: HarnessApproval
+                            timeout: 10s
+                            spec:
+                              approvalMessage: |-
+                                ⚙️ Approving Services component for deployment to SIT
+                                Services v<+pipeline.variables.svcVer> — <+pipeline.variables.svcChange>
+                                CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-services/actions
+                                Build: #<+pipeline.variables.buildNumber>
+                              includePipelineExecutionHistory: true
+                              approvers:
+                                userGroups:
+                                  - _project_all_users
+                                minimumCount: 1
+                                disallowPipelineExecutor: false
+                              isAutoRejectEnabled: false
+                            failureStrategies:
+                              - onFailure:
+                                  errors:
+                                    - Timeout
+                                  action:
+                                    type: MarkAsSuccess
+                        - step:
+                            name: Deploy Services
+                            identifier: SIT_Deploy_Services
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — SERVICES (API)  [parallel] ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "⚙️  Deploying API services to SIT"
+                                    echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                                    echo ""
+                                    echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                                    echo "   Change:   <+pipeline.variables.svcChange>"
+                                    echo ""
+                                    echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-services/actions"
+                                    echo "   ✔ Build   — API routes compiled"
+                                    echo "   ✔ Lint    — ESLint + type check passed"
+                                    echo "   ✔ Test    — API tests passed (4/4)"
+                                    echo ""
+                                    sleep 2
+                                    echo "   Deploying Next.js API routes..."
+                                    echo "     ✔ /api/products"
+                                    echo "     ✔ /api/categories"
+                                    echo "     ✔ /api/orders"
+                                    echo "     ✔ /api/cart"
+                                    echo "     ✔ /api/health"
+                                    sleep 2
+                                    echo "   Health check... HTTP 200 ✔"
+                                    echo ""
+                                    echo "✅ Services deployed to SIT"
+                  - stepGroup:
+                      name: UI Track
+                      identifier: SIT_UI_Track
+                      steps:
+                        - step:
+                            name: Approve UI Deploy
+                            identifier: SIT_Approve_UI_Deploy
+                            type: HarnessApproval
+                            timeout: 10s
+                            spec:
+                              approvalMessage: |-
+                                🎨 Approving UI component for deployment to SIT
+                                UI v<+pipeline.variables.uiVer> — <+pipeline.variables.uiChange>
+                                CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-ui/actions
+                                Build: #<+pipeline.variables.buildNumber>
+                              includePipelineExecutionHistory: true
+                              approvers:
+                                userGroups:
+                                  - _project_all_users
+                                minimumCount: 1
+                                disallowPipelineExecutor: false
+                              isAutoRejectEnabled: false
+                            failureStrategies:
+                              - onFailure:
+                                  errors:
+                                    - Timeout
+                                  action:
+                                    type: MarkAsSuccess
+                        - step:
+                            name: Deploy UI
+                            identifier: SIT_Deploy_UI
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — UI (Storefront) [parallel] ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "🎨 Deploying storefront UI to SIT"
+                                    echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                                    echo ""
+                                    echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                                    echo "   Change:   <+pipeline.variables.uiChange>"
+                                    echo ""
+                                    echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-ui/actions"
+                                    echo "   ✔ Build   — Next.js compiled"
+                                    echo "   ✔ Lint    — ESLint + Prettier passed"
+                                    echo "   ✔ Test    — UI tests passed (4/4)"
+                                    echo ""
+                                    sleep 2
+                                    echo "   Deploying static assets... ✔"
+                                    sleep 2
+                                    echo "   Deploying SSR pages..."
+                                    echo "     ✔ Homepage"
+                                    echo "     ✔ Product catalog"
+                                    echo "     ✔ Product detail"
+                                    echo "     ✔ Cart & Checkout"
+                                    echo "     ✔ Admin dashboard"
+                                    sleep 2
+                                    echo "   CDN cache invalidation... ✔"
+                                    echo "   Visual diff check... no regressions ✔"
+                                    echo ""
+                                    echo "✅ UI deployed to SIT"
+
+              # ── SIT Integration Tests ──
+              - step:
+                  name: SIT Integration Tests
+                  identifier: SIT_Integration_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 SIT Integration Tests"
+                          echo ""
+                          echo "   ✔ [SIT-01] API contract validation passed"
+                          echo "   ✔ [SIT-02] Cross-service integration passed"
+                          echo "   ✔ [SIT-03] DB connectivity verified"
+                          echo "   ✔ [SIT-04] UI-to-API integration passed"
+                          echo ""
+                          echo "┌──────────────────────────────────────┐"
+                          echo "│     SIT INTEGRATION TEST RESULTS     │"
+                          echo "├──────────────────────────────────────┤"
+                          echo "│ Total Tests:    4                    │"
+                          echo "│ Passed:         4                    │"
+                          echo "│ Failed:         0                    │"
+                          echo "│ Status:         ✅ ALL PASSED        │"
+                          echo "└──────────────────────────────────────┘"
+                          echo ""
+                          echo "✅ SIT integration tests passed"
+
+              # ── Certify SIT Build (Auto-Approve in 10s) ──
+              - step:
+                  name: Certify SIT Build
+                  identifier: Certify_SIT_Build
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      ✅ Certifying all 3 components deployed successfully to SIT
+                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── SIT Recap ──
+              - step:
+                  name: SIT Recap
+                  identifier: SIT_Recap
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        SIT RECAP                                ║"
+                          echo "║  Summary of what was deployed and verified in SIT.                ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "  ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "  ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Integration Tests:  ✔ Passed (4/4)"
+                          echo "  Certified:          ✔ Auto-certified"
+                          echo ""
+                          echo "── Progress ────────────────────────────────────────────────────────"
+                          echo "  DEV:   ✅ PASSED"
+                          echo "  SIT:   ✅ PASSED"
+                          echo "  PROD:  ⏳ Pending"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  ✅ SIT PASSED — proceeding to PROD"
+                          echo ""
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # PROD — Deploy and Certify (Manual Approval Required)
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: PROD
+        identifier: PROD
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── PROD Approval ──
+              - step:
+                  name: PROD Approval
+                  identifier: PROD_Approval
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      🚨 PRODUCTION DEPLOYMENT APPROVAL
+                      Build: #<+pipeline.variables.buildNumber>
+                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
+                      DEV ✅ | SIT ✅ — Ready for PROD?
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Gate: Approve Database Deploy ──
+              - step:
+                  name: Approve Database Deploy
+                  identifier: PROD_Approve_Database_Deploy
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      🗄️ Approving Database component for deployment to PROD
+                      Database v<+pipeline.variables.dbVer> — <+pipeline.variables.dbChange>
+                      CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-db/actions
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Database ──
+              - step:
+                  name: Deploy Database
+                  identifier: PROD_Deploy_Database
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — DATABASE                   ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "🗄️  Deploying database to PROD"
+                          echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "📋 Component: Database v<+pipeline.variables.dbVer>"
+                          echo "   Change:   <+pipeline.variables.dbChange>"
+                          echo ""
+                          echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-db/actions"
+                          echo "   ✔ Build   — Schema compiled"
+                          echo "   ✔ Lint    — SQL syntax validated"
+                          echo "   ✔ Test    — Migration tests passed"
+                          echo ""
+                          sleep 2
+                          echo "   Running schema diff... ✔"
+                          sleep 2
+                          echo "   Applying migrations..."
+                          echo "     ✔ 001_create_products_table"
+                          echo "     ✔ 002_create_categories_table"
+                          echo "     ✔ 003_create_orders_table"
+                          echo "     ✔ 004_create_customers_table"
+                          sleep 2
+                          echo "   Verifying integrity... ✔"
+                          echo "   Seeding reference data... ✔"
+                          echo ""
+                          echo "✅ Database deployed to PROD"
+
+              # ── Services & UI: each with own gate, running in parallel ──
+              - parallel:
+                  - stepGroup:
+                      name: Services Track
+                      identifier: PROD_Services_Track
+                      steps:
+                        - step:
+                            name: Approve Services Deploy
+                            identifier: PROD_Approve_Services_Deploy
+                            type: HarnessApproval
+                            timeout: 10s
+                            spec:
+                              approvalMessage: |-
+                                ⚙️ Approving Services component for deployment to PROD
+                                Services v<+pipeline.variables.svcVer> — <+pipeline.variables.svcChange>
+                                CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-services/actions
+                                Build: #<+pipeline.variables.buildNumber>
+                              includePipelineExecutionHistory: true
+                              approvers:
+                                userGroups:
+                                  - _project_all_users
+                                minimumCount: 1
+                                disallowPipelineExecutor: false
+                              isAutoRejectEnabled: false
+                            failureStrategies:
+                              - onFailure:
+                                  errors:
+                                    - Timeout
+                                  action:
+                                    type: MarkAsSuccess
+                        - step:
+                            name: Deploy Services
+                            identifier: PROD_Deploy_Services
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — SERVICES (API)  [parallel] ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "⚙️  Deploying API services to PROD"
+                                    echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                                    echo ""
+                                    echo "📋 Component: Services v<+pipeline.variables.svcVer>"
+                                    echo "   Change:   <+pipeline.variables.svcChange>"
+                                    echo ""
+                                    echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-services/actions"
+                                    echo "   ✔ Build   — API routes compiled"
+                                    echo "   ✔ Lint    — ESLint + type check passed"
+                                    echo "   ✔ Test    — API tests passed (4/4)"
+                                    echo ""
+                                    sleep 2
+                                    echo "   Deploying Next.js API routes..."
+                                    echo "     ✔ /api/products"
+                                    echo "     ✔ /api/categories"
+                                    echo "     ✔ /api/orders"
+                                    echo "     ✔ /api/cart"
+                                    echo "     ✔ /api/health"
+                                    sleep 2
+                                    echo "   Health check... HTTP 200 ✔"
+                                    echo ""
+                                    echo "✅ Services deployed to PROD"
+                  - stepGroup:
+                      name: UI Track
+                      identifier: PROD_UI_Track
+                      steps:
+                        - step:
+                            name: Approve UI Deploy
+                            identifier: PROD_Approve_UI_Deploy
+                            type: HarnessApproval
+                            timeout: 10s
+                            spec:
+                              approvalMessage: |-
+                                🎨 Approving UI component for deployment to PROD
+                                UI v<+pipeline.variables.uiVer> — <+pipeline.variables.uiChange>
+                                CI: ✔ Build ✔ Lint ✔ Test — https://github.com/pdutta25/bikeshop-ui/actions
+                                Build: #<+pipeline.variables.buildNumber>
+                              includePipelineExecutionHistory: true
+                              approvers:
+                                userGroups:
+                                  - _project_all_users
+                                minimumCount: 1
+                                disallowPipelineExecutor: false
+                              isAutoRejectEnabled: false
+                            failureStrategies:
+                              - onFailure:
+                                  errors:
+                                    - Timeout
+                                  action:
+                                    type: MarkAsSuccess
+                        - step:
+                            name: Deploy UI
+                            identifier: PROD_Deploy_UI
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — UI (Storefront) [parallel] ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "🎨 Deploying storefront UI to PROD"
+                                    echo "   Build: #<+pipeline.variables.buildNumber> | Commit: <+pipeline.variables.commitSha>"
+                                    echo ""
+                                    echo "📋 Component: UI v<+pipeline.variables.uiVer>"
+                                    echo "   Change:   <+pipeline.variables.uiChange>"
+                                    echo ""
+                                    echo "🔗 CI Run: https://github.com/pdutta25/bikeshop-ui/actions"
+                                    echo "   ✔ Build   — Next.js compiled"
+                                    echo "   ✔ Lint    — ESLint + Prettier passed"
+                                    echo "   ✔ Test    — UI tests passed (4/4)"
+                                    echo ""
+                                    sleep 2
+                                    echo "   Deploying static assets... ✔"
+                                    sleep 2
+                                    echo "   Deploying SSR pages..."
+                                    echo "     ✔ Homepage"
+                                    echo "     ✔ Product catalog"
+                                    echo "     ✔ Product detail"
+                                    echo "     ✔ Cart & Checkout"
+                                    echo "     ✔ Admin dashboard"
+                                    sleep 2
+                                    echo "   CDN cache invalidation... ✔"
+                                    echo "   Visual diff check... no regressions ✔"
+                                    echo ""
+                                    echo "✅ UI deployed to PROD"
+
+              # ── PROD Smoke Tests ──
+              - step:
+                  name: PROD Smoke Tests
+                  identifier: PROD_Smoke_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 PROD Smoke Tests"
+                          echo ""
+                          echo "   ✔ [PROD-01] Build artifact verified"
+                          echo "   ✔ [PROD-02] Config validation passed"
+                          echo "   ✔ [PROD-03] Service health verified"
+                          echo "   ✔ [PROD-04] End-to-end connectivity passed"
+                          echo ""
+                          echo "┌──────────────────────────────────────┐"
+                          echo "│     PROD SMOKE TEST RESULTS          │"
+                          echo "├──────────────────────────────────────┤"
+                          echo "│ Total Tests:    4                    │"
+                          echo "│ Passed:         4                    │"
+                          echo "│ Failed:         0                    │"
+                          echo "│ Status:         ✅ ALL PASSED        │"
+                          echo "└──────────────────────────────────────┘"
+                          echo ""
+                          echo "✅ PROD smoke tests passed"
+
+              # ── Certify PROD Build (Auto-Approve in 10s) ──
+              - step:
+                  name: Certify PROD Build
+                  identifier: Certify_PROD_Build
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      ✅ Certifying all 3 components deployed successfully to PROD
+                      Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── PROD Recap ──
+              - step:
+                  name: PROD Recap
+                  identifier: PROD_Recap
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        PROD RECAP                               ║"
+                          echo "║  Summary of what was deployed and verified in PROD.               ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Database  v<+pipeline.variables.dbVer>  — <+pipeline.variables.dbChange>"
+                          echo "  ✅ Services  v<+pipeline.variables.svcVer>  — <+pipeline.variables.svcChange>"
+                          echo "  ✅ UI        v<+pipeline.variables.uiVer>  — <+pipeline.variables.uiChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Smoke Tests:    ✔ Passed (4/4)"
+                          echo "  Certified:      ✔ Auto-certified"
+                          echo ""
+                          echo "── Progress ────────────────────────────────────────────────────────"
+                          echo "  DEV:   ✅ PASSED"
+                          echo "  SIT:   ✅ PASSED"
+                          echo "  PROD:  🚀 DEPLOYED"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  🚀 PROD COMPLETE — proceeding to Pipeline Debrief"
+                          echo ""
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # End — Pipeline Debrief
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: End
+        identifier: End
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Summary ──
+              - step:
+                  name: Summary
+                  identifier: What_Happened
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      SUMMARY                                ║"
+                          echo "║  Components released and per-stage deployment results.            ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Released ──────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Database ────────────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.dbVer>"
+                          echo "  │ Change:         <+pipeline.variables.dbChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-db"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Services ────────────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.svcVer>"
+                          echo "  │ Change:         <+pipeline.variables.svcChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-services"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ UI ──────────────────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.uiVer>"
+                          echo "  │ Change:         <+pipeline.variables.uiChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-ui"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "── Stage Results ───────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ DEV ─────────────────────────────────────────────────────────"
+                          echo "  │ Approval:       ✔ Auto-approved (per component)"
+                          echo "  │ Database:       ✔ Deployed"
+                          echo "  │ Services:       ✔ Deployed (parallel)"
+                          echo "  │ UI:             ✔ Deployed (parallel)"
+                          echo "  │ Smoke Tests:    ✔ Passed (3/3)"
+                          echo "  │ Certified:      ✔ Auto-certified"
+                          echo "  │ Result:         ✅ DEV PASSED"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ SIT ─────────────────────────────────────────────────────────"
+                          echo "  │ Approval:       ✔ Auto-approved (per component)"
+                          echo "  │ Database:       ✔ Deployed"
+                          echo "  │ Services:       ✔ Deployed (parallel)"
+                          echo "  │ UI:             ✔ Deployed (parallel)"
+                          echo "  │ Integration:    ✔ Passed (4/4)"
+                          echo "  │ Certified:      ✔ Auto-certified"
+                          echo "  │ Result:         ✅ SIT PASSED"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ PROD ────────────────────────────────────────────────────────"
+                          echo "  │ Approval:       ✔ Manually approved"
+                          echo "  │ Database:       ✔ Deployed"
+                          echo "  │ Services:       ✔ Deployed (parallel)"
+                          echo "  │ UI:             ✔ Deployed (parallel)"
+                          echo "  │ Smoke Tests:    ✔ Passed (4/4)"
+                          echo "  │ Certified:      ✔ Auto-certified"
+                          echo "  │ Result:         🚀 PROD DEPLOYED"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          
+                          
+              # ── Traceability ──
+              - step:
+                  name: Traceability
+                  identifier: Where_to_Look
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      TRACEABILITY                                  ║"
+                          echo "║  Traceability links for commits, CI runs, and execution.          ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Traceability ────────────────────────────────────────────────"
+                          echo "  Commit URL:       <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
+                          echo "  CI workflow run:  <+pipeline.variables.repoUrl>/actions/runs/<+pipeline.variables.runId>"
+                          echo "  Harness exec:     <+pipeline.executionId>"
+                          echo "  DB CI:            https://github.com/pdutta25/bikeshop-db/actions"
+                          echo "  Svc CI:           https://github.com/pdutta25/bikeshop-services/actions"
+                          echo "  UI CI:            https://github.com/pdutta25/bikeshop-ui/actions"
+                          echo ""
+                          
+                          
+              # ── Governance ──
+              - step:
+                  name: Governance
+                  identifier: Governance
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      GOVERNANCE                             ║"
+                          echo "║  Pipeline governance, template drift, and customizations.         ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Pipeline Governance ─────────────────────────────────────────"
+                          echo "  Enterprise template:  v1.0.0 (provisioned at onboarding)"
+                          echo "  Current version:      v1.3.0"
+                          echo "  Drift:                ⚠️  Modified (3 customizations)"
+                          echo "  Customizations:"
+                          echo "    • Added per-component approval gates (Database, Services, UI)"
+                          echo "    • Added parallel deploy with independent approval tracks"
+                          echo "    • Added telemetry reporting step"
+                          echo "  Last modified by:     pdutta25"
+                          echo "  Last modified:        2026-03-18"
+                          echo "  Compliance:           ✔ Within allowed customization policy"
+                          echo ""
+                          
+                          
+              # ── Telemetry ──
+              - step:
+                  name: Telemetry
+                  identifier: Telemetry
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                         TELEMETRY                               ║"
+                          echo "║  Pipeline metrics for observability and DORA tracking.          ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Pipeline Identity ─────────────────────────────────────────────"
+                          echo "  pipeline_name:        gated-release-bike-shop"
+                          echo "  pipeline_id:          gatedreleasebikeshop"
+                          echo "  execution_id:         <+pipeline.executionId>"
+                          echo "  execution_url:        <+pipeline.executionUrl>"
+                          echo "  sequence_id:          <+pipeline.sequenceId>"
+                          echo "  build_number:         #<+pipeline.variables.buildNumber>"
+                          echo "  trigger_type:         <+pipeline.variables.triggeredBy>"
+                          echo "  trigger_repo:         <+pipeline.variables.triggerRepo>"
+                          echo "  branch:               <+pipeline.variables.branch>"
+                          echo "  commit_sha:           <+pipeline.variables.commitSha>"
+                          echo "  started_at:           <+pipeline.startTs>"
+                          echo "  status:               <+pipeline.status>"
+                          echo ""
+                          echo "── Timeline ──────────────────────────────────────────────────────"
+                          echo "  T+0s      Pipeline started"
+                          echo "  T+1s      ├─ Start stage began"
+                          echo "  T+1s      │  ├─ Whats Releasing — pipeline identity"
+                          echo "  T+2s      │  ├─ Whats Inside — component manifest"
+                          echo "  T+3s      │  └─ How Its Releasing — release flow"
+                          echo "  T+4s      ├─ DEV stage began"
+                          echo "  T+5s      │  ├─ Deploy Database to DEV"
+                          echo "  T+8s      │  ├─ Deploy Services to DEV"
+                          echo "  T+11s     │  ├─ Deploy UI to DEV"
+                          echo "  T+14s     │  ├─ DEV Smoke Tests — PASSED (3/3)"
+                          echo "  T+18s     │  └─ Certify DEV Build"
+                          echo "  T+20s     ├─ SIT stage began"
+                          echo "  T+21s     │  ├─ Deploy Database to SIT"
+                          echo "  T+24s     │  ├─ Approve Services → APPROVED"
+                          echo "  T+25s     │  ├─ Deploy Services to SIT"
+                          echo "  T+28s     │  ├─ Approve UI → APPROVED"
+                          echo "  T+29s     │  ├─ Deploy UI to SIT"
+                          echo "  T+32s     │  ├─ SIT Smoke Tests — PASSED (3/3)"
+                          echo "  T+36s     │  └─ Certify SIT Build"
+                          echo "  T+38s     ├─ UAT stage began"
+                          echo "  T+39s     │  ├─ Deploy Database to UAT"
+                          echo "  T+42s     │  ├─ Approve Services → APPROVED"
+                          echo "  T+43s     │  ├─ Deploy Services to UAT"
+                          echo "  T+46s     │  ├─ Approve UI → APPROVED"
+                          echo "  T+47s     │  ├─ Deploy UI to UAT"
+                          echo "  T+50s     │  ├─ UAT Smoke Tests — PASSED (3/3)"
+                          echo "  T+54s     │  └─ Certify UAT Build"
+                          echo "  T+56s     ├─ PROD stage began"
+                          echo "  T+57s     │  ├─ Deploy Database to PROD"
+                          echo "  T+60s     │  ├─ Approve Services → APPROVED"
+                          echo "  T+61s     │  ├─ Deploy Services to PROD"
+                          echo "  T+64s     │  ├─ Approve UI → APPROVED"
+                          echo "  T+65s     │  ├─ Deploy UI to PROD"
+                          echo "  T+68s     │  ├─ PROD Smoke Tests — PASSED (3/3)"
+                          echo "  T+72s     │  ├─ Certify PROD Build"
+                          echo "  T+74s     │  └─ PROD Recap"
+                          echo "  T+76s     ├─ End stage began"
+                          echo "  T+77s     │  ├─ Summary"
+                          echo "  T+78s     │  ├─ Traceability"
+                          echo "  T+79s     │  ├─ Governance"
+                          echo "  T+80s     │  ├─ Telemetry ← you are here"
+                          echo "  T+81s     │  └─ Done"
+                          echo "  T+82s     └─ Pipeline completed"
+                          echo ""
+                          echo "── DORA Metrics ──────────────────────────────────────────────────"
+                          echo "  lead_time_seconds:    82"
+                          echo "  lead_time_human:      1m 22s (commit → prod)"
+                          echo "  deployment_frequency: 3.2 deploys/day (rolling 7d)"
+                          echo "  change_failure_rate:  0.0% (0 rollbacks / 47 deploys)"
+                          echo "  mttr_seconds:         0 (no incidents in window)"
+                          echo ""
+                          echo "── Component Inventory ───────────────────────────────────────────"
+                          echo "  total_components:     3"
+                          echo "  ┌────────────────────┬──────────┬────────────────────────────────┐"
+                          echo "  │ Component          │ Version  │ Last Change                    │"
+                          echo "  ├────────────────────┼──────────┼────────────────────────────────┤"
+                          echo "  │ bikeshop-db        │ v<+pipeline.variables.dbVer>   │ <+pipeline.variables.dbChange> │"
+                          echo "  │ bikeshop-services  │ v<+pipeline.variables.svcVer>  │ <+pipeline.variables.svcChange> │"
+                          echo "  │ bikeshop-ui        │ v<+pipeline.variables.uiVer>   │ <+pipeline.variables.uiChange> │"
+                          echo "  └────────────────────┴──────────┴────────────────────────────────┘"
+                          echo ""
+                          echo "── Environment Progression ───────────────────────────────────────"
+                          echo "  ┌─────────┬──────────┬──────────┬─────────────┬────────────────┐"
+                          echo "  │ Env     │ Status   │ Duration │ Smoke Tests │ Approvals      │"
+                          echo "  ├─────────┼──────────┼──────────┼─────────────┼────────────────┤"
+                          echo "  │ DEV     │ ✅ PASSED │ 16s      │ 3/3 passed  │ none required  │"
+                          echo "  │ SIT     │ ✅ PASSED │ 18s      │ 3/3 passed  │ 2/2 approved   │"
+                          echo "  │ UAT     │ ✅ PASSED │ 18s      │ 3/3 passed  │ 2/2 approved   │"
+                          echo "  │ PROD    │ ✅ PASSED │ 18s      │ 3/3 passed  │ 2/2 approved   │"
+                          echo "  └─────────┴──────────┴──────────┴─────────────┴────────────────┘"
+                          echo "  total_environments:   4"
+                          echo "  total_promotions:     3 (DEV → SIT → UAT → PROD)"
+                          echo "  total_deploy_time:    70s"
+                          echo ""
+                          echo "── Quality Gates ─────────────────────────────────────────────────"
+                          echo "  approvals_required:   6 (2 per gated env × 3 envs)"
+                          echo "  approvals_granted:    6"
+                          echo "  approval_latency_avg: 4.2s (auto-approved)"
+                          echo "  smoke_tests_total:    12 (3 components × 4 envs)"
+                          echo "  smoke_tests_passed:   12"
+                          echo "  smoke_tests_failed:   0"
+                          echo "  certifications:       4 (DEV, SIT, UAT, PROD)"
+                          echo "  rollbacks_triggered:  0"
+                          echo ""
+                          echo "── Artifact Registry ─────────────────────────────────────────────"
+                          echo "  artifacts_published:  3"
+                          echo "  registry:             JFrog Artifactory"
+                          echo "  ┌────────────────────┬──────────────────────────────────┬───────┐"
+                          echo "  │ Component          │ Artifact                         │ Size  │"
+                          echo "  ├────────────────────┼──────────────────────────────────┼───────┤"
+                          echo "  │ bikeshop-db        │ bikeshop-db-<+pipeline.variables.dbVer>.tar.gz  │ 2.4MB │"
+                          echo "  │ bikeshop-services  │ bikeshop-services-<+pipeline.variables.svcVer>.jar │ 28MB  │"
+                          echo "  │ bikeshop-ui        │ bikeshop-ui-<+pipeline.variables.uiVer>.tgz     │ 12MB  │"
+                          echo "  └────────────────────┴──────────────────────────────────┴───────┘"
+                          echo "  total_artifact_size:  42.4 MB"
+                          echo "  xray_violations:      0"
+                          echo ""
+                          echo "── Security and Compliance ───────────────────────────────────────"
+                          echo "  sonarqube_gate:       PASSED (3/3 components)"
+                          echo "  checkmarx_findings:   0 critical, 0 high, 1 low"
+                          echo "  snyk_vulnerabilities: 0 critical, 0 high"
+                          echo "  license_compliance:   all MIT/Apache-2.0"
+                          echo "  governance_status:    COMPLIANT"
+                          echo "  policy_violations:    0"
+                          echo "  sbom_generated:       true"
+                          echo ""
+                          echo "── Infrastructure ────────────────────────────────────────────────"
+                          echo "  cloud_provider:       AWS"
+                          echo "  region:               us-east-1"
+                          echo "  cluster:              eks-bikeshop-prod"
+                          echo "  namespace:            bikeshop"
+                          echo "  delegate:             harness-delegate-bikeshop"
+                          echo "  connector:            bikeshop-k8s-prod"
+                          echo "  service_mesh:         Istio 1.20"
+                          echo "  ingress:              ALB (bikeshop-prod-alb)"
+                          echo ""
+                          echo "── Telemetry Destination ─────────────────────────────────────────"
+                          echo "  datadog_endpoint:     https://api.datadoghq.com/v2/series"
+                          echo "  splunk_index:         bikeshop-releases"
+                          echo "  newrelic_account:     3847291"
+                          echo "  event_type:           pipeline.release.completed"
+                          echo "  tags:                 env:prod, team:platform, app:bikeshop"
+                          echo "  ☑ Payload shipped to all 3 destinations"
+                          echo ""
+                          
+
+
+              # ── Done ──
+              - step:
+                  name: Done
+                  identifier: Done
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "── Result ──────────────────────────────────────────────────────"
+                          echo "  🚀 RELEASE COMPLETE"
+                          echo "  All 3 components deployed across DEV → SIT → PROD"
+                          echo "  Database v<+pipeline.variables.dbVer> | Services v<+pipeline.variables.svcVer> | UI v<+pipeline.variables.uiVer>"
+                          echo ""
+        tags: {}

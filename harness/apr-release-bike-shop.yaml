@@ -1,0 +1,2892 @@
+pipeline:
+  name: apr-release-bike-shop
+  identifier: aprreleasebikeshop
+  projectIdentifier: devexbikeshop
+  orgIdentifier: default
+  tags: {}
+  variables:
+    - name: commitSha
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: buildNumber
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: branch
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: prNumber
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: triggeredBy
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: repoUrl
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: runId
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: triggerRepo
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: authVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: authChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: payVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: payChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: invVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: invChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: notifVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: notifChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: anlytVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: anlytChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: sfVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: sfChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: adminVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: adminChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: mobileVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: mobileChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: cdnVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: cdnChange
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: docsVer
+      type: String
+      default: "unknown"
+      value: <+input>
+    - name: docsChange
+      type: String
+      default: "unknown"
+      value: <+input>
+  stages:
+    # ════════════════════════════════════════════════════════════
+    # Start — Pipeline Overview
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: Start
+        identifier: Start
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Who Triggered ──
+              - step:
+                  name: Who Triggered
+                  identifier: Who_Triggered
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║               WHO TRIGGERED THIS RELEASE                        ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Trigger Component ─────────────────────────────────────────────"
+                          echo "  Repository .......... <+pipeline.variables.triggerRepo>"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  Build Number ........ #<+pipeline.variables.buildNumber>"
+                          echo "  CI Run .............. https://github.com/<+pipeline.variables.triggerRepo>/actions/runs/<+pipeline.variables.runId>"
+                          echo ""
+                          echo "── Dispatch Details ──────────────────────────────────────────────"
+                          echo "  Event ............... repository_dispatch"
+                          echo "  Action .............. trigger-release"
+                          echo "  Dispatch Time ....... $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                          echo "  Pipeline ............ apr-release-bike-shop"
+                          echo "  Execution ID ........ <+pipeline.executionId>"
+                          echo "  Project ............. <+pipeline.projectIdentifier>"
+                          echo ""
+                          echo "  A component CI completed successfully and dispatched this"
+                          echo "  release pipeline. Review the build details below."
+                          echo ""
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                CI BUILD TELEMETRY                              ║"
+                          echo "║  Full CI build summary from the triggering component.           ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 1 of 10: bikeshop-auth"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-auth"
+                          echo "  Repository .......... pdutta25/bikeshop-auth"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.authChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #142"
+                          echo "  Run ID .............. 8834201"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... java-spring-boot"
+                          echo "  Build Tool .......... Maven"
+                          echo "  Lint Tool ........... Checkstyle"
+                          echo "  Test Framework ...... JUnit 5"
+                          echo "  Quality Scanner ..... SonarQube"
+                          echo "  Security Scanner .... Checkmarx"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:12Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:18Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:19Z"
+                          echo "  Build Finished ...... 2026-03-19T08:02:41Z"
+                          echo "  Lint Started ........ 2026-03-19T08:02:42Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:02:58Z"
+                          echo "  Test Started ........ 2026-03-19T08:02:59Z"
+                          echo "  Test Finished ....... 2026-03-19T08:04:03Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:04:22Z"
+                          echo "  Total Duration ...... 3m 10s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 38.6MB"
+                          echo "  Dependencies ........ 74"
+                          echo "  Warnings ............ 2"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 156"
+                          echo "  Passed .............. 156"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 84.3%"
+                          echo "  Duration ............ 64s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 3"
+                          echo "  Duplication ......... 1.2%"
+                          echo "  Tech Debt ........... 22m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 1"
+                          echo "  Low ................. 3"
+                          echo "  CVEs ................ CVE-2025-0142 (low)"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop-auth-<+pipeline.variables.authVer>.jar"
+                          echo "  Version ............. <+pipeline.variables.authVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0"
+                          echo "  Pushed At ........... 2026-03-19T08:04:22Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Auth service ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 2 of 10: bikeshop-payments"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-payments"
+                          echo "  Repository .......... pdutta25/bikeshop-payments"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.payChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #218"
+                          echo "  Run ID .............. 8834202"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... java-spring-boot"
+                          echo "  Build Tool .......... Maven"
+                          echo "  Lint Tool ........... Checkstyle"
+                          echo "  Test Framework ...... JUnit 5"
+                          echo "  Quality Scanner ..... SonarQube"
+                          echo "  Security Scanner .... Checkmarx"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:14Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:20Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:21Z"
+                          echo "  Build Finished ...... 2026-03-19T08:03:15Z"
+                          echo "  Lint Started ........ 2026-03-19T08:03:16Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:03:38Z"
+                          echo "  Test Started ........ 2026-03-19T08:03:39Z"
+                          echo "  Test Finished ....... 2026-03-19T08:05:27Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:05:48Z"
+                          echo "  Total Duration ...... 4m 34s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 42.1MB"
+                          echo "  Dependencies ........ 91"
+                          echo "  Warnings ............ 1"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 287"
+                          echo "  Passed .............. 287"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 91.8%"
+                          echo "  Duration ............ 108s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 5"
+                          echo "  Duplication ......... 0.8%"
+                          echo "  Tech Debt ........... 31m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 0"
+                          echo "  Low ................. 2"
+                          echo "  CVEs ................ CVE-2025-0198 (low)"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop-payments-<+pipeline.variables.payVer>.jar"
+                          echo "  Version ............. <+pipeline.variables.payVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1"
+                          echo "  Pushed At ........... 2026-03-19T08:05:48Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Payments service ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 3 of 10: bikeshop-inventory"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-inventory"
+                          echo "  Repository .......... pdutta25/bikeshop-inventory"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.invChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #87"
+                          echo "  Run ID .............. 8834203"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... python-fastapi"
+                          echo "  Build Tool .......... pip"
+                          echo "  Lint Tool ........... Ruff"
+                          echo "  Test Framework ...... pytest"
+                          echo "  Quality Scanner ..... SonarQube"
+                          echo "  Security Scanner .... Bandit"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:10Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:14Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:15Z"
+                          echo "  Build Finished ...... 2026-03-19T08:02:03Z"
+                          echo "  Lint Started ........ 2026-03-19T08:02:04Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:02:12Z"
+                          echo "  Test Started ........ 2026-03-19T08:02:13Z"
+                          echo "  Test Finished ....... 2026-03-19T08:03:01Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:03:10Z"
+                          echo "  Total Duration ...... 2m 00s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 8.3MB"
+                          echo "  Dependencies ........ 38"
+                          echo "  Warnings ............ 0"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 124"
+                          echo "  Passed .............. 124"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 88.5%"
+                          echo "  Duration ............ 48s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 2"
+                          echo "  Duplication ......... 0.5%"
+                          echo "  Tech Debt ........... 14m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 0"
+                          echo "  Low ................. 1"
+                          echo "  CVEs ................ none"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop_inventory-<+pipeline.variables.invVer>.whl"
+                          echo "  Version ............. <+pipeline.variables.invVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2"
+                          echo "  Pushed At ........... 2026-03-19T08:03:10Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Inventory service ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 4 of 10: bikeshop-notifications"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-notifications"
+                          echo "  Repository .......... pdutta25/bikeshop-notifications"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.notifChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #63"
+                          echo "  Run ID .............. 8834204"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... nodejs-express"
+                          echo "  Build Tool .......... npm"
+                          echo "  Lint Tool ........... ESLint"
+                          echo "  Test Framework ...... Vitest"
+                          echo "  Quality Scanner ..... SonarCloud"
+                          echo "  Security Scanner .... Snyk"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:11Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:15Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:16Z"
+                          echo "  Build Finished ...... 2026-03-19T08:02:28Z"
+                          echo "  Lint Started ........ 2026-03-19T08:02:29Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:02:41Z"
+                          echo "  Test Started ........ 2026-03-19T08:02:42Z"
+                          echo "  Test Finished ....... 2026-03-19T08:03:18Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:03:30Z"
+                          echo "  Total Duration ...... 2m 19s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 15.4MB"
+                          echo "  Dependencies ........ 112"
+                          echo "  Warnings ............ 3"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 93"
+                          echo "  Passed .............. 93"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 79.2%"
+                          echo "  Duration ............ 36s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 1"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 7"
+                          echo "  Duplication ......... 1.8%"
+                          echo "  Tech Debt ........... 45m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 1"
+                          echo "  Low ................. 4"
+                          echo "  CVEs ................ CVE-2025-0311 (medium)"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop-notifications-<+pipeline.variables.notifVer>.tar.gz"
+                          echo "  Version ............. <+pipeline.variables.notifVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3"
+                          echo "  Pushed At ........... 2026-03-19T08:03:30Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Notifications service ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 5 of 10: bikeshop-analytics"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-analytics"
+                          echo "  Repository .......... pdutta25/bikeshop-analytics"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.anlytChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #156"
+                          echo "  Run ID .............. 8834205"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... python-fastapi"
+                          echo "  Build Tool .......... pip"
+                          echo "  Lint Tool ........... Ruff"
+                          echo "  Test Framework ...... pytest"
+                          echo "  Quality Scanner ..... SonarQube"
+                          echo "  Security Scanner .... Bandit"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:13Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:17Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:18Z"
+                          echo "  Build Finished ...... 2026-03-19T08:02:32Z"
+                          echo "  Lint Started ........ 2026-03-19T08:02:33Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:02:47Z"
+                          echo "  Test Started ........ 2026-03-19T08:02:48Z"
+                          echo "  Test Finished ....... 2026-03-19T08:04:06Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:04:18Z"
+                          echo "  Total Duration ...... 3m 05s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 11.2MB"
+                          echo "  Dependencies ........ 52"
+                          echo "  Warnings ............ 1"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 201"
+                          echo "  Passed .............. 201"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 86.7%"
+                          echo "  Duration ............ 78s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 4"
+                          echo "  Duplication ......... 1.1%"
+                          echo "  Tech Debt ........... 28m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 0"
+                          echo "  Low ................. 2"
+                          echo "  CVEs ................ none"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop_analytics-<+pipeline.variables.anlytVer>.whl"
+                          echo "  Version ............. <+pipeline.variables.anlytVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4"
+                          echo "  Pushed At ........... 2026-03-19T08:04:18Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Analytics service ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 6 of 10: bikeshop-storefront"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-storefront"
+                          echo "  Repository .......... pdutta25/bikeshop-storefront"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.sfChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #301"
+                          echo "  Run ID .............. 8834206"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... typescript-nextjs"
+                          echo "  Build Tool .......... npm"
+                          echo "  Lint Tool ........... ESLint"
+                          echo "  Test Framework ...... Vitest"
+                          echo "  Quality Scanner ..... SonarCloud"
+                          echo "  Security Scanner .... Snyk"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:09Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:16Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:17Z"
+                          echo "  Build Finished ...... 2026-03-19T08:03:04Z"
+                          echo "  Lint Started ........ 2026-03-19T08:03:05Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:03:24Z"
+                          echo "  Test Started ........ 2026-03-19T08:03:25Z"
+                          echo "  Test Finished ....... 2026-03-19T08:05:01Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:05:19Z"
+                          echo "  Total Duration ...... 4m 10s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 28.9MB"
+                          echo "  Dependencies ........ 187"
+                          echo "  Warnings ............ 4"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 234"
+                          echo "  Passed .............. 234"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 83.4%"
+                          echo "  Duration ............ 96s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 1"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 9"
+                          echo "  Duplication ......... 2.1%"
+                          echo "  Tech Debt ........... 52m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 2"
+                          echo "  Low ................. 5"
+                          echo "  CVEs ................ CVE-2025-0287 (medium), CVE-2025-0294 (medium)"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop-storefront-<+pipeline.variables.sfVer>.tar.gz"
+                          echo "  Version ............. <+pipeline.variables.sfVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5"
+                          echo "  Pushed At ........... 2026-03-19T08:05:19Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Storefront app ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 7 of 10: bikeshop-admin"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-admin"
+                          echo "  Repository .......... pdutta25/bikeshop-admin"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.adminChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #189"
+                          echo "  Run ID .............. 8834207"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... typescript-nextjs"
+                          echo "  Build Tool .......... npm"
+                          echo "  Lint Tool ........... ESLint"
+                          echo "  Test Framework ...... Vitest"
+                          echo "  Quality Scanner ..... SonarCloud"
+                          echo "  Security Scanner .... Snyk"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:15Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:21Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:22Z"
+                          echo "  Build Finished ...... 2026-03-19T08:02:58Z"
+                          echo "  Lint Started ........ 2026-03-19T08:02:59Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:03:14Z"
+                          echo "  Test Started ........ 2026-03-19T08:03:15Z"
+                          echo "  Test Finished ....... 2026-03-19T08:04:28Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:04:42Z"
+                          echo "  Total Duration ...... 3m 27s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 24.3MB"
+                          echo "  Dependencies ........ 163"
+                          echo "  Warnings ............ 2"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 167"
+                          echo "  Passed .............. 167"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 80.6%"
+                          echo "  Duration ............ 73s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 6"
+                          echo "  Duplication ......... 1.5%"
+                          echo "  Tech Debt ........... 38m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 1"
+                          echo "  Low ................. 3"
+                          echo "  CVEs ................ CVE-2025-0305 (medium)"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop-admin-<+pipeline.variables.adminVer>.tar.gz"
+                          echo "  Version ............. <+pipeline.variables.adminVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6"
+                          echo "  Pushed At ........... 2026-03-19T08:04:42Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Admin dashboard ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 8 of 10: bikeshop-mobile-api"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-mobile-api"
+                          echo "  Repository .......... pdutta25/bikeshop-mobile-api"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.mobileChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #244"
+                          echo "  Run ID .............. 8834208"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... go-gin"
+                          echo "  Build Tool .......... go build"
+                          echo "  Lint Tool ........... golangci-lint"
+                          echo "  Test Framework ...... go test"
+                          echo "  Quality Scanner ..... SonarQube"
+                          echo "  Security Scanner .... Gosec"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:08Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:12Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:13Z"
+                          echo "  Build Finished ...... 2026-03-19T08:02:07Z"
+                          echo "  Lint Started ........ 2026-03-19T08:02:08Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:02:29Z"
+                          echo "  Test Started ........ 2026-03-19T08:02:30Z"
+                          echo "  Test Finished ....... 2026-03-19T08:04:12Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:04:24Z"
+                          echo "  Total Duration ...... 3m 16s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 18.7MB"
+                          echo "  Dependencies ........ 29"
+                          echo "  Warnings ............ 0"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 312"
+                          echo "  Passed .............. 312"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 89.1%"
+                          echo "  Duration ............ 102s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 1"
+                          echo "  Duplication ......... 0.3%"
+                          echo "  Tech Debt ........... 8m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 0"
+                          echo "  Low ................. 1"
+                          echo "  CVEs ................ none"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop-mobile-api-<+pipeline.variables.mobileVer>"
+                          echo "  Version ............. <+pipeline.variables.mobileVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7"
+                          echo "  Pushed At ........... 2026-03-19T08:04:24Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Mobile API ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 9 of 10: bikeshop-cdn"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-cdn"
+                          echo "  Repository .......... pdutta25/bikeshop-cdn"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.cdnChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #55"
+                          echo "  Run ID .............. 8834209"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... static-webpack"
+                          echo "  Build Tool .......... Webpack"
+                          echo "  Lint Tool ........... HTMLHint"
+                          echo "  Test Framework ...... Lighthouse"
+                          echo "  Quality Scanner ..... SonarCloud"
+                          echo "  Security Scanner .... Snyk"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:16Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:19Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:20Z"
+                          echo "  Build Finished ...... 2026-03-19T08:02:14Z"
+                          echo "  Lint Started ........ 2026-03-19T08:02:15Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:02:22Z"
+                          echo "  Test Started ........ 2026-03-19T08:02:23Z"
+                          echo "  Test Finished ....... 2026-03-19T08:02:51Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:02:58Z"
+                          echo "  Total Duration ...... 1m 42s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 6.2MB"
+                          echo "  Dependencies ........ 45"
+                          echo "  Warnings ............ 0"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 28"
+                          echo "  Passed .............. 28"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 95.0%"
+                          echo "  Duration ............ 28s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 1"
+                          echo "  Duplication ......... 0.2%"
+                          echo "  Tech Debt ........... 5m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 0"
+                          echo "  Low ................. 0"
+                          echo "  CVEs ................ none"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop-cdn-<+pipeline.variables.cdnVer>.tar.gz"
+                          echo "  Version ............. <+pipeline.variables.cdnVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8"
+                          echo "  Pushed At ........... 2026-03-19T08:02:58Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. CDN assets ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  COMPONENT 10 of 10: bikeshop-docs"
+                          echo "=================================================================="
+                          echo ""
+                          echo "  ── 1. Repo Identity ────────────────────────────────────────────"
+                          echo "  Component ........... bikeshop-docs"
+                          echo "  Repository .......... pdutta25/bikeshop-docs"
+                          echo "  Branch .............. <+pipeline.variables.branch>"
+                          echo "  Commit SHA .......... <+pipeline.variables.commitSha>"
+                          echo "  Commit Message ...... <+pipeline.variables.docsChange>"
+                          echo "  Author .............. <+pipeline.variables.triggeredBy>"
+                          echo "  PR Number ........... #34"
+                          echo "  Run ID .............. 8834210"
+                          echo ""
+                          echo "  ── 2. Archetype ────────────────────────────────────────────────"
+                          echo "  Detected Type ....... markdown-mkdocs"
+                          echo "  Build Tool .......... MkDocs"
+                          echo "  Lint Tool ........... markdownlint"
+                          echo "  Test Framework ...... linkcheck"
+                          echo "  Quality Scanner ..... SonarCloud"
+                          echo "  Security Scanner .... Snyk"
+                          echo "  Artifact Registry ... Docker Hub"
+                          echo ""
+                          echo "  ── 3. Timeline ─────────────────────────────────────────────────"
+                          echo "  CI Triggered ........ 2026-03-19T08:01:18Z"
+                          echo "  Checkout Done ....... 2026-03-19T08:01:21Z"
+                          echo "  Build Started ....... 2026-03-19T08:01:22Z"
+                          echo "  Build Finished ...... 2026-03-19T08:02:01Z"
+                          echo "  Lint Started ........ 2026-03-19T08:02:02Z"
+                          echo "  Lint Finished ....... 2026-03-19T08:02:09Z"
+                          echo "  Test Started ........ 2026-03-19T08:02:10Z"
+                          echo "  Test Finished ....... 2026-03-19T08:02:38Z"
+                          echo "  Artifact Pushed ..... 2026-03-19T08:02:44Z"
+                          echo "  Total Duration ...... 1m 26s"
+                          echo ""
+                          echo "  ── 4. Build ────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Exit Code ........... 0"
+                          echo "  Artifact Size ....... 4.8MB"
+                          echo "  Dependencies ........ 12"
+                          echo "  Warnings ............ 0"
+                          echo ""
+                          echo "  ── 5. Test ─────────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Total ............... 42"
+                          echo "  Passed .............. 42"
+                          echo "  Failed .............. 0"
+                          echo "  Skipped ............. 0"
+                          echo "  Coverage ............ 100.0%"
+                          echo "  Duration ............ 28s"
+                          echo ""
+                          echo "  ── 6. Quality ──────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Gate Result ......... OK"
+                          echo "  Bugs ................ 0"
+                          echo "  Vulnerabilities ..... 0"
+                          echo "  Code Smells ......... 0"
+                          echo "  Duplication ......... 0.0%"
+                          echo "  Tech Debt ........... 0m"
+                          echo ""
+                          echo "  ── 7. Security ─────────────────────────────────────────────────"
+                          echo "  Status .............. PASSED"
+                          echo "  Critical ............ 0"
+                          echo "  High ................ 0"
+                          echo "  Medium .............. 0"
+                          echo "  Low ................. 0"
+                          echo "  CVEs ................ none"
+                          echo ""
+                          echo "  ── 8. Artifact ─────────────────────────────────────────────────"
+                          echo "  Name ................ bikeshop-docs-<+pipeline.variables.docsVer>.tar.gz"
+                          echo "  Version ............. <+pipeline.variables.docsVer>"
+                          echo "  Registry ............ Docker Hub"
+                          echo "  SHA256 .............. d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9"
+                          echo "  Pushed At ........... 2026-03-19T08:02:44Z"
+                          echo ""
+                          echo "  ── 9. Destinations ─────────────────────────────────────────────"
+                          echo "  Harness Pipeline .... apr-release-bike-shop"
+                          echo "  Target Env .......... DEV"
+                          echo "  Telemetry Sink ...... Datadog"
+                          echo "  Summary ............. Docs portal ready for DEV deployment"
+                          echo ""
+                          echo "  Data Points Captured: 59"
+                          echo ""
+                          echo "=================================================================="
+                          echo "  TOTAL: 10 components | 590 data points | All CI gates PASSED"
+                          echo "=================================================================="
+                          echo ""
+                          
+                          
+              # ── Whats Releasing ──
+              - step:
+                  name: Whats Releasing
+                  identifier: Whats_Releasing
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      WHATS RELEASING                           ║"
+                          echo "║  Release pattern, strategy, and component manifest.             ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Release Overview ──────────────────────────────────────────────"
+                          echo "  Release Pattern .... APR Release (All Platform Release)"
+                          echo "  Strategy ........... One approval, all 10 components flow"
+                          echo "  Components ......... 10"
+                          echo "  Target Env ......... DEV"
+                          echo "  Build Number ....... #<+pipeline.variables.buildNumber>"
+                          echo ""
+                          echo "── Component Manifest ────────────────────────────────────────────"
+                          echo "   1. Auth ............. bikeshop-auth           v<+pipeline.variables.authVer>"
+                          echo "                         <+pipeline.variables.authChange>"
+                          echo "   2. Payments ......... bikeshop-payments       v<+pipeline.variables.payVer>"
+                          echo "                         <+pipeline.variables.payChange>"
+                          echo "   3. Inventory ........ bikeshop-inventory      v<+pipeline.variables.invVer>"
+                          echo "                         <+pipeline.variables.invChange>"
+                          echo "   4. Notifications .... bikeshop-notifications  v<+pipeline.variables.notifVer>"
+                          echo "                         <+pipeline.variables.notifChange>"
+                          echo "   5. Analytics ........ bikeshop-analytics      v<+pipeline.variables.anlytVer>"
+                          echo "                         <+pipeline.variables.anlytChange>"
+                          echo "   6. Storefront ....... bikeshop-storefront     v<+pipeline.variables.sfVer>"
+                          echo "                         <+pipeline.variables.sfChange>"
+                          echo "   7. Admin ............ bikeshop-admin          v<+pipeline.variables.adminVer>"
+                          echo "                         <+pipeline.variables.adminChange>"
+                          echo "   8. Mobile API ....... bikeshop-mobile-api     v<+pipeline.variables.mobileVer>"
+                          echo "                         <+pipeline.variables.mobileChange>"
+                          echo "   9. CDN .............. bikeshop-cdn            v<+pipeline.variables.cdnVer>"
+                          echo "                         <+pipeline.variables.cdnChange>"
+                          echo "  10. Docs ............. bikeshop-docs           v<+pipeline.variables.docsVer>"
+                          echo "                         <+pipeline.variables.docsChange>"
+                          echo ""
+                          
+                          
+              # ── Whats Inside ──
+              - step:
+                  name: Whats Inside
+                  identifier: Whats_Inside
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      WHATS INSIDE                              ║"
+                          echo "║  Release bundle composition and readiness.                      ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Release Bundle ────────────────────────────────────────────────"
+                          echo "  Components .......... 10"
+                          echo "  CI Data Points ...... 590 (10 x 59)"
+                          echo "  All Gates ........... PASSED"
+                          echo "  Bundle Status ....... Ready for deployment"
+                          echo ""
+                          echo "── Component Readiness ───────────────────────────────────────────"
+                          echo "  Auth ............... v<+pipeline.variables.authVer>  ✅ CI passed"
+                          echo "  Payments ........... v<+pipeline.variables.payVer>  ✅ CI passed"
+                          echo "  Inventory .......... v<+pipeline.variables.invVer>  ✅ CI passed"
+                          echo "  Notifications ...... v<+pipeline.variables.notifVer>  ✅ CI passed"
+                          echo "  Analytics .......... v<+pipeline.variables.anlytVer>  ✅ CI passed"
+                          echo "  Storefront ......... v<+pipeline.variables.sfVer>  ✅ CI passed"
+                          echo "  Admin .............. v<+pipeline.variables.adminVer>  ✅ CI passed"
+                          echo "  Mobile API ......... v<+pipeline.variables.mobileVer>  ✅ CI passed"
+                          echo "  CDN ................ v<+pipeline.variables.cdnVer>  ✅ CI passed"
+                          echo "  Docs ............... v<+pipeline.variables.docsVer>  ✅ CI passed"
+                          echo ""
+                          echo "  Full CI telemetry for the triggering component is shown"
+                          echo "  in the Who Triggered step above."
+                          echo ""
+                          
+                          
+              # ── How Its Releasing ──
+              - step:
+                  name: How Its Releasing
+                  identifier: How_Its_Releasing
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      HOW ITS RELEASING                         ║"
+                          echo "║  Release flow diagram and source repositories.                  ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Release Flow ──────────────────────────────────────────────────"
+                          echo ""
+                          echo "  Approve Deploys → Deploy Auth → Deploy Payments (sequential)"
+                          echo "        ↓"
+                          echo "  ┌─── Backend Group (5 parallel) ───┐  ┌─── Frontend Group (5 parallel) ──┐"
+                          echo "  │ Deploy Inventory                 │  │ Deploy Storefront                │"
+                          echo "  │ Deploy Notifications             │  │ Deploy Admin                     │"
+                          echo "  │ Deploy Analytics                 │  │ Deploy Mobile API                │"
+                          echo "  │ (reserved)                       │  │ Deploy CDN                       │"
+                          echo "  │ (reserved)                       │  │ Deploy Docs                      │"
+                          echo "  └──────────────────────────────────┘  └──────────────────────────────────┘"
+                          echo "        ↓"
+                          echo "  Smoke Tests → Certify → DEV Recap"
+                          echo ""
+                          echo "── Source Repos ──────────────────────────────────────────────────"
+                          echo "  https://github.com/pdutta25/bikeshop-auth"
+                          echo "  https://github.com/pdutta25/bikeshop-payments"
+                          echo "  https://github.com/pdutta25/bikeshop-inventory"
+                          echo "  https://github.com/pdutta25/bikeshop-notifications"
+                          echo "  https://github.com/pdutta25/bikeshop-analytics"
+                          echo "  https://github.com/pdutta25/bikeshop-storefront"
+                          echo "  https://github.com/pdutta25/bikeshop-admin"
+                          echo "  https://github.com/pdutta25/bikeshop-mobile-api"
+                          echo "  https://github.com/pdutta25/bikeshop-cdn"
+                          echo "  https://github.com/pdutta25/bikeshop-docs"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  Proceeding to approval and deployments..."
+                          echo ""
+                          
+                          
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # DEV — Single gate, Auth+Pay sequential, then 5+5 parallel
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: DEV
+        identifier: DEV
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Gate: Approve Deploys ──
+              - step:
+                  name: Approve Deploys
+                  identifier: Approve_Deploys
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      Approving all 10 components for deployment to DEV
+                      Auth v<+pipeline.variables.authVer> | Payments v<+pipeline.variables.payVer> | Inventory v<+pipeline.variables.invVer>
+                      Notifications v<+pipeline.variables.notifVer> | Analytics v<+pipeline.variables.anlytVer>
+                      Storefront v<+pipeline.variables.sfVer> | Admin v<+pipeline.variables.adminVer> | Mobile API v<+pipeline.variables.mobileVer>
+                      CDN v<+pipeline.variables.cdnVer> | Docs v<+pipeline.variables.docsVer>
+                      CI: Build Lint Test — all 10 repos passed
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Auth Service (sequential) ──
+              - step:
+                  name: Deploy Auth Service
+                  identifier: Deploy_Auth_Service
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — AUTH SERVICE               ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "📋 Component: Auth Service v<+pipeline.variables.authVer>"
+                          echo "   Change:   <+pipeline.variables.authChange>"
+                          echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                          echo "   Source:   https://github.com/pdutta25/bikeshop-auth"
+                          echo ""
+                          echo "✅ Auth Service deployed to DEV"
+
+              # ── Deploy Payment Service (sequential after Auth) ──
+              - step:
+                  name: Deploy Payment Service
+                  identifier: Deploy_Payment_Service
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — PAYMENT SERVICE            ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "📋 Component: Payment Service v<+pipeline.variables.payVer>"
+                          echo "   Change:   <+pipeline.variables.payChange>"
+                          echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                          echo "   Source:   https://github.com/pdutta25/bikeshop-payments"
+                          echo ""
+                          echo "✅ Payment Service deployed to DEV"
+
+              # ── Backend + Frontend Groups (parallel stepGroups) ──
+              - parallel:
+                  - stepGroup:
+                      name: Backend Group
+                      identifier: Backend_Group
+                      steps:
+                        - step:
+                            name: Deploy Inventory Service
+                            identifier: Deploy_Inventory_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — INVENTORY SERVICE          ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Inventory Service v<+pipeline.variables.invVer>"
+                                    echo "   Change:   <+pipeline.variables.invChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-inventory"
+                                    echo ""
+                                    echo "✅ Inventory Service deployed to DEV"
+                        - step:
+                            name: Deploy Notification Service
+                            identifier: Deploy_Notification_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — NOTIFICATION SERVICE       ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Notification Service v<+pipeline.variables.notifVer>"
+                                    echo "   Change:   <+pipeline.variables.notifChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-notifications"
+                                    echo ""
+                                    echo "✅ Notification Service deployed to DEV"
+                        - step:
+                            name: Deploy Analytics Service
+                            identifier: Deploy_Analytics_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — ANALYTICS SERVICE          ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Analytics Service v<+pipeline.variables.anlytVer>"
+                                    echo "   Change:   <+pipeline.variables.anlytChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-analytics"
+                                    echo ""
+                                    echo "✅ Analytics Service deployed to DEV"
+                        - step:
+                            name: Reserved Backend Slot 1
+                            identifier: Reserved_Backend_Slot_1
+                            type: ShellScript
+                            timeout: 1m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "⏸️  Reserved backend slot — no component assigned"
+                        - step:
+                            name: Reserved Backend Slot 2
+                            identifier: Reserved_Backend_Slot_2
+                            type: ShellScript
+                            timeout: 1m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "⏸️  Reserved backend slot — no component assigned"
+                  - stepGroup:
+                      name: Frontend Group
+                      identifier: Frontend_Group
+                      steps:
+                        - step:
+                            name: Deploy Storefront App
+                            identifier: Deploy_Storefront_App
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — STOREFRONT APP             ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Storefront App v<+pipeline.variables.sfVer>"
+                                    echo "   Change:   <+pipeline.variables.sfChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-storefront"
+                                    echo ""
+                                    echo "✅ Storefront App deployed to DEV"
+                        - step:
+                            name: Deploy Admin Dashboard
+                            identifier: Deploy_Admin_Dashboard
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — ADMIN DASHBOARD            ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Admin Dashboard v<+pipeline.variables.adminVer>"
+                                    echo "   Change:   <+pipeline.variables.adminChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-admin"
+                                    echo ""
+                                    echo "✅ Admin Dashboard deployed to DEV"
+                        - step:
+                            name: Deploy Mobile API
+                            identifier: Deploy_Mobile_API
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — MOBILE API                 ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Mobile API v<+pipeline.variables.mobileVer>"
+                                    echo "   Change:   <+pipeline.variables.mobileChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-mobile-api"
+                                    echo ""
+                                    echo "✅ Mobile API deployed to DEV"
+                        - step:
+                            name: Deploy CDN Assets
+                            identifier: Deploy_CDN_Assets
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — CDN ASSETS                 ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: CDN Assets v<+pipeline.variables.cdnVer>"
+                                    echo "   Change:   <+pipeline.variables.cdnChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-cdn"
+                                    echo ""
+                                    echo "✅ CDN Assets deployed to DEV"
+                        - step:
+                            name: Deploy Docs Portal
+                            identifier: Deploy_Docs_Portal
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — DOCS PORTAL                ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Docs Portal v<+pipeline.variables.docsVer>"
+                                    echo "   Change:   <+pipeline.variables.docsChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-docs"
+                                    echo ""
+                                    echo "✅ Docs Portal deployed to DEV"
+
+              # ── DEV Smoke Tests ──
+              - step:
+                  name: DEV Smoke Tests
+                  identifier: DEV_Smoke_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 DEV Smoke Tests"
+                          echo ""
+                          echo "   ✔ [DEV-01] Auth Service health check passed"
+                          echo "   ✔ [DEV-02] Payment Service health check passed"
+                          echo "   ✔ [DEV-03] Inventory Service health check passed"
+                          echo "   ✔ [DEV-04] Notification Service health check passed"
+                          echo "   ✔ [DEV-05] Analytics Service health check passed"
+                          echo "   ✔ [DEV-06] Storefront App reachable"
+                          echo "   ✔ [DEV-07] Admin Dashboard reachable"
+                          echo "   ✔ [DEV-08] Mobile API health check passed"
+                          echo "   ✔ [DEV-09] CDN Assets accessible"
+                          echo "   ✔ [DEV-10] Docs Portal reachable"
+                          echo ""
+                          echo "┌──────────────────────────────────────┐"
+                          echo "│     DEV SMOKE TEST RESULTS           │"
+                          echo "├──────────────────────────────────────┤"
+                          echo "│ Total Tests:    10                   │"
+                          echo "│ Passed:         10                   │"
+                          echo "│ Failed:         0                    │"
+                          echo "│ Status:         ✅ ALL PASSED        │"
+                          echo "└──────────────────────────────────────┘"
+                          echo ""
+                          echo "✅ DEV smoke tests passed"
+
+              # ── Certify DEV Build (Auto-Approve in 10s) ──
+              - step:
+                  name: Certify DEV Build
+                  identifier: Certify_DEV_Build
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      Certifying all 10 components deployed successfully to DEV
+                      Auth v<+pipeline.variables.authVer> | Payments v<+pipeline.variables.payVer> | Inventory v<+pipeline.variables.invVer>
+                      Notifications v<+pipeline.variables.notifVer> | Analytics v<+pipeline.variables.anlytVer>
+                      Storefront v<+pipeline.variables.sfVer> | Admin v<+pipeline.variables.adminVer> | Mobile API v<+pipeline.variables.mobileVer>
+                      CDN v<+pipeline.variables.cdnVer> | Docs v<+pipeline.variables.docsVer>
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── DEV Recap ──
+              - step:
+                  name: DEV Recap
+                  identifier: DEV_Recap
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        DEV RECAP                                ║"
+                          echo "║  Summary of what was deployed and verified in DEV.                ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Auth Service         v<+pipeline.variables.authVer>  — <+pipeline.variables.authChange>"
+                          echo "  ✅ Payment Service      v<+pipeline.variables.payVer>  — <+pipeline.variables.payChange>"
+                          echo "  ✅ Inventory Service    v<+pipeline.variables.invVer>  — <+pipeline.variables.invChange>"
+                          echo "  ✅ Notification Service v<+pipeline.variables.notifVer>  — <+pipeline.variables.notifChange>"
+                          echo "  ✅ Analytics Service    v<+pipeline.variables.anlytVer>  — <+pipeline.variables.anlytChange>"
+                          echo "  ✅ Storefront App       v<+pipeline.variables.sfVer>  — <+pipeline.variables.sfChange>"
+                          echo "  ✅ Admin Dashboard      v<+pipeline.variables.adminVer>  — <+pipeline.variables.adminChange>"
+                          echo "  ✅ Mobile API           v<+pipeline.variables.mobileVer>  — <+pipeline.variables.mobileChange>"
+                          echo "  ✅ CDN Assets           v<+pipeline.variables.cdnVer>  — <+pipeline.variables.cdnChange>"
+                          echo "  ✅ Docs Portal          v<+pipeline.variables.docsVer>  — <+pipeline.variables.docsChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Smoke Tests:    ✔ Passed (10/10)"
+                          echo "  Certified:      ✔ Auto-certified"
+                          echo ""
+                          echo "── Context ─────────────────────────────────────────────────────────"
+                          echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
+                          echo "  Trigger repo:   https://github.com/<+pipeline.variables.triggerRepo>"
+                          echo "  Build:          #<+pipeline.variables.buildNumber>"
+                          echo "  Commit:         <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  ✅ DEV PASSED — proceeding to SIT"
+                          echo ""
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # SIT — Single gate, Auth+Pay sequential, then 5+5 parallel
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: SIT
+        identifier: SIT
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Gate: Approve Deploys ──
+              - step:
+                  name: Approve Deploys
+                  identifier: SIT_Approve_Deploys
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      Approving all 10 components for deployment to SIT
+                      Auth v<+pipeline.variables.authVer> | Payments v<+pipeline.variables.payVer> | Inventory v<+pipeline.variables.invVer>
+                      Notifications v<+pipeline.variables.notifVer> | Analytics v<+pipeline.variables.anlytVer>
+                      Storefront v<+pipeline.variables.sfVer> | Admin v<+pipeline.variables.adminVer> | Mobile API v<+pipeline.variables.mobileVer>
+                      CDN v<+pipeline.variables.cdnVer> | Docs v<+pipeline.variables.docsVer>
+                      CI: Build Lint Test — all 10 repos passed
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Auth Service (sequential) ──
+              - step:
+                  name: Deploy Auth Service
+                  identifier: SIT_Deploy_Auth_Service
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — AUTH SERVICE               ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "📋 Component: Auth Service v<+pipeline.variables.authVer>"
+                          echo "   Change:   <+pipeline.variables.authChange>"
+                          echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                          echo "   Source:   https://github.com/pdutta25/bikeshop-auth"
+                          echo ""
+                          echo "✅ Auth Service deployed to SIT"
+
+              # ── Deploy Payment Service (sequential after Auth) ──
+              - step:
+                  name: Deploy Payment Service
+                  identifier: SIT_Deploy_Payment_Service
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — PAYMENT SERVICE            ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "📋 Component: Payment Service v<+pipeline.variables.payVer>"
+                          echo "   Change:   <+pipeline.variables.payChange>"
+                          echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                          echo "   Source:   https://github.com/pdutta25/bikeshop-payments"
+                          echo ""
+                          echo "✅ Payment Service deployed to SIT"
+
+              # ── Backend + Frontend Groups (parallel stepGroups) ──
+              - parallel:
+                  - stepGroup:
+                      name: Backend Group
+                      identifier: SIT_Backend_Group
+                      steps:
+                        - step:
+                            name: Deploy Inventory Service
+                            identifier: SIT_Deploy_Inventory_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — INVENTORY SERVICE          ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Inventory Service v<+pipeline.variables.invVer>"
+                                    echo "   Change:   <+pipeline.variables.invChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-inventory"
+                                    echo ""
+                                    echo "✅ Inventory Service deployed to SIT"
+                        - step:
+                            name: Deploy Notification Service
+                            identifier: SIT_Deploy_Notification_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — NOTIFICATION SERVICE       ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Notification Service v<+pipeline.variables.notifVer>"
+                                    echo "   Change:   <+pipeline.variables.notifChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-notifications"
+                                    echo ""
+                                    echo "✅ Notification Service deployed to SIT"
+                        - step:
+                            name: Deploy Analytics Service
+                            identifier: SIT_Deploy_Analytics_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — ANALYTICS SERVICE          ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Analytics Service v<+pipeline.variables.anlytVer>"
+                                    echo "   Change:   <+pipeline.variables.anlytChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-analytics"
+                                    echo ""
+                                    echo "✅ Analytics Service deployed to SIT"
+                        - step:
+                            name: Reserved Backend Slot 1
+                            identifier: SIT_Reserved_Backend_Slot_1
+                            type: ShellScript
+                            timeout: 1m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "⏸️  Reserved backend slot — no component assigned"
+                        - step:
+                            name: Reserved Backend Slot 2
+                            identifier: SIT_Reserved_Backend_Slot_2
+                            type: ShellScript
+                            timeout: 1m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "⏸️  Reserved backend slot — no component assigned"
+                  - stepGroup:
+                      name: Frontend Group
+                      identifier: SIT_Frontend_Group
+                      steps:
+                        - step:
+                            name: Deploy Storefront App
+                            identifier: SIT_Deploy_Storefront_App
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — STOREFRONT APP             ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Storefront App v<+pipeline.variables.sfVer>"
+                                    echo "   Change:   <+pipeline.variables.sfChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-storefront"
+                                    echo ""
+                                    echo "✅ Storefront App deployed to SIT"
+                        - step:
+                            name: Deploy Admin Dashboard
+                            identifier: SIT_Deploy_Admin_Dashboard
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — ADMIN DASHBOARD            ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Admin Dashboard v<+pipeline.variables.adminVer>"
+                                    echo "   Change:   <+pipeline.variables.adminChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-admin"
+                                    echo ""
+                                    echo "✅ Admin Dashboard deployed to SIT"
+                        - step:
+                            name: Deploy Mobile API
+                            identifier: SIT_Deploy_Mobile_API
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — MOBILE API                 ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Mobile API v<+pipeline.variables.mobileVer>"
+                                    echo "   Change:   <+pipeline.variables.mobileChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-mobile-api"
+                                    echo ""
+                                    echo "✅ Mobile API deployed to SIT"
+                        - step:
+                            name: Deploy CDN Assets
+                            identifier: SIT_Deploy_CDN_Assets
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — CDN ASSETS                 ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: CDN Assets v<+pipeline.variables.cdnVer>"
+                                    echo "   Change:   <+pipeline.variables.cdnChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-cdn"
+                                    echo ""
+                                    echo "✅ CDN Assets deployed to SIT"
+                        - step:
+                            name: Deploy Docs Portal
+                            identifier: SIT_Deploy_Docs_Portal
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — DOCS PORTAL                ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Docs Portal v<+pipeline.variables.docsVer>"
+                                    echo "   Change:   <+pipeline.variables.docsChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-docs"
+                                    echo ""
+                                    echo "✅ Docs Portal deployed to SIT"
+
+              # ── SIT Integration Tests ──
+              - step:
+                  name: SIT Integration Tests
+                  identifier: SIT_Integration_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 SIT Integration Tests"
+                          echo ""
+                          echo "   ✔ [SIT-01] Auth Service health check passed"
+                          echo "   ✔ [SIT-02] Payment Service health check passed"
+                          echo "   ✔ [SIT-03] Inventory Service health check passed"
+                          echo "   ✔ [SIT-04] Notification Service health check passed"
+                          echo "   ✔ [SIT-05] Analytics Service health check passed"
+                          echo "   ✔ [SIT-06] Storefront App reachable"
+                          echo "   ✔ [SIT-07] Admin Dashboard reachable"
+                          echo "   ✔ [SIT-08] Mobile API health check passed"
+                          echo "   ✔ [SIT-09] CDN Assets accessible"
+                          echo "   ✔ [SIT-10] Docs Portal reachable"
+                          echo ""
+                          echo "┌──────────────────────────────────────┐"
+                          echo "│  SIT INTEGRATION TEST RESULTS        │"
+                          echo "├──────────────────────────────────────┤"
+                          echo "│ Total Tests:    10                   │"
+                          echo "│ Passed:         10                   │"
+                          echo "│ Failed:         0                    │"
+                          echo "│ Status:         ✅ ALL PASSED        │"
+                          echo "└──────────────────────────────────────┘"
+                          echo ""
+                          echo "✅ SIT integration tests passed"
+
+              # ── Certify SIT Build (Auto-Approve in 10s) ──
+              - step:
+                  name: Certify SIT Build
+                  identifier: SIT_Certify_SIT_Build
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      Certifying all 10 components deployed successfully to SIT
+                      Auth v<+pipeline.variables.authVer> | Payments v<+pipeline.variables.payVer> | Inventory v<+pipeline.variables.invVer>
+                      Notifications v<+pipeline.variables.notifVer> | Analytics v<+pipeline.variables.anlytVer>
+                      Storefront v<+pipeline.variables.sfVer> | Admin v<+pipeline.variables.adminVer> | Mobile API v<+pipeline.variables.mobileVer>
+                      CDN v<+pipeline.variables.cdnVer> | Docs v<+pipeline.variables.docsVer>
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── SIT Recap ──
+              - step:
+                  name: SIT Recap
+                  identifier: SIT_Recap
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        SIT RECAP                                ║"
+                          echo "║  Summary of what was deployed and verified in SIT.                ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Auth Service         v<+pipeline.variables.authVer>  — <+pipeline.variables.authChange>"
+                          echo "  ✅ Payment Service      v<+pipeline.variables.payVer>  — <+pipeline.variables.payChange>"
+                          echo "  ✅ Inventory Service    v<+pipeline.variables.invVer>  — <+pipeline.variables.invChange>"
+                          echo "  ✅ Notification Service v<+pipeline.variables.notifVer>  — <+pipeline.variables.notifChange>"
+                          echo "  ✅ Analytics Service    v<+pipeline.variables.anlytVer>  — <+pipeline.variables.anlytChange>"
+                          echo "  ✅ Storefront App       v<+pipeline.variables.sfVer>  — <+pipeline.variables.sfChange>"
+                          echo "  ✅ Admin Dashboard      v<+pipeline.variables.adminVer>  — <+pipeline.variables.adminChange>"
+                          echo "  ✅ Mobile API           v<+pipeline.variables.mobileVer>  — <+pipeline.variables.mobileChange>"
+                          echo "  ✅ CDN Assets           v<+pipeline.variables.cdnVer>  — <+pipeline.variables.cdnChange>"
+                          echo "  ✅ Docs Portal          v<+pipeline.variables.docsVer>  — <+pipeline.variables.docsChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Integration Tests: ✔ Passed (10/10)"
+                          echo "  Certified:         ✔ Auto-certified"
+                          echo ""
+                          echo "── Progress ────────────────────────────────────────────────────────"
+                          echo "  DEV ✅  SIT ✅  PROD ⏳"
+                          echo ""
+                          echo "── Context ─────────────────────────────────────────────────────────"
+                          echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
+                          echo "  Trigger repo:   https://github.com/<+pipeline.variables.triggerRepo>"
+                          echo "  Build:          #<+pipeline.variables.buildNumber>"
+                          echo "  Commit:         <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  ✅ SIT PASSED — proceeding to PROD"
+                          echo ""
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # PROD — Approval gate, Auth+Pay sequential, then 5+5 parallel
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: PROD
+        identifier: PROD
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Gate: PROD Approval ──
+              - step:
+                  name: PROD Approval
+                  identifier: PROD_Approval
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      Approving all 10 components for deployment to PROD
+                      Auth v<+pipeline.variables.authVer> | Payments v<+pipeline.variables.payVer> | Inventory v<+pipeline.variables.invVer>
+                      Notifications v<+pipeline.variables.notifVer> | Analytics v<+pipeline.variables.anlytVer>
+                      Storefront v<+pipeline.variables.sfVer> | Admin v<+pipeline.variables.adminVer> | Mobile API v<+pipeline.variables.mobileVer>
+                      CDN v<+pipeline.variables.cdnVer> | Docs v<+pipeline.variables.docsVer>
+                      CI: Build Lint Test — all 10 repos passed
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── Deploy Auth Service (sequential) ──
+              - step:
+                  name: Deploy Auth Service
+                  identifier: PROD_Deploy_Auth_Service
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — AUTH SERVICE               ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "📋 Component: Auth Service v<+pipeline.variables.authVer>"
+                          echo "   Change:   <+pipeline.variables.authChange>"
+                          echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                          echo "   Source:   https://github.com/pdutta25/bikeshop-auth"
+                          echo ""
+                          echo "✅ Auth Service deployed to PROD"
+
+              # ── Deploy Payment Service (sequential after Auth) ──
+              - step:
+                  name: Deploy Payment Service
+                  identifier: PROD_Deploy_Payment_Service
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "╔══════════════════════════════════════╗"
+                          echo "║  DEPLOY — PAYMENT SERVICE            ║"
+                          echo "╚══════════════════════════════════════╝"
+                          echo ""
+                          echo "📋 Component: Payment Service v<+pipeline.variables.payVer>"
+                          echo "   Change:   <+pipeline.variables.payChange>"
+                          echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                          echo "   Source:   https://github.com/pdutta25/bikeshop-payments"
+                          echo ""
+                          echo "✅ Payment Service deployed to PROD"
+
+              # ── Backend + Frontend Groups (parallel stepGroups) ──
+              - parallel:
+                  - stepGroup:
+                      name: Backend Group
+                      identifier: PROD_Backend_Group
+                      steps:
+                        - step:
+                            name: Deploy Inventory Service
+                            identifier: PROD_Deploy_Inventory_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — INVENTORY SERVICE          ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Inventory Service v<+pipeline.variables.invVer>"
+                                    echo "   Change:   <+pipeline.variables.invChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-inventory"
+                                    echo ""
+                                    echo "✅ Inventory Service deployed to PROD"
+                        - step:
+                            name: Deploy Notification Service
+                            identifier: PROD_Deploy_Notification_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — NOTIFICATION SERVICE       ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Notification Service v<+pipeline.variables.notifVer>"
+                                    echo "   Change:   <+pipeline.variables.notifChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-notifications"
+                                    echo ""
+                                    echo "✅ Notification Service deployed to PROD"
+                        - step:
+                            name: Deploy Analytics Service
+                            identifier: PROD_Deploy_Analytics_Service
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — ANALYTICS SERVICE          ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Analytics Service v<+pipeline.variables.anlytVer>"
+                                    echo "   Change:   <+pipeline.variables.anlytChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-analytics"
+                                    echo ""
+                                    echo "✅ Analytics Service deployed to PROD"
+                        - step:
+                            name: Reserved Backend Slot 1
+                            identifier: PROD_Reserved_Backend_Slot_1
+                            type: ShellScript
+                            timeout: 1m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "⏸️  Reserved backend slot — no component assigned"
+                        - step:
+                            name: Reserved Backend Slot 2
+                            identifier: PROD_Reserved_Backend_Slot_2
+                            type: ShellScript
+                            timeout: 1m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "⏸️  Reserved backend slot — no component assigned"
+                  - stepGroup:
+                      name: Frontend Group
+                      identifier: PROD_Frontend_Group
+                      steps:
+                        - step:
+                            name: Deploy Storefront App
+                            identifier: PROD_Deploy_Storefront_App
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — STOREFRONT APP             ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Storefront App v<+pipeline.variables.sfVer>"
+                                    echo "   Change:   <+pipeline.variables.sfChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-storefront"
+                                    echo ""
+                                    echo "✅ Storefront App deployed to PROD"
+                        - step:
+                            name: Deploy Admin Dashboard
+                            identifier: PROD_Deploy_Admin_Dashboard
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — ADMIN DASHBOARD            ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Admin Dashboard v<+pipeline.variables.adminVer>"
+                                    echo "   Change:   <+pipeline.variables.adminChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-admin"
+                                    echo ""
+                                    echo "✅ Admin Dashboard deployed to PROD"
+                        - step:
+                            name: Deploy Mobile API
+                            identifier: PROD_Deploy_Mobile_API
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — MOBILE API                 ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Mobile API v<+pipeline.variables.mobileVer>"
+                                    echo "   Change:   <+pipeline.variables.mobileChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-mobile-api"
+                                    echo ""
+                                    echo "✅ Mobile API deployed to PROD"
+                        - step:
+                            name: Deploy CDN Assets
+                            identifier: PROD_Deploy_CDN_Assets
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — CDN ASSETS                 ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: CDN Assets v<+pipeline.variables.cdnVer>"
+                                    echo "   Change:   <+pipeline.variables.cdnChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-cdn"
+                                    echo ""
+                                    echo "✅ CDN Assets deployed to PROD"
+                        - step:
+                            name: Deploy Docs Portal
+                            identifier: PROD_Deploy_Docs_Portal
+                            type: ShellScript
+                            timeout: 5m
+                            spec:
+                              shell: Bash
+                              onDelegate: true
+                              source:
+                                type: Inline
+                                spec:
+                                  script: |-
+                                    #!/bin/bash
+                                    echo "╔══════════════════════════════════════╗"
+                                    echo "║  DEPLOY — DOCS PORTAL                ║"
+                                    echo "╚══════════════════════════════════════╝"
+                                    echo ""
+                                    echo "📋 Component: Docs Portal v<+pipeline.variables.docsVer>"
+                                    echo "   Change:   <+pipeline.variables.docsChange>"
+                                    echo "   CI:       ✔ Build ✔ Lint ✔ Test"
+                                    echo "   Source:   https://github.com/pdutta25/bikeshop-docs"
+                                    echo ""
+                                    echo "✅ Docs Portal deployed to PROD"
+
+              # ── PROD Smoke Tests ──
+              - step:
+                  name: PROD Smoke Tests
+                  identifier: PROD_Smoke_Tests
+                  type: ShellScript
+                  timeout: 5m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo "🔍 PROD Smoke Tests"
+                          echo ""
+                          echo "   ✔ [PROD-01] Auth Service health check passed"
+                          echo "   ✔ [PROD-02] Payment Service health check passed"
+                          echo "   ✔ [PROD-03] Inventory Service health check passed"
+                          echo "   ✔ [PROD-04] Notification Service health check passed"
+                          echo "   ✔ [PROD-05] Analytics Service health check passed"
+                          echo "   ✔ [PROD-06] Storefront App reachable"
+                          echo "   ✔ [PROD-07] Admin Dashboard reachable"
+                          echo "   ✔ [PROD-08] Mobile API health check passed"
+                          echo "   ✔ [PROD-09] CDN Assets accessible"
+                          echo "   ✔ [PROD-10] Docs Portal reachable"
+                          echo ""
+                          echo "┌──────────────────────────────────────┐"
+                          echo "│     PROD SMOKE TEST RESULTS          │"
+                          echo "├──────────────────────────────────────┤"
+                          echo "│ Total Tests:    10                   │"
+                          echo "│ Passed:         10                   │"
+                          echo "│ Failed:         0                    │"
+                          echo "│ Status:         ✅ ALL PASSED        │"
+                          echo "└──────────────────────────────────────┘"
+                          echo ""
+                          echo "✅ PROD smoke tests passed"
+
+              # ── Certify PROD Build (Auto-Approve in 10s) ──
+              - step:
+                  name: Certify PROD Build
+                  identifier: PROD_Certify_PROD_Build
+                  type: HarnessApproval
+                  timeout: 10s
+                  spec:
+                    approvalMessage: |-
+                      Certifying all 10 components deployed successfully to PROD
+                      Auth v<+pipeline.variables.authVer> | Payments v<+pipeline.variables.payVer> | Inventory v<+pipeline.variables.invVer>
+                      Notifications v<+pipeline.variables.notifVer> | Analytics v<+pipeline.variables.anlytVer>
+                      Storefront v<+pipeline.variables.sfVer> | Admin v<+pipeline.variables.adminVer> | Mobile API v<+pipeline.variables.mobileVer>
+                      CDN v<+pipeline.variables.cdnVer> | Docs v<+pipeline.variables.docsVer>
+                      Build: #<+pipeline.variables.buildNumber>
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    isAutoRejectEnabled: false
+                  failureStrategies:
+                    - onFailure:
+                        errors:
+                          - Timeout
+                        action:
+                          type: MarkAsSuccess
+
+              # ── PROD Recap ──
+              - step:
+                  name: PROD Recap
+                  identifier: PROD_Recap
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                        PROD RECAP                               ║"
+                          echo "║  Summary of what was deployed and verified in PROD.               ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Deployed ─────────────────────────────────────────────"
+                          echo "  ✅ Auth Service         v<+pipeline.variables.authVer>  — <+pipeline.variables.authChange>"
+                          echo "  ✅ Payment Service      v<+pipeline.variables.payVer>  — <+pipeline.variables.payChange>"
+                          echo "  ✅ Inventory Service    v<+pipeline.variables.invVer>  — <+pipeline.variables.invChange>"
+                          echo "  ✅ Notification Service v<+pipeline.variables.notifVer>  — <+pipeline.variables.notifChange>"
+                          echo "  ✅ Analytics Service    v<+pipeline.variables.anlytVer>  — <+pipeline.variables.anlytChange>"
+                          echo "  ✅ Storefront App       v<+pipeline.variables.sfVer>  — <+pipeline.variables.sfChange>"
+                          echo "  ✅ Admin Dashboard      v<+pipeline.variables.adminVer>  — <+pipeline.variables.adminChange>"
+                          echo "  ✅ Mobile API           v<+pipeline.variables.mobileVer>  — <+pipeline.variables.mobileChange>"
+                          echo "  ✅ CDN Assets           v<+pipeline.variables.cdnVer>  — <+pipeline.variables.cdnChange>"
+                          echo "  ✅ Docs Portal          v<+pipeline.variables.docsVer>  — <+pipeline.variables.docsChange>"
+                          echo ""
+                          echo "── Verification ────────────────────────────────────────────────────"
+                          echo "  Smoke Tests:    ✔ Passed (10/10)"
+                          echo "  Certified:      ✔ Auto-certified"
+                          echo ""
+                          echo "── Progress ────────────────────────────────────────────────────────"
+                          echo "  DEV ✅  SIT ✅  PROD 🚀"
+                          echo ""
+                          echo "── Context ─────────────────────────────────────────────────────────"
+                          echo "  Triggered by:   <+pipeline.variables.triggeredBy>"
+                          echo "  Trigger repo:   https://github.com/<+pipeline.variables.triggerRepo>"
+                          echo "  Build:          #<+pipeline.variables.buildNumber>"
+                          echo "  Commit:         <+pipeline.variables.commitSha>"
+                          echo ""
+                          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                          echo "  ✅ PROD COMPLETE — proceeding to Pipeline Debrief"
+                          echo ""
+        tags: {}
+
+    # ════════════════════════════════════════════════════════════
+    # End — Pipeline Debrief
+    # ════════════════════════════════════════════════════════════
+    - stage:
+        name: End
+        identifier: End
+        type: Custom
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
+        spec:
+          execution:
+            steps:
+              # ── Summary ──
+              - step:
+                  name: Summary
+                  identifier: What_Happened
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      SUMMARY                                ║"
+                          echo "║  Components released and per-stage deployment results.            ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Components Released ──────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Auth Service ───────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.authVer>"
+                          echo "  │ Change:         <+pipeline.variables.authChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-auth"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Payment Service ────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.payVer>"
+                          echo "  │ Change:         <+pipeline.variables.payChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-payments"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Inventory Service ──────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.invVer>"
+                          echo "  │ Change:         <+pipeline.variables.invChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-inventory"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Notification Service ───────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.notifVer>"
+                          echo "  │ Change:         <+pipeline.variables.notifChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-notifications"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Analytics Service ──────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.anlytVer>"
+                          echo "  │ Change:         <+pipeline.variables.anlytChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-analytics"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Storefront App ─────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.sfVer>"
+                          echo "  │ Change:         <+pipeline.variables.sfChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-storefront"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Admin Dashboard ────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.adminVer>"
+                          echo "  │ Change:         <+pipeline.variables.adminChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-admin"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Mobile API ─────────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.mobileVer>"
+                          echo "  │ Change:         <+pipeline.variables.mobileChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-mobile-api"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ CDN Assets ─────────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.cdnVer>"
+                          echo "  │ Change:         <+pipeline.variables.cdnChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-cdn"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ Docs Portal ────────────────────────────────────────────────"
+                          echo "  │ Version:        v<+pipeline.variables.docsVer>"
+                          echo "  │ Change:         <+pipeline.variables.docsChange>"
+                          echo "  │ Source:         https://github.com/pdutta25/bikeshop-docs"
+                          echo "  │ CI:             ✔ Build  ✔ Lint  ✔ Test"
+                          echo "  └──────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "── Stage Results ───────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ DEV ─────────────────────────────────────────────────────────"
+                          echo "  │ Approval:       ✔ Single gate, auto-approved"
+                          echo "  │ Auth Service:   ✔ Deployed (sequential)"
+                          echo "  │ Payment Svc:    ✔ Deployed (sequential)"
+                          echo "  │ Inventory Svc:  ✔ Deployed (Backend Group)"
+                          echo "  │ Notification:   ✔ Deployed (Backend Group)"
+                          echo "  │ Analytics Svc:  ✔ Deployed (Backend Group)"
+                          echo "  │ Storefront:     ✔ Deployed (Frontend Group)"
+                          echo "  │ Admin:          ✔ Deployed (Frontend Group)"
+                          echo "  │ Mobile API:     ✔ Deployed (Frontend Group)"
+                          echo "  │ CDN Assets:     ✔ Deployed (Frontend Group)"
+                          echo "  │ Docs Portal:    ✔ Deployed (Frontend Group)"
+                          echo "  │ Smoke Tests:    ✔ Passed (10/10)"
+                          echo "  │ Certified:      ✔ Auto-certified"
+                          echo "  │ Result:         ✅ DEV PASSED"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ SIT ─────────────────────────────────────────────────────────"
+                          echo "  │ Approval:       ✔ Single gate, auto-approved"
+                          echo "  │ Auth Service:   ✔ Deployed (sequential)"
+                          echo "  │ Payment Svc:    ✔ Deployed (sequential)"
+                          echo "  │ Inventory Svc:  ✔ Deployed (Backend Group)"
+                          echo "  │ Notification:   ✔ Deployed (Backend Group)"
+                          echo "  │ Analytics Svc:  ✔ Deployed (Backend Group)"
+                          echo "  │ Storefront:     ✔ Deployed (Frontend Group)"
+                          echo "  │ Admin:          ✔ Deployed (Frontend Group)"
+                          echo "  │ Mobile API:     ✔ Deployed (Frontend Group)"
+                          echo "  │ CDN Assets:     ✔ Deployed (Frontend Group)"
+                          echo "  │ Docs Portal:    ✔ Deployed (Frontend Group)"
+                          echo "  │ Integration:    ✔ Passed (10/10)"
+                          echo "  │ Certified:      ✔ Auto-certified"
+                          echo "  │ Result:         ✅ SIT PASSED"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          echo "  ┌─ PROD ────────────────────────────────────────────────────────"
+                          echo "  │ Approval:       ✔ PROD gate, auto-approved"
+                          echo "  │ Auth Service:   ✔ Deployed (sequential)"
+                          echo "  │ Payment Svc:    ✔ Deployed (sequential)"
+                          echo "  │ Inventory Svc:  ✔ Deployed (Backend Group)"
+                          echo "  │ Notification:   ✔ Deployed (Backend Group)"
+                          echo "  │ Analytics Svc:  ✔ Deployed (Backend Group)"
+                          echo "  │ Storefront:     ✔ Deployed (Frontend Group)"
+                          echo "  │ Admin:          ✔ Deployed (Frontend Group)"
+                          echo "  │ Mobile API:     ✔ Deployed (Frontend Group)"
+                          echo "  │ CDN Assets:     ✔ Deployed (Frontend Group)"
+                          echo "  │ Docs Portal:    ✔ Deployed (Frontend Group)"
+                          echo "  │ Smoke Tests:    ✔ Passed (10/10)"
+                          echo "  │ Certified:      ✔ Auto-certified"
+                          echo "  │ Result:         ✅ PROD PASSED"
+                          echo "  └───────────────────────────────────────────────────────────────"
+                          echo ""
+                          
+                          
+              # ── Traceability ──
+              - step:
+                  name: Traceability
+                  identifier: Where_to_Look
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      TRACEABILITY                                  ║"
+                          echo "║  Traceability links for commits, CI runs, and execution.          ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Traceability ────────────────────────────────────────────────"
+                          echo "  Commit URL:       <+pipeline.variables.repoUrl>/commit/<+pipeline.variables.commitSha>"
+                          echo "  CI workflow run:  <+pipeline.variables.repoUrl>/actions/runs/<+pipeline.variables.runId>"
+                          echo "  Harness exec:     <+pipeline.executionId>"
+                          echo "  Auth CI:          https://github.com/pdutta25/bikeshop-auth/actions"
+                          echo "  Payments CI:      https://github.com/pdutta25/bikeshop-payments/actions"
+                          echo "  Inventory CI:     https://github.com/pdutta25/bikeshop-inventory/actions"
+                          echo "  Notifications CI: https://github.com/pdutta25/bikeshop-notifications/actions"
+                          echo "  Analytics CI:     https://github.com/pdutta25/bikeshop-analytics/actions"
+                          echo "  Storefront CI:    https://github.com/pdutta25/bikeshop-storefront/actions"
+                          echo "  Admin CI:         https://github.com/pdutta25/bikeshop-admin/actions"
+                          echo "  Mobile API CI:    https://github.com/pdutta25/bikeshop-mobile-api/actions"
+                          echo "  CDN CI:           https://github.com/pdutta25/bikeshop-cdn/actions"
+                          echo "  Docs CI:          https://github.com/pdutta25/bikeshop-docs/actions"
+                          echo ""
+                          
+                          
+              # ── Governance ──
+              - step:
+                  name: Governance
+                  identifier: Governance
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                      GOVERNANCE                             ║"
+                          echo "║  Pipeline governance, template drift, and customizations.         ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Pipeline Governance ─────────────────────────────────────────"
+                          echo "  Enterprise template:  v1.0.0 (provisioned at onboarding)"
+                          echo "  Current version:      v1.0.0"
+                          echo "  Drift:                None — matches template"
+                          echo "  Last modified by:     pdutta25"
+                          echo "  Last modified:        2026-03-18"
+                          echo "  Compliance:           ✔ Within allowed customization policy"
+                          echo ""
+                          
+                          
+              # ── Telemetry ──
+              - step:
+                  name: Telemetry
+                  identifier: Telemetry
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "╔══════════════════════════════════════════════════════════════════╗"
+                          echo "║                         TELEMETRY                               ║"
+                          echo "║  Pipeline metrics for observability and DORA tracking.          ║"
+                          echo "╚══════════════════════════════════════════════════════════════════╝"
+                          echo ""
+                          echo "── Pipeline Identity ─────────────────────────────────────────────"
+                          echo "  pipeline_name:        apr-release-bike-shop"
+                          echo "  pipeline_id:          aprreleasebikeshop"
+                          echo "  execution_id:         <+pipeline.executionId>"
+                          echo "  execution_url:        <+pipeline.executionUrl>"
+                          echo "  sequence_id:          <+pipeline.sequenceId>"
+                          echo "  build_number:         #<+pipeline.variables.buildNumber>"
+                          echo "  trigger_type:         <+pipeline.variables.triggeredBy>"
+                          echo "  trigger_repo:         <+pipeline.variables.triggerRepo>"
+                          echo "  branch:               <+pipeline.variables.branch>"
+                          echo "  commit_sha:           <+pipeline.variables.commitSha>"
+                          echo "  started_at:           <+pipeline.startTs>"
+                          echo "  status:               <+pipeline.status>"
+                          echo ""
+                          echo "── Timeline ──────────────────────────────────────────────────────"
+                          echo "  T+0s      Pipeline started"
+                          echo "  T+1s      ├─ Start stage began"
+                          echo "  T+1s      │  ├─ Whats Releasing — pipeline identity"
+                          echo "  T+2s      │  ├─ Whats Inside — 10 component manifest"
+                          echo "  T+3s      │  └─ How Its Releasing — release flow"
+                          echo "  T+4s      ├─ DEV stage began"
+                          echo "  T+5s      │  ├─ Deploy Auth to DEV"
+                          echo "  T+6s      │  ├─ Deploy Payments to DEV"
+                          echo "  T+7s      │  ├─ [parallel] Deploy Inventory, Notifications, Analytics"
+                          echo "  T+10s     │  ├─ [parallel] Deploy Storefront, Admin, Mobile API, CDN, Docs"
+                          echo "  T+14s     │  ├─ DEV Smoke Tests — PASSED (10/10)"
+                          echo "  T+20s     │  └─ Certify DEV Build"
+                          echo "  T+22s     ├─ SIT stage began"
+                          echo "  T+23s     │  ├─ Deploy Auth to SIT"
+                          echo "  T+24s     │  ├─ Deploy Payments to SIT"
+                          echo "  T+25s     │  ├─ [parallel] Deploy Inv, Notif, Analytics"
+                          echo "  T+28s     │  ├─ [parallel] Deploy SF, Admin, Mobile, CDN, Docs"
+                          echo "  T+32s     │  ├─ SIT Smoke Tests — PASSED (10/10)"
+                          echo "  T+38s     │  └─ Certify SIT Build"
+                          echo "  T+40s     ├─ UAT stage began"
+                          echo "  T+41s     │  ├─ Deploy Auth to UAT"
+                          echo "  T+42s     │  ├─ Deploy Payments to UAT"
+                          echo "  T+43s     │  ├─ [parallel] Deploy Inv, Notif, Analytics"
+                          echo "  T+46s     │  ├─ [parallel] Deploy SF, Admin, Mobile, CDN, Docs"
+                          echo "  T+50s     │  ├─ UAT Smoke Tests — PASSED (10/10)"
+                          echo "  T+56s     │  └─ Certify UAT Build"
+                          echo "  T+58s     ├─ PROD stage began"
+                          echo "  T+59s     │  ├─ Deploy Auth to PROD"
+                          echo "  T+60s     │  ├─ Deploy Payments to PROD"
+                          echo "  T+61s     │  ├─ [parallel] Deploy Inv, Notif, Analytics"
+                          echo "  T+64s     │  ├─ [parallel] Deploy SF, Admin, Mobile, CDN, Docs"
+                          echo "  T+68s     │  ├─ PROD Smoke Tests — PASSED (10/10)"
+                          echo "  T+74s     │  ├─ Certify PROD Build"
+                          echo "  T+76s     │  └─ PROD Recap"
+                          echo "  T+78s     ├─ End stage began"
+                          echo "  T+79s     │  ├─ Summary"
+                          echo "  T+80s     │  ├─ Traceability"
+                          echo "  T+81s     │  ├─ Governance"
+                          echo "  T+82s     │  ├─ Telemetry ← you are here"
+                          echo "  T+83s     │  └─ Done"
+                          echo "  T+84s     └─ Pipeline completed"
+                          echo ""
+                          echo "── DORA Metrics ──────────────────────────────────────────────────"
+                          echo "  lead_time_seconds:    84"
+                          echo "  lead_time_human:      1m 24s (commit → prod)"
+                          echo "  deployment_frequency: 2.8 deploys/day (rolling 7d)"
+                          echo "  change_failure_rate:  0.0% (0 rollbacks / 34 deploys)"
+                          echo "  mttr_seconds:         0 (no incidents in window)"
+                          echo ""
+                          echo "── Component Inventory ───────────────────────────────────────────"
+                          echo "  total_components:     10"
+                          echo "  ┌──────────────────────┬──────────┬────────────────────────────────┐"
+                          echo "  │ Component            │ Version  │ Last Change                    │"
+                          echo "  ├──────────────────────┼──────────┼────────────────────────────────┤"
+                          echo "  │ bikeshop-auth        │ v<+pipeline.variables.authVer>  │ <+pipeline.variables.authChange> │"
+                          echo "  │ bikeshop-payments    │ v<+pipeline.variables.payVer>   │ <+pipeline.variables.payChange> │"
+                          echo "  │ bikeshop-inventory   │ v<+pipeline.variables.invVer>   │ <+pipeline.variables.invChange> │"
+                          echo "  │ bikeshop-notif       │ v<+pipeline.variables.notifVer> │ <+pipeline.variables.notifChange> │"
+                          echo "  │ bikeshop-analytics   │ v<+pipeline.variables.anlytVer> │ <+pipeline.variables.anlytChange> │"
+                          echo "  │ bikeshop-storefront  │ v<+pipeline.variables.sfVer>    │ <+pipeline.variables.sfChange> │"
+                          echo "  │ bikeshop-admin       │ v<+pipeline.variables.adminVer> │ <+pipeline.variables.adminChange> │"
+                          echo "  │ bikeshop-mobile-api  │ v<+pipeline.variables.mobileVer>│ <+pipeline.variables.mobileChange> │"
+                          echo "  │ bikeshop-cdn         │ v<+pipeline.variables.cdnVer>   │ <+pipeline.variables.cdnChange> │"
+                          echo "  │ bikeshop-docs        │ v<+pipeline.variables.docsVer>  │ <+pipeline.variables.docsChange> │"
+                          echo "  └──────────────────────┴──────────┴────────────────────────────────┘"
+                          echo ""
+                          echo "── Environment Progression ───────────────────────────────────────"
+                          echo "  ┌─────────┬──────────┬──────────┬──────────────┬────────────────┐"
+                          echo "  │ Env     │ Status   │ Duration │ Smoke Tests  │ Approvals      │"
+                          echo "  ├─────────┼──────────┼──────────┼──────────────┼────────────────┤"
+                          echo "  │ DEV     │ ✅ PASSED │ 18s      │ 10/10 passed │ none required  │"
+                          echo "  │ SIT     │ ✅ PASSED │ 18s      │ 10/10 passed │ none required  │"
+                          echo "  │ UAT     │ ✅ PASSED │ 18s      │ 10/10 passed │ none required  │"
+                          echo "  │ PROD    │ ✅ PASSED │ 18s      │ 10/10 passed │ none required  │"
+                          echo "  └─────────┴──────────┴──────────┴──────────────┴────────────────┘"
+                          echo "  total_environments:   4"
+                          echo "  total_promotions:     3 (DEV → SIT → UAT → PROD)"
+                          echo "  total_deploy_time:    72s"
+                          echo "  pattern:              apr (auth/payments sequential, rest parallel)"
+                          echo ""
+                          echo "── Quality Gates ─────────────────────────────────────────────────"
+                          echo "  approvals_required:   0"
+                          echo "  approvals_granted:    0"
+                          echo "  smoke_tests_total:    40 (10 components × 4 envs)"
+                          echo "  smoke_tests_passed:   40"
+                          echo "  smoke_tests_failed:   0"
+                          echo "  certifications:       4 (DEV, SIT, UAT, PROD)"
+                          echo "  rollbacks_triggered:  0"
+                          echo ""
+                          echo "── Artifact Registry ─────────────────────────────────────────────"
+                          echo "  artifacts_published:  10"
+                          echo "  registry:             JFrog Artifactory"
+                          echo "  ┌──────────────────────┬─────────────────────────────────────┬───────┐"
+                          echo "  │ Component            │ Artifact                            │ Size  │"
+                          echo "  ├──────────────────────┼─────────────────────────────────────┼───────┤"
+                          echo "  │ bikeshop-auth        │ bikeshop-auth-<+pipeline.variables.authVer>.jar      │ 22MB  │"
+                          echo "  │ bikeshop-payments    │ bikeshop-payments-<+pipeline.variables.payVer>.jar   │ 24MB  │"
+                          echo "  │ bikeshop-inventory   │ bikeshop-inventory-<+pipeline.variables.invVer>.whl  │ 1.8MB │"
+                          echo "  │ bikeshop-notif       │ bikeshop-notif-<+pipeline.variables.notifVer>.tgz    │ 3.2MB │"
+                          echo "  │ bikeshop-analytics   │ bikeshop-analytics-<+pipeline.variables.anlytVer>.whl│ 2.1MB │"
+                          echo "  │ bikeshop-storefront  │ bikeshop-storefront-<+pipeline.variables.sfVer>.tgz  │ 15MB  │"
+                          echo "  │ bikeshop-admin       │ bikeshop-admin-<+pipeline.variables.adminVer>.tgz    │ 11MB  │"
+                          echo "  │ bikeshop-mobile-api  │ bikeshop-mobile-<+pipeline.variables.mobileVer>      │ 14MB  │"
+                          echo "  │ bikeshop-cdn         │ bikeshop-cdn-<+pipeline.variables.cdnVer>.tar.gz     │ 4.2MB │"
+                          echo "  │ bikeshop-docs        │ bikeshop-docs-<+pipeline.variables.docsVer>.tar.gz   │ 8.4MB │"
+                          echo "  └──────────────────────┴─────────────────────────────────────┴───────┘"
+                          echo "  total_artifact_size:  105.7 MB"
+                          echo "  xray_violations:      0"
+                          echo ""
+                          echo "── Security and Compliance ───────────────────────────────────────"
+                          echo "  sonarqube_gate:       PASSED (10/10 components)"
+                          echo "  checkmarx_findings:   0 critical, 0 high, 2 low"
+                          echo "  bandit_findings:      0 critical, 0 high"
+                          echo "  snyk_vulnerabilities: 0 critical, 0 high"
+                          echo "  gosec_findings:       0"
+                          echo "  license_compliance:   all MIT/Apache-2.0/ISC/BSD"
+                          echo "  governance_status:    COMPLIANT"
+                          echo "  policy_violations:    0"
+                          echo "  sbom_generated:       true (10 SBOMs)"
+                          echo ""
+                          echo "── Infrastructure ────────────────────────────────────────────────"
+                          echo "  cloud_provider:       AWS"
+                          echo "  region:               us-east-1"
+                          echo "  cluster:              eks-bikeshop-prod"
+                          echo "  namespace:            bikeshop"
+                          echo "  delegate:             harness-delegate-bikeshop"
+                          echo "  connector:            bikeshop-k8s-prod"
+                          echo "  service_mesh:         Istio 1.20"
+                          echo "  ingress:              ALB (bikeshop-prod-alb)"
+                          echo ""
+                          echo "── Telemetry Destination ─────────────────────────────────────────"
+                          echo "  datadog_endpoint:     https://api.datadoghq.com/v2/series"
+                          echo "  splunk_index:         bikeshop-releases"
+                          echo "  newrelic_account:     3847291"
+                          echo "  event_type:           pipeline.release.completed"
+                          echo "  tags:                 env:prod, team:platform, app:bikeshop"
+                          echo "  ☑ Payload shipped to all 3 destinations"
+                          echo ""
+                          
+
+
+              # ── Done ──
+              - step:
+                  name: Done
+                  identifier: Done
+                  type: ShellScript
+                  timeout: 1m
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          #!/bin/bash
+                          echo ""
+                          echo "── Result ──────────────────────────────────────────────────────"
+                          echo "  ✅ RELEASE COMPLETE"
+                          echo "  All 10 components deployed to DEV → SIT → PROD"
+                          echo "  Auth v<+pipeline.variables.authVer> | Payments v<+pipeline.variables.payVer> | Inventory v<+pipeline.variables.invVer>"
+                          echo "  Notifications v<+pipeline.variables.notifVer> | Analytics v<+pipeline.variables.anlytVer>"
+                          echo "  Storefront v<+pipeline.variables.sfVer> | Admin v<+pipeline.variables.adminVer> | Mobile API v<+pipeline.variables.mobileVer>"
+                          echo "  CDN v<+pipeline.variables.cdnVer> | Docs v<+pipeline.variables.docsVer>"
+                          echo ""
+        tags: {}

@@ -8,6 +8,10 @@ on:
       - 'docs/**'
       - '.github/dependabot.yml'
       - 'LICENSE'
+      - 'harness/**'
+      - 'slides/**'
+      - '.github/workflows/*-release-bike-shop*'
+      - '.github/workflows/trigger-release*'
   pull_request:
     branches: [main]
     paths-ignore:
@@ -15,6 +19,10 @@ on:
       - 'docs/**'
       - '.github/dependabot.yml'
       - 'LICENSE'
+      - 'harness/**'
+      - 'slides/**'
+      - '.github/workflows/*-release-bike-shop*'
+      - '.github/workflows/trigger-release*'
   workflow_dispatch:
     inputs:
       test_deploy:

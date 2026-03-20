@@ -1,0 +1,18 @@
+{
+  "org": "pdutta25",
+  "components": [
+    { "repo": "bikeshop-db",            "alias": "db",       "label": "Database" },
+    { "repo": "bikeshop-services",      "alias": "svc",      "label": "Services" },
+    { "repo": "bikeshop-ui",            "alias": "ui",       "label": "UI" },
+    { "repo": "bikeshop-auth",          "alias": "auth",     "label": "Auth" },
+    { "repo": "bikeshop-payments",      "alias": "pay",      "label": "Payments" },
+    { "repo": "bikeshop-inventory",     "alias": "inv",      "label": "Inventory" },
+    { "repo": "bikeshop-notifications", "alias": "notif",    "label": "Notifications" },
+    { "repo": "bikeshop-analytics",     "alias": "anlyt",    "label": "Analytics" },
+    { "repo": "bikeshop-storefront",    "alias": "sf",       "label": "Storefront" },
+    { "repo": "bikeshop-admin",         "alias": "admin",    "label": "Admin" },
+    { "repo": "bikeshop-mobile-api",    "alias": "mobile",   "label": "Mobile API" },
+    { "repo": "bikeshop-cdn",           "alias": "cdn",      "label": "CDN" },
+    { "repo": "bikeshop-docs",          "alias": "docs",     "label": "Docs" }
+  ]
+}
