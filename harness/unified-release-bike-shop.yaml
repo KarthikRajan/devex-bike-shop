@@ -1791,6 +1791,10 @@ pipeline:
                   spec:
                     shell: Bash
                     onDelegate: true
+                    environmentVariables:
+                      - name: HARNESS_API_KEY
+                        type: Secret
+                        value: harness_api_key
                     source:
                       type: Inline
                       spec:
@@ -1820,7 +1824,7 @@ pipeline:
                           NOTES_PAYLOAD=$(jq -Rs '.' < /tmp/pipeline_annotations.md)
                           curl -sf -X PUT \
                             "https://app.harness.io/pipeline/api/pipelines/execution/<+pipeline.executionId>/notes?accountIdentifier=<+account.identifier>&orgIdentifier=<+org.identifier>&projectIdentifier=<+project.identifier>" \
-                            -H "x-api-key: <+secrets.getValue("harness_api_key")>" \
+                            -H "x-api-key: $HARNESS_API_KEY" \
                             -H "Content-Type: application/json" \
                             -d "$NOTES_PAYLOAD" \
                             && echo "  ✅ Annotations posted to execution notes" \
