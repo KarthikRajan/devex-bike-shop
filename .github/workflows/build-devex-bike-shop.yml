@@ -360,8 +360,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: read
     steps:
       - name: CI Results Summary
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo ""
           echo "╔═══════════════════════════════════════════════════════════════╗"
@@ -444,9 +447,77 @@ jobs:
           echo "  │  Result:       ✅ 13/13 artifacts attested              │"
           echo "  └─────────────────────────────────────────────────────────┘"
           echo ""
+          echo "  ┌─────────────────────────────────────────────────────────┐"
+          echo "  │  🤖 DEPENDABOT — Automated Dependency Updates            │"
+          echo "  ├─────────────────────────────────────────────────────────┤"
+          echo "  │                                                          │"
+          # Query merged Dependabot PRs since last release tag
+          PREV_TAG=$(gh release list --repo "${{ github.repository }}" --limit 2 --json tagName,publishedAt --jq '.[1].tagName // empty' 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            TAG_DATE=$(gh release view "$PREV_TAG" --repo "${{ github.repository }}" --json publishedAt --jq '.publishedAt' 2>/dev/null || echo "")
+            echo "  │  Since last release: $PREV_TAG                           │"
+            echo "  │                                                          │"
+            if [ -n "$TAG_DATE" ]; then
+              DEPENDABOT_PRS=$(gh pr list --repo "${{ github.repository }}" --author "dependabot[bot]" --state merged --search "merged:>=$TAG_DATE" --json number,title,url --jq '.[] | "  │  ✅ #\(.number) \(.title)"' 2>/dev/null || echo "")
+            fi
+            if [ -n "$DEPENDABOT_PRS" ]; then
+              COUNT_DB=$(echo "$DEPENDABOT_PRS" | wc -l | tr -d ' ')
+              echo "$DEPENDABOT_PRS"
+              echo "  │                                                          │"
+              echo "  │  Total: $COUNT_DB dependency update(s) merged automatically │"
+            else
+              echo "  │  No dependency updates since last release               │"
+            fi
+          else
+            echo "  │  No previous release tag found                         │"
+          fi
+          echo "  │                                                          │"
+          echo "  │  Dependabot keeps 847 dependencies current without      │"
+          echo "  │  developer effort — security stays up to date.          │"
+          echo "  └─────────────────────────────────────────────────────────┘"
+          echo ""
           echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "  🚀 ALL GATES PASSED — triggering Harness deployment"
           echo "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo ""
+          echo "  ╔═══════════════════════════════════════════════════════════╗"
+          echo "  ║                    📖 DEMO STORYLINE                      ║"
+          echo "  ╠═══════════════════════════════════════════════════════════╣"
+          echo "  ║                                                           ║"
+          echo "  ║  \"This is bikeshop.com — 1 app, 13 microservices.        ║"
+          echo "  ║                                                           ║"
+          echo "  ║  We made 4 changes for a Spring Sale campaign.            ║"
+          echo "  ║  One push to main kicks off the full CI pipeline:         ║"
+          echo "  ║                                                           ║"
+          echo "  ║  First, build, lint, and test run in parallel — these     ║"
+          echo "  ║  are real. Next.js build, ESLint, Vitest. All green.     ║"
+          echo "  ║                                                           ║"
+          echo "  ║  Then security scan and code quality gate in parallel —   ║"
+          echo "  ║  Trivy finds vulnerabilities, SonarCloud checks code     ║"
+          echo "  ║  standards. Only clean code moves forward.               ║"
+          echo "  ║                                                           ║"
+          echo "  ║  Once scans pass, three things happen at once:            ║"
+          echo "  ║  - All 13 components publish to JFrog Artifactory         ║"
+          echo "  ║  - AI generates release notes from commit history         ║"
+          echo "  ║  - Docs auto-update on the GitHub Wiki                    ║"
+          echo "  ║                                                           ║"
+          echo "  ║  After publish, compliance validates every artifact —     ║"
+          echo "  ║  SBOM generation, signature verification, license and    ║"
+          echo "  ║  CVE checks, then signs a deployment attestation.        ║"
+          echo "  ║  Only attested artifacts reach production.               ║"
+          echo "  ║                                                           ║"
+          echo "  ║  Finally, the deploy gate opens and triggers Harness —   ║"
+          echo "  ║  which rolls out all 13 components across DEV, SIT,      ║"
+          echo "  ║  and PROD with the real storefront going live on Render. ║"
+          echo "  ║                                                           ║"
+          echo "  ║  Meanwhile, Dependabot has been keeping all 847           ║"
+          echo "  ║  dependencies up to date automatically — no developer    ║"
+          echo "  ║  effort, security stays current.                          ║"
+          echo "  ║                                                           ║"
+          echo "  ║  One push. Full CI/CD. GitHub + JFrog + Harness.\"        ║"
+          echo "  ║                                                           ║"
+          echo "  ╚═══════════════════════════════════════════════════════════╝"
 
       - name: Checkout code
         if: (github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')) || inputs.test_deploy == true
